@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"  ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.OrgObjDao">
+	<!-- 异议处理列表 -->
+	<resultMap type="com.workmanagement.model.AdminObjModel" id="adminObjMap">
+		<id column="sys_operate_id"  property="sysOperateId"/>
+		<result column="sys_user_id" property="sysUserId"/>
+		<result column="sys_org_id" property="sysOrgId"/>
+		<result column="index_item_id" property="indexItemId"/>
+		<result column="sys_operate_status" property="sysOperateStatus"/>
+		<result column="default_index_item_id" property="defaultIndexItemId"/>
+		<result column="record_date" property="recordDate"/>
+		<result column="sys_operate_time" property="sysOperateTime"/>
+		<result column="auth_file" property="authFile"/> 
+		<result column="report_org_id" property="reportOrgId"/>  
+		<result column="data_id" property="dataId"/> 
+	</resultMap>
+	<!-- 异议处理详情表 -->
+	<resultMap type="com.workmanagement.model.SysOperateListModel" id="sysOperateListMap">
+		<id column="sys_operate_list_id" property="sysOperateListId"/>
+		<result column="sys_operate_id" property="sysOperateId"/>
+		<result column="sys_operate_time" property="sysOperateTime"/>
+		<result column="index_item_id" property="indexItemId"/>
+		<result column="org_explain" property="orgExplain"/>
+		<result column="server_explain" property="serverExplain"/>
+		<result column="maininfo_explain" property="maininfoExplain"/>
+		<result column="mark" property="mark"/>
+	</resultMap>
+	
+	<!-- 查询异议列表 -->
+	<select id="querySysOperateList" resultType="com.workmanagement.model.AdminObjModel">
+		SELECT 	(SELECT INDEXTB.INDEX_NAME FROM INDEX_TB INDEXTB WHERE INDEXTB.INDEX_ID=OPERATE.INDEX_ITEM_ID) AS indexName,
+				(SELECT ORG.SYS_ORG_NAME FROM SYS_ORG_TB ORG WHERE ORG.SYS_ORG_ID=OPERATE.SYS_ORG_ID) AS sysOrgName,
+				OPERATE.SYS_OPERATE_TIME AS sysOperateTime,
+				OPERATE.RECORD_DATE AS recordDate,
+				OPERATE.SYS_OPERATE_STATUS AS sysOperateStatus,
+				OPERATE.DEFAULT_INDEX_ITEM_ID AS defaultIndexItemId,
+				OPERATE.INDEX_ITEM_ID AS indexItemId,
+				OPERATE.SYS_ORG_ID AS sysOrgId,
+				OPERATE.SYS_OPERATE_ID AS sysOperateId,
+				OPERATE.REPORT_ORG_ID AS reportOrgId,
+				OPERATE.DATA_ID AS dataId,
+				(SELECT JBXX.INDEX_JBXX_QYMC FROM INDEX_JBXX_TB JBXX WHERE JBXX.DEFAULT_INDEX_ITEM_ID=OPERATE.DEFAULT_INDEX_ITEM_ID FETCH FIRST 1 ROWS ONLY) AS jbxxQimc,
+				(SELECT DEFAULTINDEX.CODE_CREDIT FROM DEFAULT_INDEX_ITEM_TB DEFAULTINDEX WHERE DEFAULTINDEX.DEFAULT_INDEX_ITEM_ID=OPERATE.DEFAULT_INDEX_ITEM_ID) AS codeCredit,
+				(SELECT DEFAULTINDEX.CODE_ORG FROM DEFAULT_INDEX_ITEM_TB DEFAULTINDEX WHERE DEFAULTINDEX.DEFAULT_INDEX_ITEM_ID=OPERATE.DEFAULT_INDEX_ITEM_ID) AS codeOrg,
+				(SELECT ORG.SYS_ORG_NAME FROM SYS_ORG_TB ORG WHERE ORG.SYS_ORG_ID=OPERATE.REPORT_ORG_ID) AS sysReportOrgName
+		FROM 	SYS_OPERATE_TB OPERATE
+		WHERE   1=1
+		<if test="reporateType==1">
+			AND (OPERATE.SYS_ORG_ID =#{orgIds} OR (OPERATE.REPORT_ORG_ID=#{orgIds} AND OPERATE.SYS_OPERATE_STATUS!=0))
+		</if>
+		<if test="reporateType==2">
+			AND (OPERATE.SYS_ORG_ID=#{sysOrgId} OR (OPERATE.REPORT_ORG_ID=#{sysOrgId} AND OPERATE.SYS_OPERATE_STATUS!=0))
+		</if>
+		<if test="reporateType==3">
+			AND (OPERATE.REPORT_ORG_ID=#{orgIds} AND OPERATE.SYS_OPERATE_STATUS=1)
+		</if>
+		<if test="defaultId!=null">
+			AND OPERATE.DEFAULT_INDEX_ITEM_ID IN
+			<foreach collection="defaultId" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+		<if test="indexItemId!=null">
+			AND OPERATE.INDEX_ITEM_ID=#{indexItemId}
+		</if>
+		<if test="recordDate!=null">
+			AND subStr(OPERATE.SYS_OPERATE_TIME,1,10)=#{recordDate}
+		</if>
+		<if test="status!=null">
+			AND OPERATE.SYS_OPERATE_STATUS=#{status}
+		</if>
+		ORDER BY OPERATE.SYS_OPERATE_TIME DESC
+	</select>
+		<!-- 查询异议列表   全部  xiehao-->
+	<select id="queryAllSysOperateList" resultType="com.workmanagement.model.AdminObjModel">
+		SELECT 	(SELECT INDEXTB.INDEX_NAME FROM INDEX_TB INDEXTB WHERE INDEXTB.INDEX_ID=OPERATE.INDEX_ITEM_ID) AS indexName,
+				(SELECT ORG.SYS_ORG_NAME FROM SYS_ORG_TB ORG WHERE ORG.SYS_ORG_ID=OPERATE.SYS_ORG_ID) AS sysOrgName,
+				OPERATE.SYS_OPERATE_TIME AS sysOperateTime,
+				OPERATE.RECORD_DATE AS recordDate,
+				OPERATE.SYS_OPERATE_STATUS AS sysOperateStatus,
+				OPERATE.DEFAULT_INDEX_ITEM_ID AS defaultIndexItemId,
+				OPERATE.INDEX_ITEM_ID AS indexItemId,
+				OPERATE.SYS_ORG_ID AS sysOrgId,
+				OPERATE.SYS_OPERATE_ID AS sysOperateId,
+				OPERATE.REPORT_ORG_ID AS reportOrgId,
+				OPERATE.DATA_ID AS dataId,
+				(SELECT JBXX.INDEX_JBXX_QYMC FROM INDEX_JBXX_TB JBXX WHERE JBXX.DEFAULT_INDEX_ITEM_ID=OPERATE.DEFAULT_INDEX_ITEM_ID FETCH FIRST 1 ROWS ONLY) AS jbxxQimc,
+				(SELECT DEFAULTINDEX.CODE_CREDIT FROM DEFAULT_INDEX_ITEM_TB DEFAULTINDEX WHERE DEFAULTINDEX.DEFAULT_INDEX_ITEM_ID=OPERATE.DEFAULT_INDEX_ITEM_ID) AS codeCredit,
+				(SELECT DEFAULTINDEX.CODE_ORG FROM DEFAULT_INDEX_ITEM_TB DEFAULTINDEX WHERE DEFAULTINDEX.DEFAULT_INDEX_ITEM_ID=OPERATE.DEFAULT_INDEX_ITEM_ID) AS codeOrg,
+				(SELECT ORG.SYS_ORG_NAME FROM SYS_ORG_TB ORG WHERE ORG.SYS_ORG_ID=OPERATE.REPORT_ORG_ID) AS sysReportOrgName
+		FROM 	SYS_OPERATE_TB OPERATE
+		ORDER BY OPERATE.SYS_OPERATE_TIME DESC
+	</select>
+	<!-- 查询异议列表   xiehao-->
+	<select id="querySysOperateList1" resultType="com.workmanagement.model.AdminObjModel">
+		SELECT 	(SELECT INDEXTB.INDEX_NAME FROM INDEX_TB INDEXTB WHERE INDEXTB.INDEX_ID=OPERATE.INDEX_ITEM_ID) AS indexName,
+				(SELECT ORG.SYS_ORG_NAME FROM SYS_ORG_TB ORG WHERE ORG.SYS_ORG_ID=OPERATE.SYS_ORG_ID) AS sysOrgName,
+				OPERATE.SYS_OPERATE_TIME AS sysOperateTime,
+				OPERATE.RECORD_DATE AS recordDate,
+				OPERATE.SYS_OPERATE_STATUS AS sysOperateStatus,
+				OPERATE.DEFAULT_INDEX_ITEM_ID AS defaultIndexItemId,
+				OPERATE.INDEX_ITEM_ID AS indexItemId,
+				OPERATE.SYS_ORG_ID AS sysOrgId,
+				OPERATE.SYS_OPERATE_ID AS sysOperateId,
+				OPERATE.REPORT_ORG_ID AS reportOrgId,
+				OPERATE.DATA_ID AS dataId,
+				(SELECT JBXX.INDEX_JBXX_QYMC FROM INDEX_JBXX_TB JBXX WHERE JBXX.DEFAULT_INDEX_ITEM_ID=OPERATE.DEFAULT_INDEX_ITEM_ID FETCH FIRST 1 ROWS ONLY) AS jbxxQimc,
+				(SELECT DEFAULTINDEX.CODE_CREDIT FROM DEFAULT_INDEX_ITEM_TB DEFAULTINDEX WHERE DEFAULTINDEX.DEFAULT_INDEX_ITEM_ID=OPERATE.DEFAULT_INDEX_ITEM_ID) AS codeCredit,
+				(SELECT DEFAULTINDEX.CODE_ORG FROM DEFAULT_INDEX_ITEM_TB DEFAULTINDEX WHERE DEFAULTINDEX.DEFAULT_INDEX_ITEM_ID=OPERATE.DEFAULT_INDEX_ITEM_ID) AS codeOrg,
+				(SELECT ORG.SYS_ORG_NAME FROM SYS_ORG_TB ORG WHERE ORG.SYS_ORG_ID=OPERATE.REPORT_ORG_ID) AS sysReportOrgName
+		FROM 	SYS_OPERATE_TB OPERATE
+		WHERE   1=1
+			AND OPERATE.SYS_ORG_ID =#{id} OR ( OPERATE.REPORT_ORG_ID=#{rid} AND OPERATE.SYS_OPERATE_STATUS=1 )
+			<!-- AND OPERATE.REPORT_ORG_ID =#{id}  OR OPERATE.SYS_ORG_ID =#{rid} AND OPERATE.SYS_OPERATE_STATUS=1 -->
+		<!-- 	<foreach collection="orgId" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach> -->
+			<if test="defaultIndexItemId!=null">
+				AND OPERATE.DEFAULT_INDEX_ITEM_ID=#{defaultIndexItemId}
+			</if>
+			<if test="indexItemId!=null">
+				AND OPERATE.INDEX_ITEM_ID=#{indexItemId}
+			</if>
+			<if test="recordDate!=null">
+				AND OPERATE.RECORD_DATE=#{recordDate}
+			</if>
+				ORDER BY OPERATE.SYS_OPERATE_TIME DESC
+	<!--	<if test="reporateType==1">
+			 <foreach collection="orgIds" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach> 
+		</if> -->
+		<!-- <if test="reporateType==2">
+			AND OPERATE.REPORT_ORG_ID IN #{orgIds}
+		</if> -->
+	</select>
+	<!-- 查询异议列表   推送   xiehao-->
+	<select id="queryAllSysOperateList1" resultType="com.workmanagement.model.AdminObjModel">
+		SELECT 	(SELECT INDEXTB.INDEX_NAME FROM INDEX_TB INDEXTB WHERE INDEXTB.INDEX_ID=OPERATE.INDEX_ITEM_ID) AS indexName,
+				(SELECT ORG.SYS_ORG_NAME FROM SYS_ORG_TB ORG WHERE ORG.SYS_ORG_ID=OPERATE.SYS_ORG_ID) AS sysOrgName,
+				OPERATE.SYS_OPERATE_TIME AS sysOperateTime,
+				OPERATE.RECORD_DATE AS recordDate,
+				OPERATE.SYS_OPERATE_STATUS AS sysOperateStatus,
+				OPERATE.DEFAULT_INDEX_ITEM_ID AS defaultIndexItemId,
+				OPERATE.INDEX_ITEM_ID AS indexItemId,
+				OPERATE.SYS_ORG_ID AS sysOrgId,
+				OPERATE.SYS_OPERATE_ID AS sysOperateId,
+				OPERATE.REPORT_ORG_ID AS reportOrgId,
+				OPERATE.DATA_ID AS dataId,
+				(SELECT JBXX.INDEX_JBXX_QYMC FROM INDEX_JBXX_TB JBXX WHERE JBXX.DEFAULT_INDEX_ITEM_ID=OPERATE.DEFAULT_INDEX_ITEM_ID FETCH FIRST 1 ROWS ONLY) AS jbxxQimc,
+				(SELECT DEFAULTINDEX.CODE_CREDIT FROM DEFAULT_INDEX_ITEM_TB DEFAULTINDEX WHERE DEFAULTINDEX.DEFAULT_INDEX_ITEM_ID=OPERATE.DEFAULT_INDEX_ITEM_ID) AS codeCredit,
+				(SELECT DEFAULTINDEX.CODE_ORG FROM DEFAULT_INDEX_ITEM_TB DEFAULTINDEX WHERE DEFAULTINDEX.DEFAULT_INDEX_ITEM_ID=OPERATE.DEFAULT_INDEX_ITEM_ID) AS codeOrg,
+				(SELECT ORG.SYS_ORG_NAME FROM SYS_ORG_TB ORG WHERE ORG.SYS_ORG_ID=OPERATE.REPORT_ORG_ID) AS sysReportOrgName
+		FROM 	SYS_OPERATE_TB OPERATE
+		WHERE   1=1
+		
+		AND (OPERATE.SYS_ORG_ID =#{id} AND OPERATE.SYS_OPERATE_STATUS!=2) OR ( OPERATE.REPORT_ORG_ID=#{rid} AND OPERATE.SYS_OPERATE_STATUS=1 )
+		<!-- 	<foreach collection="orgId" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach> -->
+			<if test="defaultIndexItemId!=null">
+				AND OPERATE.DEFAULT_INDEX_ITEM_ID=#{defaultIndexItemId}
+			</if>
+			<if test="indexItemId!=null">
+				AND OPERATE.INDEX_ITEM_ID=#{indexItemId}
+			</if>
+			<if test="recordDate!=null">
+				AND OPERATE.RECORD_DATE=#{recordDate}
+			</if>
+				ORDER BY OPERATE.SYS_OPERATE_TIME DESC
+	<!--	<if test="reporateType==1">
+			 <foreach collection="orgIds" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach> 
+		</if> -->
+		<!-- <if test="reporateType==2">
+			AND OPERATE.REPORT_ORG_ID IN #{orgIds}
+		</if> -->
+	</select>
+	
+	<insert id="insertSysOperate" useGeneratedKeys="true" keyProperty="sysOperateId" parameterType="com.workmanagement.model.AdminObjModel">
+		INSERT INTO SYS_OPERATE_TB(
+				SYS_USER_ID,
+				SYS_OPERATE_TIME,
+				INDEX_ITEM_ID,
+				DEFAULT_INDEX_ITEM_ID,
+				SYS_OPERATE_STATUS,
+				RECORD_DATE,
+				AUTH_FILE,
+				REPORT_ORG_ID,
+				DATA_ID
+			)VALUES(
+				#{sysUserId},
+				#{sysOperateTime},
+				#{indexItemId},
+				#{defaultIndexItemId},
+				#{sysOperateStatus},
+				#{recordDate},
+				#{authFile},
+				#{reportOrgId},
+				#{dataId}
+			)
+	</insert>
+	
+	<select id="querySysOperateCount" resultType="Integer">
+		SELECT SYS_OPERATE_ID FROM SYS_OPERATE_TB WHERE INDEX_ITEM_ID=#{indexId} AND DEFAULT_INDEX_ITEM_ID=#{defaultId} AND SYS_ORG_ID=#{sysOrgId}
+	</select>
+	
+	<update id="updateSysOperate" parameterType="com.workmanagement.model.AdminObjModel">
+		UPDATE 	SYS_OPERATE_TB
+		SET		SYS_USER_ID=#{sysUserId},
+				SYS_ORG_ID=#{sysOrgId},
+				SYS_OPERATE_TIME=#{sysOperateTime},
+				SYS_OPERATE_STATUS=#{sysOperateStatus}
+		WHERE 	SYS_OPERATE_ID=#{sysOperateId}
+	</update>
+	
+	<insert id="insertSysOperateList" useGeneratedKeys="true" keyProperty="sysOperateListId" parameterType="com.workmanagement.model.SysOperateListModel">
+		INSERT INTO SYS_OPERATE_LIST_TB(
+				SYS_OPERATE_ID,
+				SYS_OPERATE_TIME,
+				INDEX_ITEM_ID,
+				MARK
+			)VALUES(
+				#{sysOperateId},
+				#{sysOperateTime},
+				#{indexItemId},
+				#{mark}
+			)
+	</insert>
+	
+	<select id="querySysOperateListCount" resultType="Integer">
+		SELECT SYS_OPERATE_LIST_ID FROM SYS_OPERATE_LIST_TB WHERE INDEX_ITEM_ID=#{indexItemId} AND SYS_OPERATE_ID=#{sysOperateId}
+	</select>
+	
+	<update id="updateSysOperateList" parameterType="com.workmanagement.model.SysOperateListModel">
+		UPDATE 	SYS_OPERATE_LIST_TB
+		SET 	ORG_EXPLAIN=#{orgExplain},
+				MAININFO_EXPLAIN=#{maininfoExplain},
+				SYS_OPERATE_TIME=#{sysOperateTime}
+		WHERE 	SYS_OPERATE_LIST_ID=#{sysOperateListId}
+	</update>
+	
+	<select id="querySysOperateListByOperateId" resultMap="sysOperateListMap">
+		SELECT * FROM SYS_OPERATE_LIST_TB WHERE SYS_OPERATE_ID=#{operateId}
+	</select>
+	
+	<select id="querySysOperateById" resultMap="adminObjMap">
+		SELECT * FROM SYS_OPERATE_TB WHERE sys_operate_id=#{operateId}
+	</select>
+	
+	<update id="updateSysOperateStatus">
+		UPDATE SYS_OPERATE_TB SET SYS_OPERATE_STATUS=2 WHERE SYS_OPERATE_ID=#{operateId}
+	</update>
+	
+	<select id="querySysOperateCountByStatus" resultType="Integer">
+		SELECT 	COUNT(*) FROM SYS_OPERATE_TB 
+		WHERE 	SYS_ORG_ID=#{sysOrgid} 
+			AND INDEX_ITEM_ID=#{indexId} 
+			AND DEFAULT_INDEX_ITEM_ID=#{defaultId} 
+			AND RECORD_DATE=#{recoedDate}
+	</select>
+	
+	<select id="queryDefaultId" resultType="Integer">
+		SELECT DEFAULT_INDEX_ITEM_ID FROM DEFAULT_INDEX_ITEM_TB 
+		WHERE 1=1
+		<if test="defaultIndexItemCode!=null">
+			AND (CODE_CREDIT=#{defaultIndexItemCode} OR CODE_ORG=#{defaultIndexItemCode}) 
+		</if>
+		<if test="jbxxQymc!=null">
+			AND QYMC=#{jbxxQymc}
+		</if>
+		<if test="areaId!=null">
+			AND SYS_AREA_ID=#{areaId}
+		</if>
+	</select>
+	
+	<update id="updateSysOperateListMark" parameterType="com.workmanagement.model.SysOperateListModel">
+		UPDATE 	SYS_OPERATE_LIST_TB
+		SET 	MARK=#{mark}
+		WHERE 	SYS_OPERATE_LIST_ID=#{sysOperateListId}
+	</update>
+</mapper>

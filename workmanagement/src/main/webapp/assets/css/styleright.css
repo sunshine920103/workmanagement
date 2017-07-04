@@ -1,0 +1,522 @@
+@charset "utf-8";
+/* CSS Document */
+/*查看详情*/
+*{border:0;margin:0;padding:0;}
+body{font-family:'微软雅黑'; margin:0 auto;min-width:980px; font-size:12px;}
+ul{display:block;margin:0;padding:0;list-style:none;}
+li{display:block;margin:0;padding:0;list-style: none;}
+img{border:0;}
+a,a:focus{text-decoration:none;color:#626262;outline:none;}
+a:hover{text-decoration:none;}
+table{border-collapse:collapse;border-spacing: 0;}
+cite{font-style:normal;}
+span{display:inline;}
+.fl{
+	float:left;
+}
+.fr{
+	float:right;
+}
+.clr{
+	clear:both;
+}
+.c666{
+	color:#666;
+}
+.ml20{
+	margin-left:20px;
+}
+.ml30{
+	margin-left:30px;
+}
+.ml50{
+	margin-left:50px;
+}
+.mr20{
+	margin-right:20px
+}
+.w60{
+	width:60px;
+}
+.lh40{
+	line-height:40px;
+}
+.tc{
+	text-align:center;
+}
+.mc{
+	margin:0 auto;
+}
+.webMain{
+	border:1px solid #fff;
+	padding:20px 0 20px 0;
+}
+.detailh3{
+	font-size:18px;
+	text-align:center;
+	color:#666;
+}
+.detailTime{
+	line-height:40px;
+	width:700px;
+	margin:0 auto;
+	border-bottom:1px solid #eee;
+	color:#999;
+}
+.detailTime>div{
+	margin-left:30px;
+	margin-right:30px;
+}
+.content{
+	width:700px;
+	margin:0 auto;
+	line-height:25px;
+	margin-top:20px;
+}
+.contentTitle{
+	margin-left:30px;
+	width:60px;
+	color:#666;
+}
+.contentTxt{
+	border:1px solid #eee;
+	padding:0 10px 0 10px;
+	width:550px;
+}
+.detailbut{
+	width:700px;
+	margin:0 auto;
+	line-height:40px;
+}
+.detailbut input{
+	margin-top:5px;
+	width:100px;
+	height:25px;
+	background:#DFECF9;
+	color:#000;
+	margin-top:10px;
+}
+.detailbut input:hover{
+	background:#E2F2FA;
+	cursor:pointer;
+}
+.detailback{
+	width:700px;
+	margin:0 auto;
+}
+.detailback input{
+	width:100px;
+	height:25px;
+	background:#DFECF9;
+	margin-left:90px;
+	margin-top:10px;
+}
+.detailback input:hover{
+	background:#E2F2FA;
+	cursor:pointer;
+}
+/*管道保护电位测量记录*/
+.recordBox{
+	line-height:40px;
+	margin-right:20px;
+}
+.recordBox select{
+	width:130px;
+	margin-left:20px;
+	border:1px solid #eee;
+}
+.recordTitle{
+	font-size:14px;
+	font-weight:bold;
+	color:#666;
+	background:#f0f5f7;
+}
+.recordTitle span{
+	display:inline;
+}
+.recordBox+table td{
+	text-align:center;
+	border:1px solid #cbcbcb;
+	height:25px;
+}
+.recordBox+table [type="text"]{
+	height:25px;
+	line-height:25px;
+	color:#666;
+	text-align:center;
+}
+.recordBox+table textarea{
+	height:25px;
+	line-height:25px;
+	color:#666;
+	resize:none;
+}
+.recordBox+table [type="text"]:focus{
+	background:#F2F8FD;
+}
+td.tableFooter{
+	line-height:40px;
+	padding-left:10px;
+}
+.tableFooter input{
+	border:1px solid #999;
+	height:25px;
+	line-height:25px;
+	width:150px;
+}
+.save{
+	margin:0 auto;
+	margin-top:10px;
+	cursor:pointer;
+	display:block;
+}
+.save:hover{
+	background:#E2F2FA;
+}
+/*管道保护电位曲线图*/
+.recordBox+table+table{
+	width:270px;
+	margin:10px;
+}
+.recordBox+table+table td{
+	text-align:center;
+	border:1px solid #eee;
+	height:25px;
+}
+.recordBox+table+table [type]{
+	height:25px;
+	line-height:25px;
+	color:#666;
+	text-align:center;
+	width:70px;
+}
+.recordBox+table+table [type]:focus{
+	background:#F2F8FD;
+}
+.quxianRight{
+	border:1px solid #eee;
+	margin-top:10px;
+	cursor:pointer;
+}
+.quxianRight:hover{
+	border:1px solid #ccc;
+}
+.quxianRight div{
+	line-height:25px;
+	padding-left:10px;
+	width:250px;
+	margin:0 auto;
+	margin-top:5px;
+	text-align:center;
+}
+.quxianRightDiv{
+	height:283px;
+	border:1px solid #999;
+}
+/*绝缘接头（法兰）性能测量记录*/
+.record0{
+	line-height:40px;
+	margin-bottom:10px;
+}
+.record0 input{
+	width:80px;
+	height:30px;
+	background:#DFECF9;
+	cursor:pointer;
+	margin-right:20px;
+}
+.record0 input:hover{
+	background:#E2F2FA;
+}
+
+.record0+table td{
+	text-align:center;
+	border:1px solid #eee;
+	height:25px;
+}
+.record0+table [type="text"]{
+	height:25px;
+	line-height:25px;
+	color:#666;
+	width:60px;
+	text-align:center;
+}
+.record0+table [type="text"]:focus{
+	background:#F2F8FD;
+}
+/*阴极保护站运行月综合记录*/
+.record1{
+	line-height:40px;
+	margin-bottom:10px;
+}
+.record1 input{
+	width:90px;
+	height:30px;
+	background:#DFECF9;
+	cursor:pointer;
+	margin-right:20px;
+}
+.record1 input:hover{
+	background:#E2F2FA;
+}
+.record1+table{
+	margin:0 auto;
+}
+.record1+table td{
+	text-align:center;
+	border:1px solid #cbcbcb;
+	height:25px;
+}
+.recordTitle{background:url(../images) repeat-x; height:34px; line-height:34px;  text-indent:11px; text-align:left;}
+.record1+table [type="text"]{
+	height:25px;
+	line-height:25px;
+	color:#666;
+	width:113px;
+	text-align:center;
+}
+.record1+table [type="text"]:focus{
+	background:#F2F8FD;
+}
+.analyze{
+	margin-top:20px;
+	border-bottom:1px solid #eee;
+	padding-bottom:20px;
+}
+.analyze p:first-child{
+	line-height:30px;
+	width:110px;
+	text-align:right;
+	margin-right:10px;
+}
+.analyze textarea{
+	width:847px;
+	height:130px;
+	border:1px solid #999;
+	color:#666;
+	padding:10px;
+}
+.analyzeFooter{
+	line-height:40px;
+	margin-top:10px;
+	margin-bottom:20px;
+}
+.analyzeFooter>div{
+	width:250px;
+	text-align:right;
+	margin:20px 0 20px 0;
+}
+.analyzeFooter input{
+	width:150px;
+	height:25px;
+	border:1px solid #eee;
+	margin-left:20px;
+}
+.analyzeFooter input:focus{
+	background:#F2F8FD;
+}
+/*阴极保护站运行记录*/
+.record2{
+	line-height:40px;
+	margin-bottom:10px;
+}
+.record2 input{
+	width:80px;
+	height:30px;
+	background:#DFECF9;
+	cursor:pointer;
+	margin-right:20px;
+}
+.record2 input:hover{
+	background:#E2F2FA;
+}
+.record2 select{
+	width:160px;
+	margin-left:20px;
+	border:1px solid #ccc;
+	height:32px;
+	line-height:32px;
+	padding-left:10px;
+}
+
+.record2+table td{
+	text-align:center;
+	border:1px solid #cbcbcb;
+	height:25px;
+}
+.record2+table [type="text"]{
+	height:25px;
+	line-height:25px;
+	color:#666;
+	text-align:center;
+}
+.record2+table [type="text"]:focus{
+	background:#F2F8FD;
+}
+.recordTitle input{
+	border:1px solid #ccc;
+}
+/*集输气管线附属设施维护记录*/
+.record3 select{
+	width:130px;
+	margin-left:20px;
+	border:1px solid #eee;
+}
+.record3{
+	line-height:40px;
+	margin-bottom:10px;
+}
+.record3 input{
+	width:80px;
+	height:30px;
+	background:#DFECF9;
+	cursor:pointer;
+	margin-right:20px;
+	margin-bottom:10px;
+}
+.record3 input:hover{
+	background:#E2F2FA
+}
+
+.record3+table td{
+	text-align:center;
+	border:1px solid #cbcbcb;
+	height:25px;
+}
+.record3+table [type="text"]{
+	height:25px;
+	line-height:25px;
+	color:#666;
+	text-align:center;
+}
+.record3+table [type="text"]:focus{
+	background:#F2F8FD;
+}
+/*违章违建*/
+.formMain{
+	border:1px solid #eee;
+	margin-right:-1px;
+}
+.formMain input,.formMain textarea,.formLine select{
+	border:1px solid #eee;
+}
+.formLine{
+	margin-top:10px;
+	margin-bottom:10px;
+}
+.formLine>div div,.formLine>div input,.formLine>div select{
+	float:left;
+}
+.formLine>div div{
+	width:40px;
+	line-height:25px;
+	text-align:center;
+	font-weight:bold;
+}
+.formLine h4{
+	line-height:25px;
+	width:75px;
+	text-align:right;
+	margin-right:10px;
+}
+.formLine>div{
+	margin-top:10px;
+}
+.formLine input,.formLine select{
+	height:25px;
+	line-height:25px;
+	color:#666;
+}
+.formLine input:focus{
+	background:#F2F8FD;
+}
+.formLine textarea{
+	width:800px;
+	height:100px;
+	padding:10px;
+}
+/*通知和学习*/
+.infoTable{
+	border:1px solid #eee;
+}
+.record4{
+	line-height:40px;
+}
+.record4 input{
+	width:30px;
+	height:30px;
+	background:#DFECF9;
+	cursor:pointer;
+	margin-right:20px;
+}
+.record4 input:hover{
+	background:#C9E8FA;
+}
+.record4+table{
+	width:980px;
+}
+.record4+table td{
+	text-align:center;
+	border:1px solid #cbcbcb;
+	height:25px;
+}
+.record4+table [type="text"]{
+	height:25px;
+	line-height:25px;
+	color:#666;
+	text-align:center;
+}
+.record4+table [type="text"]:focus{
+	background:#F2F8FD;
+}
+.record4+table [type="button"]{
+	 width:100px;
+	 height:20px;
+	 background:#dfecf9;
+	 margin-top:2px;
+	 cursor:pointer;
+}
+.record4+table [type="button"]:hover{
+	background:#6AA4B9;
+}
+.scbtnModi{width:85px;height:35px; background:url(../images/btnbg.png) no-repeat center; font-size:14px;font-weight:bold;color:#fff; cursor:pointer;border-radius:3px; behavior:url(js/pie.htc);}
+.scbtnModi:hover{background:#6AA4B9;}
+/*管道保护电位测量记录查看*/
+td.tableFooter0{
+	line-height:40px;
+	padding-left:10px;
+}
+.tableFooter0 input{
+	border-bottom:1px solid #eee;
+	height:25px;
+	line-height:25px;
+	width:150px;
+}
+/**/
+.recordTitle0{font-size:14px; font-weight:bold; color:#666;background:url(../images/th.gif) repeat-x; height:34px; line-height:34px; border-bottom:solid 1px #b6cad2; text-indent:11px;}
+.recordTitle0 span{display:inline;}
+.recordTitle0 input{background:#f0f5f7;border-bottom:1px solid #ccc;border-top:0;border-left:0;border-right:0;}
+
+.seachform option {background:#eee;}
+.analyzeFooter0{
+	line-height:40px;
+	margin-top:10px;
+	margin-bottom:20px;
+}
+.analyzeFooter0>div{
+	width:250px;
+	text-align:right;
+	margin:0 20px 0 20px;
+}
+.analyzeFooter0 input{
+	width:100px;
+	height:25px;
+	border-bottom:1px solid #eee;
+	margin-left:20px;
+	text-align:center;
+}
+.analyzeFooter0 input:focus{
+	background:#F2F8FD;
+}
+
+.inputAdd{text-align:left!important; line-height:25px!important; word-break:break-all!important; word-wrap:break-word; display:block;}

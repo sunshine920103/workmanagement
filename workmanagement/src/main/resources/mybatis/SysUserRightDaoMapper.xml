@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SystemUserRightDao">
+	<select id="queryUserDetailsByUsername" resultType="com.workmanagement.model.MyUserDetails">
+		SELECT * FROM sys_user_tb WHERE username=#{username}
+	</select>
+	
+	<select id="queryUserRole" resultType="com.workmanagement.model.SysRole">
+		SELECT sr.* FROM sys_role_user_tb sru, sys_role_tb sr 
+		WHERE sru.sys_role_id = sr.sys_role_id AND sru.sys_user_id=#{user_id}
+	</select>
+	
+	<select id="queryUserMenusByRoleIds" parameterType="java.util.List" resultType="com.workmanagement.model.SysMenu">
+		SELECT distinct sm.sys_menu_id, sm.sys_menu_name, sm.sys_menu_path, sm.sys_menu_parent_id, sm.sys_menu_icon, sm.sys_menu_weight ,sm.sys_menu_type
+		FROM sys_role_menu_tb srm, sys_menu_tb sm
+		WHERE srm.sys_menu_id = sm.sys_menu_id AND srm.sys_role_id in 
+		<foreach collection="roleIds" item="roleId" open="(" close=")" separator=",">
+			#{roleId}
+		</foreach>
+		ORDER BY  sys_menu_weight DESC
+	</select>
+	
+	<select id="queryAllPathRole" resultType="com.workmanagement.model.SysPathRole">
+		SELECT sm.sys_menu_path, srm.sys_role_id FROM sys_menu_tb sm, sys_role_menu_tb srm WHERE sm.sys_menu_id = srm.sys_menu_id AND sm.sys_menu_path IS NOT NULL
+	</select>
+</mapper>

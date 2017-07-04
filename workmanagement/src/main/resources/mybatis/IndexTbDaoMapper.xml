@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.IndexTbDao">
+
+	<!-- 指标包含指标项的一对多映射 -->
+	<resultMap type="com.workmanagement.model.IndexTb" id="indexTbitemMap">
+		<id property="indexId" column="index_id" />
+		<result property="indexName" column="index_name" />
+		<result property="indexCode" column="index_code" />
+		<result property="sysAreaId" column="sys_area_id" />
+		<result property="indexNumber" column="index_number" />
+		<result property="indexNotes" column="index_notes" />
+		<result property="indexUsed" column="index_used" />
+		<result property="indexCreateTime" column="index_create_time" />
+		<result property="sys_user_id" column="sys_user_id" />
+		<result property="sys_org_id" column="sys_org_id" />
+		<result property="indexType" column="index_type" />
+	</resultMap>
+
+	<!-- 指标项基本映射 -->
+	<resultMap id="indexItemTbMap" type="com.workmanagement.model.IndexItemTb">
+		<id property="indexItemId" column="index_item_id" />
+		<result property="indexId" column="index_id" />
+		<result property="indexItemName" column="index_item_name" />
+		<result property="indexItemCode" column="index_item_code" />
+		<result property="indexItemNumber" column="index_item_number" />
+		<result property="sysAreaId" column="sys_area_id" />
+		<result property="indexItemUsed" column="index_item_used" />
+		<result property="indexItemType" column="index_item_type" />
+		<result property="dicId" column="dic_id" />
+		<result property="indexItemImportUnique" column="index_item_import_unique" />
+		<result property="indexItemEmpty" column="index_item_empty" />
+		<result property="indexItemNetId" column="index_item_net_id" />
+		<result property="indexItemNotes" column="index_item_notes" />
+		<result property="indexItemCreateTime" column="index_item_create_time" />
+		<result property="sys_user_id" column="sys_user_id" />
+		<result property="sys_org_id" column="sys_org_id" />
+		<result property="indexItemAliasName" column="index_item_alias_name" />
+		<result property="varLength" column="var_length" />
+	</resultMap>
+
+	<!-- 查询指标下的指标项 -->
+	<select id="queryIndexItemsByIndex" resultMap="indexItemTbMap">
+		SELECT * FROM
+		index_item_tb WHERE index_id=#{indexId} ORDER BY index_item_id ASC
+	</select>
+
+	<select id="getAllUsedIndexTb" resultMap="indexTbitemMap">
+		SELECT * FROM INDEX_TB WHERE INDEX_USED = 1
+	</select>
+
+	<!-- 查询指标下的启用的指标项 -->
+	<select id="queryUsedIndexItemsByIndex" resultMap="indexItemTbMap">
+		SELECT * FROM
+		index_item_tb WHERE index_id=#{indexId} and index_item_used=1 ORDER BY index_item_id ASC
+	</select>
+	
+	<!-- 删除指标大类 -->
+	<update id="del" parameterType="java.lang.Integer">
+		delete from index_tb where index_id = #{indexId}
+	</update>
+	
+	<!-- 保存一个指标 -->
+	<insert id="insertIndex" parameterType="com.workmanagement.model.IndexTb">
+		insert into
+		index_tb(index_name,index_code,sys_area_id,index_number,index_notes,index_used,index_create_time,
+		sys_user_id,sys_org_id,index_type)
+		values(#{indexName},#{indexCode},#{sysAreaId},#{indexNumber},#{indexNotes},#{indexUsed},CURRENT_DATE,
+		#{sys_user_id},#{sys_org_id},#{indexType})
+	</insert>
+
+	<!-- 根据指标大类名称对应的数据库表名查询该指标 -->
+	<select id="queryIdByCode" resultMap="indexTbitemMap">
+		SELECT * FROM index_tb dt
+		where dt.index_code = #{indexCode}
+	</select>
+	
+	<!-- 根据指标大类名称对应的数据库表名查询该指标,加地区 -->
+	<select id="queryByCodeAndAreaId" resultMap="indexTbitemMap">
+		SELECT * FROM index_tb 
+		where index_code = #{indexCode} and sys_area_id = #{areaId}
+	</select>
+
+	<!-- 通过指标大类名称获取 -->
+	<select id="queryIdByName" resultMap="indexTbitemMap">
+		SELECT * FROM index_tb dt
+		where dt.index_name = #{indexName}
+	</select>
+	
+	<!-- 通过指标大类名称和地区 -->
+	<select id="queryByNameAndAreaId" resultMap="indexTbitemMap">
+		SELECT * FROM index_tb 
+		where index_name = #{indexName} and sys_area_id=#{areaId}
+	</select>
+	
+	<!-- 四川省能查看全部的指标个数 -->
+	<select id="countAll" resultType="java.lang.Integer">
+		select count(*) from  index_tb
+	</select>
+	
+	<!-- 登录市所建和四川省建的指标个数-->
+	<select id="countAll2" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(*) from  index_tb where sys_area_id = 1 or sys_area_id=#{id}
+	</select>
+
+	<insert id="createTable" statementType="STATEMENT">
+		CREATE TABLE ${tbName} (
+		${tbId} INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY (
+		START
+		WITH 1 INCREMENT BY 1 MINVALUE -2147483648 MAXVALUE 2147483647 NO
+		CYCLE CACHE 20 NO ORDER ),
+		"DEFAULT_INDEX_ITEM_ID" INTEGER ,
+		"SYS_ORG_ID" INTEGER ,
+		"SYS_AREA_ID" INTEGER ,
+		"RECORD_DATE" DATE ,
+		"SUBMIT_TIME" TIMESTAMP  
+		) IN "XWXM"   
+	</insert>
+
+	<!--获取所有 -->
+	<select id="selectAll" resultMap="indexTbitemMap">
+		SELECT * FROM index_tb 
+		WHERE  index_used=1
+		ORDER BY
+		index_id asc
+	</select>
+
+	<!-- 将指标大类置为无效 -->
+	<update id="change">
+		update index_tb set index_used = #{1}
+		where
+		index_id =
+		#{0}
+	</update>
+
+	<!-- 四川省登录：查询所有指标    WHERE a.SYS_AREA_ID =1 OR a.SYS_AREA_UPID=1-->
+	<select id="queryAll" resultMap="indexTbitemMap">
+		SELECT i.*,a.SYS_AREA_NAME as
+		sysAreaName FROM INDEX_TB i
+		LEFT JOIN SYS_AREA_TB a ON a.SYS_AREA_ID =
+		i.SYS_AREA_ID		
+		order by index_used DESC
+	</select>
+
+	<!-- 市登录：查询四川省及自己的指标 -->
+	<select id="queryAll2" parameterType="java.lang.Integer"
+		resultMap="indexTbitemMap">
+		SELECT i.*,a.SYS_AREA_NAME as sysAreaName FROM INDEX_TB i
+		LEFT JOIN SYS_AREA_TB a ON a.SYS_AREA_ID = i.SYS_AREA_ID
+		WHERE 
+		a.SYS_AREA_ID = #{id} OR a.SYS_AREA_UPID=0 
+		order by index_number
+	</select>
+
+	<!-- 四川省登录：按地区和指标名称模糊查询指标 -->
+	<select id="mohuQueryAll" resultMap="indexTbitemMap">
+		select * from (SELECT
+		i.*,a.SYS_AREA_NAME as sysAreaName FROM INDEX_TB i
+		LEFT JOIN
+		SYS_AREA_TB a ON a.SYS_AREA_ID = i.SYS_AREA_ID
+		WHERE a.SYS_AREA_ID =1
+		OR a.SYS_AREA_UPID=1 ) s
+		where 1= 1
+		<if test="words!=null"> and s.index_name like '%'|| #{words} ||'%'</if> 
+		<if test="aId!=null"> and s.SYS_AREA_ID = #{aId}</if>
+		order by index_number
+	</select>
+
+	<!-- 市登录：模糊查询查询上级及自己的指标 -->
+	<select id="mohuQueryAll2" resultMap="indexTbitemMap">
+		select * from ( SELECT
+		i.*,a.SYS_AREA_NAME as sysAreaName FROM INDEX_TB i
+		LEFT JOIN
+		SYS_AREA_TB a ON a.SYS_AREA_ID = i.SYS_AREA_ID
+		WHERE a.SYS_AREA_ID in
+		<foreach collection="areaIds" item="id" open="("
+					separator="," close=")">
+					#{id}
+				</foreach>		
+		) s
+		where s.index_name like '%'|| #{1} ||'%'
+		order by index_number
+	</select>
+
+	<!-- 根据id查询一个指标,返回带指标项 -->
+	<select id="queryById" parameterType="int" resultMap="indexTbitemMap">
+		select
+		i.*,a.sys_area_name AS sysAreaName from index_tb i
+		left join
+		sys_area_tb a on i.sys_area_id = a.sys_area_id
+		where index_id = #{id}
+	</select>
+	
+	<!-- 通过地区id查询指标大类 -->
+	<select id="queryIndexBySysAreaId" parameterType="int"
+		resultMap="indexTbitemMap">
+		select * from index_tb
+		where sys_area_id = #{sysAreaId}
+	</select>
+
+	<!-- 根据指标大类名称模糊查询 -->
+	<select id="mohuQuery" parameterType="java.lang.String"
+		resultMap="indexTbitemMap">
+		select * from index_tb
+		<where>
+			index_name like '%'||#{indexName}||'%'
+		</where>
+	</select>
+
+	<!-- 通过多个地区id查询指标大类 -->
+	<select id="queryIndexBySysAreaIds" parameterType="int"
+		resultMap="indexTbitemMap">
+		select * from index_tb where sys_area_id =252
+		AND index_used=1 ORDER BY index_id ASC
+	</select>
+
+	<select id="getIndexTbbyIndexCode" resultMap="indexTbitemMap">
+		SELECT * FROM
+		index_tb
+		WHERE index_code = #{indexCode}
+	</select>
+	<!--获取所有code -->
+	<select id="selectAllIndexCode" resultType="java.lang.Object">
+		SELECT index_code
+		FROM index_tb ORDER BY index_id asc
+	</select>
+	<!--获取所有name -->
+	<select id="selectAllIndexName" resultType="java.lang.Object">
+		SELECT index_name
+		FROM index_tb ORDER BY index_id asc
+	</select>
+
+
+	<select id="queryIndex" resultMap="indexTbitemMap">
+		SELECT * FROM index_tb it
+		<where>
+			<if test="map.areaId!=null">
+				it.sys_area_id IN
+				<foreach collection="map.areaId" item="id" open="("
+					separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test="map.indexName!=null">AND it.index_name like '%${map.indexName}%'</if>
+		</where>
+		ORDER BY it.index_id asc
+	</select>
+
+
+	<!-- 获取所有的银行贷款信息 -->
+	<select id="queryIndexIndexYhdk" resultType="java.util.Map">
+		SELECT
+		INDEX_YXDK_DKJJH,INDEX_YXDK_DKHTH,CODE_CREDIT,CODE_ORG,INDEX_JBXX_QYMC,INDEX_YXDK_DKYWFSDJRJG,
+		INDEX_YXDK_HTYXZT,INDEX_YXDK_HTLL,INDEX_YXDK_HTJE,INDEX_YXDK_HTJEBZ,INDEX_YXDK_DKRQ,INDEX_YXDK_DQR,INDEX_YXDK_DKYE,
+		INDEX_YXDK_DKYEBZ,INDEX_YXDK_DBGS,INDEX_YXDK_DBFS,INDEX_YXDK_WJFL,INDEX_YXDK_ZQ,INDEX_YXDK_ZQRQ,INDEX_YXDK_QXJE
+		FROM INDEX_YXDK_TB,DEFAULT_INDEX_ITEM_TB,INDEX_JBXX_TB,INDEX_ITEM_TB
+		WHERE INDEX_YXDK_TB.DEFAULT_INDEX_ITEM_ID =
+		DEFAULT_INDEX_ITEM_TB.DEFAULT_INDEX_ITEM_ID AND
+		INDEX_JBXX_TB.DEFAULT_INDEX_ITEM_ID =
+		INDEX_YXDK_TB.DEFAULT_INDEX_ITEM_ID AND
+		INDEX_YXDK_TB.DEFAULT_INDEX_ITEM_ID IN
+		(SELECT DEFAULT_INDEX_ITEM_ID
+		FROM INDEX_YXDK_TB WHERE SYS_ORG_ID =#{org})
+		AND
+		INDEX_YXDK_TB.SYS_ORG_ID != #{org}
+		<if test="IndexYhdkId!=null">
+			AND INDEX_YXDK_ID = #{IndexYhdkId}
+		</if>
+		GROUP BY
+		INDEX_YXDK_DKJJH,INDEX_YXDK_DKHTH,CODE_CREDIT,CODE_ORG,INDEX_JBXX_QYMC,INDEX_YXDK_DKYWFSDJRJG,
+		INDEX_YXDK_HTYXZT,INDEX_YXDK_HTLL,INDEX_YXDK_HTJE,INDEX_YXDK_HTJEBZ,INDEX_YXDK_DKRQ,INDEX_YXDK_DQR,INDEX_YXDK_DKYE,
+		INDEX_YXDK_DKYEBZ,INDEX_YXDK_DBGS,INDEX_YXDK_DBFS,INDEX_YXDK_WJFL,INDEX_YXDK_ZQ,INDEX_YXDK_ZQRQ,INDEX_YXDK_QXJE
+
+	</select>
+
+	<select id="queryIndexIndexSfxx" resultType="java.util.Map">
+
+		SELECT
+		INDEX_SFXX_AH,INDEX_SFXX_LAFY,INDEX_SFXX_LARQ,INDEX_SFXX_AY,INDEX_SFXX_ZXYJWSBH,INDEX_SFXX_ZXBD,
+		INDEX_SFXX_ZXBDJE,INDEX_SFXX_YZXBD,INDEX_SFXX_YZXBDJE,INDEX_SFXX_TB.SUBMIT_TIME,INDEX_SFXX_JARQ,INDEX_SFXX_ZXJAFS,
+		CODE_CREDIT,CODE_ORG,INDEX_JBXX_QYMC
+		FROM
+		INDEX_SFXX_TB,DEFAULT_INDEX_ITEM_TB,INDEX_JBXX_TB
+		WHERE
+		INDEX_SFXX_TB.DEFAULT_INDEX_ITEM_ID =
+		DEFAULT_INDEX_ITEM_TB.DEFAULT_INDEX_ITEM_ID AND
+		INDEX_JBXX_TB.DEFAULT_INDEX_ITEM_ID =
+		INDEX_SFXX_TB.DEFAULT_INDEX_ITEM_ID
+		AND INDEX_SFXX_TB.DEFAULT_INDEX_ITEM_ID IN
+		(SELECT DEFAULT_INDEX_ITEM_ID FROM
+		INDEX_SFXX_TB WHERE
+		SYS_ORG_ID =#{org}) AND
+		INDEX_SFXX_TB.SYS_ORG_ID != #{org}
+		<if test="IndexSfxxId!=null">
+			AND index_sfxx_id = #{IndexSfxxId}
+		</if>
+		group by
+		INDEX_SFXX_AH,INDEX_SFXX_LAFY,INDEX_SFXX_LARQ,INDEX_SFXX_AY,INDEX_SFXX_ZXYJWSBH,INDEX_SFXX_ZXBD,
+		INDEX_SFXX_ZXBDJE,INDEX_SFXX_YZXBD,INDEX_SFXX_YZXBDJE,INDEX_SFXX_TB.SUBMIT_TIME,INDEX_SFXX_JARQ,INDEX_SFXX_ZXJAFS,CODE_CREDIT,CODE_ORG,INDEX_JBXX_QYMC
+
+	</select>
+
+	<!-- 根据ID获取行政处罚信息 -->
+
+	<select id="queryIndexIndexXzcfxx" resultType="java.util.Map">
+		SELECT
+		CODE_ORG,CODE_CREDIT,INDEX_XZCFXX_XZCFWSH,INDEX_XZCFXX_CFSJ,INDEX_XZCFXX_WFHWGXWMS,
+		INDEX_XZCFXX_CDCFBM,INDEX_XZCFXX_SJJE,INDEX_XZCFXX_CFJE,INDEX_XZCFXX_CFJD,INDEX_XZCFXX_ZGQK,INDEX_JBXX_QYMC
+		FROM INDEX_XZCFXX_TB,DEFAULT_INDEX_ITEM_TB,INDEX_JBXX_TB
+		WHERE INDEX_XZCFXX_TB.DEFAULT_INDEX_ITEM_ID =
+		DEFAULT_INDEX_ITEM_TB.DEFAULT_INDEX_ITEM_ID AND
+		INDEX_JBXX_TB.DEFAULT_INDEX_ITEM_ID =
+		INDEX_XZCFXX_TB.DEFAULT_INDEX_ITEM_ID
+		AND INDEX_XZCFXX_TB.DEFAULT_INDEX_ITEM_ID IN (SELECT DEFAULT_INDEX_ITEM_ID FROM
+		INDEX_XZCFXX_TB WHERE SYS_ORG_ID =#{org}) AND
+		INDEX_XZCFXX_TB.SYS_ORG_ID != #{org}
+		<if test="IndexSfxxId!=null">
+			AND INDEX_XZCFXX_ID = #{IndexSfxxId}
+		</if>
+		GROUP BY
+		CODE_ORG,CODE_CREDIT,INDEX_XZCFXX_XZCFWSH,INDEX_XZCFXX_CFSJ,INDEX_XZCFXX_WFHWGXWMS,
+		INDEX_XZCFXX_CDCFBM,INDEX_XZCFXX_SJJE,INDEX_XZCFXX_CFJE,INDEX_XZCFXX_CFJD,INDEX_XZCFXX_ZGQK,INDEX_JBXX_QYMC
+
+
+	</select>
+	<select id="queryIndexTbByCode" resultType="java.util.Map">
+		${sql}
+	</select>
+</mapper>

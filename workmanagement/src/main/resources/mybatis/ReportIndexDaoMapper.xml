@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.ReportIndexDao">
+    <resultMap type="com.workmanagement.model.ReportIndex" id="reportIndexMap">
+        <id column="report_index_id" property="reportIndexId"/>
+        <result column="report_index_method" property="reportIndexMethod"/>
+        <result column="report_index_template" property="reportIndexTemplate"/>
+        <result column="report_index_numbers" property="reportIndexNumbers"/>
+        <result column="report_index_time" property="reportIndexTime"/>
+        <result column="report_index_status" property="reportIndexStatus"/>
+        <result column="sys_org_id" property="sysOrgId"/>
+        <result column="report_index_org_name" property="reportIndexOrgName"/>
+        <result column="report_index_submit_time" property="reportIndexSubmitTime"/>
+        <result column="sys_user_id" property="sysUserId"/>
+        <result column="report_index_path" property="reportIndexPath"/>
+        <result column="error_excel_path" property="errorExcelPath"/>
+        <!--<collection property="reportIndexErrorList" select="queryReportIndexErrorList" ofType="com.workmanagement.model.ReportIndexError" javaType="ArrayList" column="report_index_id" />-->
+    </resultMap>
+    <resultMap type="com.workmanagement.model.ReportIndexError" id="reportIndexErrorMap">
+        <id column="report_index_error_id" property="reportIndexErrorId"/>
+        <result column="report_index_id" property="reportIndexId"/>
+        <result column="report_index_error_item_code" property="reportIndexErrorItemCode"/>
+        <result column="report_index_error_name" property="reportIndexErrorName"/>
+        <result column="report_index_error_value" property="reportIndexErrorValue"/>
+        <result column="report_index_error_notes" property="reportIndexErrorNotes"/>
+    </resultMap>  
+    
+    <select id="queryRepeatUnique"  resultType="java.util.Map">
+		select * from ${tempTbName}
+			where ${unique} in (select  ${unique}  from  ${tempTbName}  group  by  ${unique}  having  count(${unique}) > 1) 
+	</select>
+    <insert id="insertTou"  >
+		 INSERT INTO ${tempu} select * from ${tempTbName} 
+	where DEFAULT_INDEX_ITEM_ID in 
+		(select  DEFAULT_INDEX_ITEM_ID  
+			from  ${tempTbName}  group  by  DEFAULT_INDEX_ITEM_ID  having  count(DEFAULT_INDEX_ITEM_ID) > 1)  
+	</insert>
+	
+    <resultMap id = "creditRepeat" type="java.util.Map">
+    	<result property="codeCredit" column="CODE_CREDIT"/>
+    	<result property="num" column="NUM"/>
+    </resultMap>    
+    <select id="queryRepeatCredit"  resultMap="creditRepeat">
+		select CODE_CREDIT,NUM from ${tempTbName}
+			where CODE_CREDIT in (select  CODE_CREDIT  from  ${tempTbName}  group  by  CODE_CREDIT  having  count(CODE_CREDIT) > 1) 
+	</select>
+    
+    <resultMap id = "orgRepeat" type="java.util.Map">
+    	<result property="codeOrg" column="CODE_ORG"/>
+    	<result property="num" column="NUM"/>
+    </resultMap>   
+    <select id="queryRepeatOrg"  resultMap="orgRepeat">
+		select CODE_ORG,NUM from ${tempTbName}
+			where CODE_ORG in (select  CODE_ORG  from  ${tempTbName}  group  by  CODE_ORG  having  count(CODE_ORG) > 1) 
+	</select>
+    
+    <resultMap id = "areaValueToCode" type="java.util.Map">
+    	<result property="key" column="SYS_AREA_NAME"/>
+    	<result property="value" column="SYS_AREA_CODE"/>
+    </resultMap>   
+    
+    <resultMap id = "orgValueToCode" type="java.util.Map">
+    	<result property="key" column="SYS_ORG_NAME"/>
+    	<result property="value" column="SYS_ORG_FINANCIAL_CODE"/>
+    </resultMap>   
+    
+    <resultMap id = "indusValueToCode" type="java.util.Map">
+    	<result property="key" column="SYS_INDUSTRY_NAME"/>
+    	<result property="value" column="SYS_INDUSTRY_CODE"/>
+    </resultMap>   
+    
+    <resultMap id = "dicValueToCode" type="java.util.Map">
+    	<result property="dicId" column="DIC_ID"/>
+    	<result property="key" column="DIC_CONTENT_VALUE"/>
+    	<result property="value" column="DIC_CONTENT_CODE"/> 
+    </resultMap>   
+    <select id="queryAllDicValueToCode"  resultMap="dicValueToCode">
+		SELECT DIC_ID,DIC_CONTENT_VALUE,DIC_CONTENT_CODE FROM DIC_CONTENT_TB   
+	</select>
+
+    <!-- 查询关联错误信息集合 -->
+    <select id="queryReportIndexErrorList" resultMap="reportIndexErrorMap">
+		SELECT * FROM report_index_error_tb WHERE report_index_id=#{reportIndexId}
+	</select>
+
+	<!--  查询：同一个模板，同一个机构，同一天是否上报有成功记录 -->
+	<select id="queryReporByTempOrgDate" resultMap="reportIndexMap">
+		SELECT * FROM report_index_tb r 
+			left join report_excel_template_tb e on r.report_index_template = e.report_index_template
+		WHERE r.sys_org_id = #{orgId} and r.report_index_time={time} 
+		and r.report_index_status=0 and e.report_excel_template_id={temptId}
+	</select>
+
+    <!-- 报送数据 -->
+    <insert id="reportInfo" parameterType="java.util.Map" statementType="STATEMENT">
+		${sqlMap.sql}
+	</insert>
+
+    <!-- 通过ID查询 -->
+    <select id="getReportIndexById" resultMap="reportIndexMap">
+		SELECT * FROM report_index_tb WHERE report_index_id = #{reportIndexId}
+	</select>
+
+    <!--通过id删除-->
+    <delete id="deleteById">
+		DELETE FROM report_index_tb WHERE report_index_id = #{reportIndexId}
+	</delete>
+
+    <!-- 保存 -->
+    <insert id="insertOne" parameterType="com.workmanagement.model.ReportIndex">
+		INSERT INTO report_index_tb(report_index_method,report_index_template,report_index_numbers,report_index_time,report_index_status,sys_org_id,
+        report_index_org_name,report_index_submit_time,sys_user_id,report_index_path,error_excel_path)
+		VALUES(#{reportIndexMethod},#{reportIndexTemplate},#{reportIndexNumbers},#{reportIndexTime},#{reportIndexStatus},#{sysOrgId},
+        #{reportIndexOrgName},#{reportIndexSubmitTime},#{sysUserId},#{reportIndexPath},#{errorExcelPath})
+	</insert>
+
+    <!-- 更新 -->
+    <update id="updateById" parameterType="com.workmanagement.model.ReportIndex">
+        UPDATE report_index_tb
+        <trim prefix="set" suffixOverrides=",">
+            <if test="reportIndexMethod!=null">report_index_method=#{reportIndexMethod},</if>
+            <if test="reportIndexTemplate!=null">report_index_template=#{reportIndexTemplate},</if>
+            <if test="reportIndexNumbers!=null">report_index_numbers=#{reportIndexNumbers},</if>
+            <if test="reportIndexTime!=null">report_index_time=#{reportIndexTime},</if>
+            <if test="reportIndexStatus!=null">report_index_status=#{reportIndexStatus},</if>
+            <if test="sysOrgId!=null">sys_org_id=#{sysOrgId},</if>
+            <if test="reportIndexOrgName!=null">report_index_org_name=#{reportIndexOrgName},</if>
+            <if test="reportIndexSubmitTime!=null">report_index_submit_time=#{reportIndexSubmitTime},</if>
+            <if test="sysUserId!=null">sys_user_id=#{sysUserId},</if>
+            <if test="reportIndexPath!=null">report_index_path=#{reportIndexPath}</if>
+            <if test="errorExcelPath!=null">error_excel_path=#{errorExcelPath}</if>
+        </trim>
+        WHERE report_index_id = #{reportIndexId}
+    </update>
+
+    <!-- 查询列表 -->
+    <select id="queryReportIndexs" resultMap="reportIndexMap">
+        SELECT * FROM report_index_tb
+        <where>
+            <trim prefixOverrides="and">
+                <if test="report_index_method!=null">
+                    report_index_method=#{report_index_method}
+                </if>
+                <if test="notReportIndexMethod!=null">
+                    and report_index_method != #{notReportIndexMethod}
+                </if>
+                <if test="report_index_template!=null">
+                    and report_index_template=#{report_index_template}
+                </if>
+                <if test="reportIndexOrgId!=null">
+                    and report_index_org_id =#{reportIndexOrgId}
+                </if>
+                <if test="notReport_index_status!=null">
+                    AND report_index_status != #{notReport_index_status}
+                </if>
+                <if test="orgIds!=null">
+                    AND report_index_org_id IN
+                    <foreach collection="orgIds" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+            </trim>
+        </where>
+        order by report_index_id desc
+    </select>
+
+    <insert id="addSomeDataToIndexTb">
+        INSERT INTO ${tableName}
+        <foreach collection="titles" open="(" close=")" separator="," item="title">
+            ${title}
+        </foreach>
+        VALUES
+        <foreach collection="values" open="(" close=")" separator="," item="value">
+            #{value}
+        </foreach>
+        IN "XWXM"   
+    </insert>
+    
+    <!-- 唯一标识校验 -->
+    <select id="uniqueCheck" parameterType="java.lang.String" >
+		SELECT * FROM (
+			SELECT ROW_NUMBER() OVER(PARTITION BY #{uniqueCode})AS a,num,#{uniqueCode} FROM #{tempTbName}
+		)AS b WHERE b.a >1
+	</select>
+    
+    
+  	<!-- 向临时表插入数据 -->
+    <insert id="insertToTemp">
+          	INSERT INTO ${tbName}
+       <foreach collection="columnList" open="(" close=")" separator="," item="title">
+           ${title}
+       </foreach>
+       VALUES
+       <foreach collection="dataList" open="(" close=")" separator="," item="value">
+           <if test="value!=null">#{value}</if>
+           <if test="value==null">null</if>
+       </foreach>
+    </insert>
+	<!--按照excel中的行号选取对应的临时表中的每条数据  -->
+	<select id="selectOneFormTempTb"  resultType="java.util.Map">
+		select * from ${tbName} where num = #{num}
+	</select>
+	
+	<!--将临时表中的全部数据取出 -->
+	<select id="selectAllFormTempTb"  resultType="java.util.Map">
+		select * from ${tbName} order by num asc
+	</select>
+	<!--  -->
+	<update id="updateIsInsert">
+		update ${tempTbName} set isinsert = 1 where num=#{num}
+	</update>
+	
+	<update id="updateStatus">
+		update ${tempTbName} set status = 1 where num=#{num}
+	</update>
+	
+	<select id="queryStatusNum"  resultType="java.lang.Integer">
+		select COUNT(*) from ${tempTbName} where status = #{status}
+	</select>
+	
+	<select id="getDataNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select COUNT(*) from ${tempTbName} 
+	</select>
+	
+	<select id="isTempTableExists" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select COUNT(*) from sysibm.systables where TID != 0 and name = #{tempTbName}
+	</select>
+	<!-- 删除动态表 -->
+	<delete id="deleteTempTb" parameterType="java.lang.String">
+		drop table ${tempTbName}
+	</delete>
+	 <!-- 更新临时表的二码id -->
+    <select id="updateTempDafaultId" >
+		update ${tbName} set default_index_item_id =#{defaultIndexItemId} where num = #{num}
+	</select>
+    <!-- 查询数据条数 -->
+    <select id="countBySql" parameterType="java.lang.String" resultType="java.lang.Integer" statementType="STATEMENT">
+		${sql}
+	</select>
+
+    <select id="getMap" parameterType="java.lang.String" resultType="java.util.Map" statementType="STATEMENT">
+		${sql}
+	</select>
+
+    <!-- 更新数据 -->
+    <select id="updateBySql" parameterType="java.lang.String" statementType="STATEMENT">
+		${sql}
+	</select>
+	
+	<!-- 更新数据 -->
+    <insert id="insertIndex" parameterType="java.lang.String" statementType="STATEMENT">
+		${sql}
+	</insert>
+
+    <select id="selectThisCellDataIsHaved" parameterType="map" resultType="int">
+		SELECT COUNT(0) FROM ${tableName} WHERE ${title} = #{value}
+	</select>
+
+    <!--根据类别查看信息-->
+    <select id="getReportsByMethod" parameterType="int" resultMap="reportIndexMap">
+		SELECT * FROM report_index_tb WHERE report_index_method=#{reportIndexMethod} ORDER BY report_index_id DESC
+	</select>
+
+    <!--根据类别以及机构ids查看信息-->
+    <select id="getReportsByMethodAndOrgIds" parameterType="map" resultMap="reportIndexMap">
+        SELECT * FROM report_index_tb WHERE report_index_method=#{reportIndexMethod}
+        AND sys_org_id IN
+        <foreach collection="sysOrgIds" open="(" close=")" separator="," item="sysOrgId">
+            #{sysOrgId}
+        </foreach>
+        ORDER BY report_index_id DESC
+    </select>
+
+    <select id="queryReportIndexsById" parameterType="int" resultMap="reportIndexMap">
+		SELECT * FROM report_index_tb WHERE report_index_id=#{id}
+	</select>
+
+    <select id="queryReportIndexsByName" parameterType="java.lang.String" resultMap="reportIndexMap">
+		SELECT * FROM report_index_tb itb WHERE itb.report_index_template=#{indexName}
+	</select>
+
+    <select id="getDataBySome" parameterType="map" resultMap="reportIndexMap">
+        select * from report_index_tb WHERE sys_org_id IN
+        <foreach collection="sysOrgIds" open="(" close=")" separator="," item="sysOrgId">
+            #{sysOrgId}
+        </foreach>
+        <if test="reportIndexMethod!=null">
+            AND report_index_method=#{reportIndexMethod}
+        </if>
+        <if test="reportIndexTemplate!=null">
+            AND report_index_template=#{reportIndexTemplate}
+        </if>
+        <if test="reportIndexStatus!=null">
+            AND report_index_status=#{reportIndexStatus}
+        </if>
+        <if test="recordDate!=null">
+            AND to_char(report_index_time,'YYYY-MM-DD') = #{recordDate}
+        </if>
+        <if test="reportSubmitTime!=null">
+            AND to_char(REPORT_INDEX_SUBMIT_TIME,'YYYY-MM-DD') = #{reportSubmitTime}
+        </if>
+        ORDER BY report_index_id DESC
+    </select>
+    
+     <select id="queryAllAreaValueToCode"  resultMap="areaValueToCode">
+		SELECT SYS_AREA_NAME,SYS_AREA_CODE FROM sys_area_tb  
+	</select>
+	
+	<select id="queryAllOrgValueToCode"  resultMap="orgValueToCode">
+		SELECT SYS_ORG_NAME,SYS_ORG_FINANCIAL_CODE FROM sys_org_tb  
+	</select>
+	
+	<select id="queryAllIndusValueToCode"  resultMap="indusValueToCode">
+		SELECT SYS_INDUSTRY_NAME,SYS_INDUSTRY_CODE FROM SYS_INDUSTRY_TB  
+	</select>
+    
+</mapper>

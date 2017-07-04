@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"  ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysClassFyDao">
+	<resultMap type="com.workmanagement.model.SysClassFyModel" id="sysClassFyMap">
+		<id column="sys_industry_id" property="sysIndustryId"/>
+		<result column="sys_industry_code" property="sysIndustryCode"/>
+		<result column="sys_industry_name" property="sysIndustryName"/>
+		<result column="sys_industry_notes" property="sysIndustryNotes"/>
+		<result column="sys_dic_id" property="sysDicId"/>
+	</resultMap>
+	<!-- 查询所有数据,带分页 -->
+	<select id="queryAllSysClassFy"  resultMap="sysClassFyMap" >
+			SELECT t.SYS_DIC_ID,t.SYS_INDUSTRY_CODE,t.SYS_INDUSTRY_ID,t.SYS_INDUSTRY_NAME,t.SYS_INDUSTRY_NOTES FROM SYS_INDUSTRY_TB t ORDER BY SYS_INDUSTRY_CODE
+	</select>
+	<!-- 查询所有数据，不带分页 -->
+	<select id="queryAllSysClassFy1"  resultMap="sysClassFyMap" >
+			SELECT t.SYS_DIC_ID,t.SYS_INDUSTRY_CODE,t.SYS_INDUSTRY_ID,t.SYS_INDUSTRY_NAME,t.SYS_INDUSTRY_NOTES FROM SYS_INDUSTRY_TB t ORDER BY SYS_INDUSTRY_CODE
+	</select>
+	
+	<!-- 根据名字查询对象 -->
+	<select id="queryByName" resultMap="sysClassFyMap"  >
+		SELECT * FROM SYS_INDUSTRY_TB   WHERE sys_industry_name=#{sysIndustryName}
+	</select>
+	<!-- 根据名字查询对象 -->
+	<select id="queryListByName" resultMap="sysClassFyMap"  >
+		SELECT * FROM SYS_INDUSTRY_TB   WHERE sys_industry_name=#{sysIndustryName}
+	</select>
+	
+	<!-- 通过行业id查询行业编码 -->
+	<select id="queryCodeById" resultMap="sysClassFyMap"  parameterType="Integer">
+		SELECT SYS_INDUSTRY_CODE FROM SYS_INDUSTRY_TB   WHERE SYS_INDUSTRY_ID=#{sysIndustryId}
+	</select>
+	<!-- 通过行业id查询所有行业 -->
+	<select id="queryAllCodeById" resultMap="sysClassFyMap"  parameterType="Integer">
+		SELECT * FROM SYS_INDUSTRY_TB   WHERE SYS_INDUSTRY_ID=#{sysIndustryId}
+	</select>
+	<!-- 通过行业编码模糊查询有没有关联数据-->
+	<select id="queryClassFyModelByCode" resultMap="sysClassFyMap"  >
+	<!--	SELECT SYS_INDUSTRY_CODE FROM SYS_INDUSTRY_TB   WHERE SYS_INDUSTRY_ID   -->
+		SELECT * FROM SYS_INDUSTRY_TB   WHERE  SYS_INDUSTRY_ID !=#{sysIndustryId} AND SYS_INDUSTRY_CODE LIKE '${sysIndustryCode}%'
+	</select>
+	<!-- 通过行业编码对应数据-->
+	<select id="queryModelByCode" resultMap="sysClassFyMap"  >
+	<!--	SELECT SYS_INDUSTRY_CODE FROM SYS_INDUSTRY_TB   WHERE SYS_INDUSTRY_ID   -->
+		SELECT * FROM SYS_INDUSTRY_TB   WHERE   SYS_INDUSTRY_CODE=#{sysIndustryCode}
+	</select>
+	<!-- 通过行业编码对应数据  模糊查询-->
+	<select id="queryModelByCode1" resultMap="sysClassFyMap"  >
+	<!--	SELECT SYS_INDUSTRY_CODE FROM SYS_INDUSTRY_TB   WHERE SYS_INDUSTRY_ID   -->
+		SELECT * FROM SYS_INDUSTRY_TB   WHERE   SYS_INDUSTRY_CODE like '%${sysIndustryCode}%'
+	</select>
+	
+	<!--  修改数据-->
+	<update id="updateExchenge" parameterType="com.workmanagement.model.SysClassFyModel">
+		UPDATE SYS_INDUSTRY_TB
+		<set>
+			<if test="sysIndustryName!=null">sys_industry_name=#{sysIndustryName},</if>
+			<if test="sysIndustryCode!=null">sys_industry_code=#{sysIndustryCode},</if>
+			<if test="sysIndustryNotes!=null">sys_industry_notes=#{sysIndustryNotes},</if>
+			<if test="sysDicId!=null">sys_dic_id=#{sysDicId}</if>
+		</set>
+		WHERE sys_industry_id = #{sysIndustryId}
+	</update>
+	
+	<!-- 添加数据   -->
+	<insert id="insertExchenge" parameterType="com.workmanagement.model.SysClassFyModel" >
+		INSERT INTO SYS_INDUSTRY_TB(SYS_INDUSTRY_NAME,SYS_INDUSTRY_CODE,SYS_INDUSTRY_NOTES,SYS_DIC_ID)
+		VALUES(#{sysIndustryName},#{sysIndustryCode},#{sysIndustryNotes},61)
+	</insert>
+	<!--  通过行业名查询是否存在数据-->
+	<select id="isSysIndustryName"  resultType="int" parameterType="String">
+		SELECT count(0) FROM SYS_INDUSTRY_TB WHERE SYS_INDUSTRY_NAME=#{sysIndustryName}
+	</select>
+	<!--  通过行业名查询所有数据-->
+	<select id="isSysIndNameByAll" resultMap="sysClassFyMap" >
+		SELECT * FROM SYS_INDUSTRY_TB  WHERE SYS_INDUSTRY_NAME=#{sysIndustryName}
+	</select>
+	<!--  通过行业名查询所有数据  	模糊查询-->
+	<select id="isSysIndNameByAll1" resultMap="sysClassFyMap" parameterType="String">
+		SELECT * FROM SYS_INDUSTRY_TB  WHERE SYS_INDUSTRY_NAME LIKE '%${sysIndustryName}%' OR SYS_INDUSTRY_CODE LIKE '%${sysIndustryName}%'
+	</select>
+	<!-- 通过id删除数据 -->
+	<delete id="delClassFyById">
+		DELETE SYS_INDUSTRY_TB WHERE SYS_INDUSTRY_TB.SYS_INDUSTRY_ID=#{sysIndustryId}
+	</delete>
+</mapper>

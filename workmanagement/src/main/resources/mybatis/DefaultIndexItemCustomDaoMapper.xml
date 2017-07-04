@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.DefaultIndexItemCustomDao">
+	<resultMap type="com.workmanagement.model.DefaultIndexItemCustom" id="defaultIndexItemCustomMap">
+		<id column="default_index_item_id" property="defaultIndexItemId"/>
+		<result column="code_org" property="codeOrg"/>
+		<result column="code_credit" property="codeCredit"/>
+		<result column="index_jbxx_qymc" property="qymc"/>
+		<result column="index_ggxx_xm" property="fddbr"/>
+		<result column="index_jbxx_lxdh" property="lxdh"/>
+		<result column="index_dwdbxx_bdbrzjlx" property="bdbrzjlx"/>
+		<result column="index_jbxx_qyzs" property="qyzs"/>
+		<result column="default_index_item_id" property="defaultItemId"/>
+	</resultMap>
+	
+	<!-- 查询列表 -->
+	<!-- <select id="queryDefaultIndexItemCustoms" resultMap="defaultIndexItemCustomMap">
+		${queryTemporarySql}
+		<if test="limit!=null">
+			LIMIT #{limit} OFFSET #{offset}
+		</if>
+	</select> -->
+	<select id="queryDefaultIndexItemCustoms" resultMap="defaultIndexItemCustomMap">
+	<if test="sql==null">
+	
+		 ${queryTemporarySql}
+		 
+	</if>
+	<if test="sql!=null">
+		${sql}
+	</if>
+		 <if test="limit!=null">
+		 <![CDATA[
+			WHERE  a.cpbid > #{limit} AND a.cpbid <= #{offset}
+		 ]]>
+		</if>
+	
+	</select>
+	<!-- 查询总数 -->
+	 <select id="queryDefaultIndexItemCustoms_count" resultType="int">
+		<if test="sql==null">
+			${queryTemporarySql_count}
+	</if>
+	</select> 
+</mapper>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysOtherManageDao">
+
+	<resultMap type="com.workmanagement.model.SysOtherManage" id="sysOtherManageMap">
+		<id column="sys_set_id" property="sysSetId" />
+		<result column="sys_set_stime" property="sysSetStime" />
+		<result column="sys_set_etime" property="sysSetEtime" />
+		<result column="sys_set_login_overdue" property="sysSetLoginOverdue" />
+		<result column="sys_set_query_limit_switch" property="sysSetQueryLimitSwitch" />
+		<result column="sys_set_login_num" property="sysSetLoginNum" />
+		<result column="sys_set_pwd_rule" property="sysSetQwdRule" />
+		<result column="sys_set_org_switch" property="sysSetOrgSwitch" />
+		<result column="sys_area_id" property="sysAreaId" />
+		<result column="auth_file_switch" property="authFileSwitch" />
+		<result column="operate_auth_file_switch" property="operateAuthFileSwitch" />
+		<result column="credit_report_auth_file_switch" property="creditReportAuthFileSwitch" />
+		<result column="month_limit" property="monthLimit" />
+		<result column="multiple_limit" property="multipleLimit" />
+	</resultMap>
+	
+	<!--查询其他管理数据 -->
+	<select id="querySysOtherManage" resultMap="sysOtherManageMap">
+		SELECT * FROM SYS_SET_TB
+		WHERE sys_area_id=#{aid}
+	</select>
+	
+	<!-- 修改其他管理 -->
+	<update id="updateSysOtherManage" parameterType="com.workmanagement.model.SysOtherManage">
+		UPDATE 	SYS_SET_TB
+		<set>
+			<if test="sysSetStime!=null">
+				SYS_SET_STIME=#{sysSetStime},
+			</if>
+			<if test="sysSetEtime!=null">
+				SYS_SET_ETIME=#{sysSetEtime},
+			</if>
+			<if test="sysSetLoginOverdue!=null">
+				SYS_SET_LOGIN_OVERDUE=#{sysSetLoginOverdue},
+			</if>
+			<if test="sysSetLoginNum!=null">
+				SYS_SET_LOGIN_NUM=#{sysSetLoginNum},
+			</if>
+			<if test="sysSetQwdRule!=null">
+				SYS_SET_PWD_RULE=#{sysSetQwdRule},
+			</if>
+			<if test="sysSetOrgSwitch!=null">
+				SYS_SET_ORG_SWITCH =#{sysSetOrgSwitch},
+			</if>
+			<if test="authFileSwitch!=null">
+				AUTH_FILE_SWITCH =#{authFileSwitch},
+			</if>
+			<if test="operateAuthFileSwitch!=null">
+				OPERATE_AUTH_FILE_SWITCH =#{operateAuthFileSwitch},
+			</if>
+			<if test="creditReportAuthFileSwitch!=null">
+				CREDIT_REPORT_AUTH_FILE_SWITCH =#{creditReportAuthFileSwitch},
+			</if>
+			<if test="multipleLimit!=null">
+				MULTIPLE_LIMIT =#{multipleLimit}
+			</if>
+		</set>
+		WHERE 	SYS_SET_ID = #{sysSetId}
+		        AND SYS_AREA_ID=#{sysAreaId}
+	</update>
+	
+	<!-- 增加其他管理-->
+	<insert id="insertSysOtherManage" parameterType="com.workmanagement.model.SysOtherManage">
+		INSERT INTO SYS_SET_TB(
+			SYS_SET_STIME,
+			SYS_SET_ETIME,
+			SYS_SET_LOGIN_OVERDUE,
+			SYS_SET_LOGIN_NUM,
+			SYS_SET_PWD_RULE,
+			SYS_SET_ORG_SWITCH,
+			SYS_AREA_ID,
+			AUTH_FILE_SWITCH,
+			OPERATE_AUTH_FILE_SWITCH,
+			CREDIT_REPORT_AUTH_FILE_SWITCH,
+			MONTH_LIMIT,
+			MULTIPLE_LIMIT)VALUES(
+			<if test="sysSetStime!=null">
+				#{sysSetStime},
+			</if>
+			<if test="sysSetEtime!=null">
+				#{sysSetEtime},
+			</if>
+			<if test="sysSetLoginOverdue!=null">
+				#{sysSetLoginOverdue},
+			</if>
+			<if test="sysSetLoginNum!=null">
+				#{sysSetLoginNum},
+			</if>
+			<if test="sysSetQwdRule!=null">
+				#{sysSetQwdRule},
+			</if>
+			<if test="sysSetOrgSwitch!=null">
+				#{sysSetOrgSwitch},
+			</if>
+			<if test="sysAreaId!=null">
+				#{sysAreaId},
+			</if>
+			<if test="authFileSwitch!=null">
+				#{authFileSwitch},
+			</if>
+			<if test="operateAuthFileSwitch!=null">
+				#{operateAuthFileSwitch},
+			</if>
+			<if test="creditReportAuthFileSwitch!=null">
+				#{creditReportAuthFileSwitch},
+			</if>
+			<if test="monthLimit!=null">
+				#{monthLimit},
+			</if>
+			<if test="multipleLimit!=null">
+				#{multipleLimit}
+			</if>
+			)
+	</insert>
+	<!-- 修改次数限制-月数 -->
+	<update id="updateMonthLimit">
+		UPDATE SYS_SET_TB SET MONTH_LIMIT=#{monthLimit}
+	</update>
+
+</mapper>

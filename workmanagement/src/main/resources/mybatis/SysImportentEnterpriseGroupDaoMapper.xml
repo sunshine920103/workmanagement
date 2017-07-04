@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysImportentEnterpriseGroupDao">
+<resultMap type="com.workmanagement.model.SysImportentEnterpriseGroup" id="siegMap">
+		<id column="sys_importent_enterprise_group_id" property="sys_importent_enterprise_group_id" />
+		<result column="sys_importent_enterprise_group_name" property="sys_importent_enterprise_group_name" />
+		<result column="sys_user_id" property="sys_user_id" />
+		<result column="submit_time" property="submit_time" />
+		<result column="sys_org_id" property="sys_org_id" />
+		<result column="username" property="username" />
+		<result column="sys_org_name" property="sys_org_name" />
+		<collection property="default_index_item_id" select="querysieg" ofType="com.workmanagement.model.DefaultIndexItem" javaType="ArrayList" column="sys_importent_enterprise_group_id" />
+	</resultMap>
+	
+	<resultMap type="com.workmanagement.model.DefaultIndexItem" id="defaultIndexItemQymc">
+		<id column="default_index_item_id" property="defaultIndexItemId"/>
+		<result column="code_credit" property="codeCredit"/>
+		<result column="code_org" property="codeOrg"/>
+		<result column="index_jbxx_qymc" property="qymc"/>
+	</resultMap>
+	<select id="querysieg" resultMap="defaultIndexItemQymc">
+		 SELECT a.default_index_item_id,code_credit,code_org,b.index_jbxx_qymc FROM DEFAULT_INDEX_ITEM_TB a
+			LEFT JOIN index_jbxx_tb b ON a.DEFAULT_INDEX_ITEM_id=b.DEFAULT_INDEX_ITEM_id
+			<where>
+				a.default_index_item_id in(select default_index_item_id from SYS_IMPORTENT_ENTERPRISE_TB where sys_importent_enterprise_group_id = #{sys_importent_enterprise_group_id}) GROUP BY a.default_index_item_id,code_credit,code_org,b.index_jbxx_qymc
+		</where>
+	</select>
+	
+	<select id="querySieg" resultMap="siegMap">
+			select SYS_IMPORTENT_ENTERPRISE_GROUP_TB.*,sys_org_tb.sys_org_name,username from SYS_IMPORTENT_ENTERPRISE_GROUP_TB left join sys_org_tb on SYS_IMPORTENT_ENTERPRISE_GROUP_TB.sys_org_id = sys_org_tb.sys_org_id left join sys_user_tb on sys_user_tb.sys_user_id = SYS_IMPORTENT_ENTERPRISE_GROUP_TB.sys_user_id
+			<where>
+			1=1 
+				<if test="name!=null">and sys_importent_enterprise_group_name like '%'||#{name}||'%' </if>
+				<if test="qmc!=null">and sys_importent_enterprise_group_name =#{qmc} </if>
+				<if test="id!=null"> and sys_importent_enterprise_group_id=#{id}</if>
+				<if test="orgId!=null"> and SYS_IMPORTENT_ENTERPRISE_GROUP_TB.sys_org_id=#{orgId}</if>
+				<if test="orgIds!=null">
+					 AND SYS_IMPORTENT_ENTERPRISE_GROUP_TB.sys_org_id IN
+				<foreach collection="orgIds" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>	
+				
+				</if>
+				<if test="orgIn!=null">
+					and SYS_IMPORTENT_ENTERPRISE_GROUP_TB.sys_org_id in (select sys_org_id from sys_org_tb where SYS_ORG_AFFILIATION_AREA_ID = #{orgIn})
+				</if>
+				order by sys_importent_enterprise_group_id desc
+			</where>
+	</select>
+	
+	<insert id="insertGroup" parameterType="com.workmanagement.model.SysImportentEnterpriseGroup">
+		insert into sys_importent_enterprise_group_tb(sys_importent_enterprise_group_name,sys_user_id,sys_org_id,submit_time) 
+		values(#{sys_importent_enterprise_group_name},#{sys_user_id},#{sys_org_id},current_timestamp)
+	</insert>
+	
+	<insert id="insertOneOfGroup" >
+		insert into sys_importent_enterprise_tb(sys_importent_enterprise_group_id,default_index_item_id) 
+		values(#{groupId},#{defaultId})
+	</insert>
+	
+	<select id="qureyByName" parameterType="java.lang.String" resultMap="siegMap">
+		select * from sys_importent_enterprise_group_tb where sys_importent_enterprise_group_name =#{name}
+	</select>
+	
+</mapper>

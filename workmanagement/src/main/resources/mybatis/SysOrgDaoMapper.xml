@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysOrgDao">
+
+    <!-- 不带映射 -->
+    <resultMap type="com.workmanagement.model.SysOrg" id="defaultSysOrgMap">
+        <id column="sys_org_id" property="sys_org_id"/>
+        <result column="sys_org_upid" property="sys_org_upid"/>
+        <result column="sys_org_financial_code" property="sys_org_financial_code"/>
+        <result column="sys_org_name" property="sys_org_name"/>
+        <result column="sys_org_type_id" property="sys_org_type_id"/>
+        <result column="sys_org_type_name" property="sys_org_type_name"/>
+        <result column="sys_area_id" property="sys_area_id"/>
+        <result column="sys_org_address_area_name" property="sys_org_address_area_name"/>
+        <result column="sys_org_phone" property="sys_org_phone"/>
+        <result column="sys_org_address" property="sys_org_address"/>
+        <result column="sys_org_representative" property="sys_org_representative"/>
+        <result column="sys_org_finance_operator" property="sys_org_finance_operator"/>
+        <result column="sys_org_finance_operator_phone" property="sys_org_finance_operator_phone"/>
+        <result column="sys_org_code" property="sys_org_code"/>
+        <result column="sys_dic_id" property="sys_dic_id"/>
+        <result column="sys_org_credit_code" property="sys_org_credit_code"/>
+        <result column="sys_org_licence" property="sys_org_licence"/>
+        <result column="sys_org_reg_capital" property="sys_org_reg_capital"/>
+        <result column="sys_org_issuance_day" property="sys_org_issuance_day"/>
+        <result column="sys_org_code_number" property="sys_org_code_number"/>
+        <result column="sys_org_reg_number" property="sys_org_reg_number"/>
+        <result column="sys_org_notes" property="sys_org_notes"/>
+        <result column="sys_org_used" property="sys_org_used"/>
+        <result column="sys_org_current_query_times" property="sys_org_current_query_times"/>
+        <result column="sys_org_current_limit_query_times" property="sys_org_current_limit_query_times"/>
+        <result column="sys_org_type" property="sys_org_type"/>
+        <result column="sys_org_service_center_call" property="sys_org_service_center_call"/>
+        <result column="sys_org_service_center_name" property="sys_org_service_center_name"/>
+        <result column="sys_org_credit_report" property="sys_org_credit_report"/>
+        <result column="sys_org_logo" property="sys_org_logo"/>
+        <result column="sys_org_affiliation_area_id" property="sys_org_affiliation_area_id"/>
+        <result column="sys_org_status" property="sys_org_status"/>
+        <result column="sys_org_time" property="sys_org_time"/>
+    </resultMap>
+
+    <!-- 映射子机构 -->
+    <resultMap type="com.workmanagement.model.SysOrg" id="sysOrgMap">
+        <id column="sys_org_id" property="sys_org_id"/>
+        <result column="sys_org_upid" property="sys_org_upid"/>
+        <result column="sys_org_financial_code" property="sys_org_financial_code"/>
+        <result column="sys_org_name" property="sys_org_name"/>
+        <result column="sys_org_type_id" property="sys_org_type_id"/>
+        <result column="sys_org_type_name" property="sys_org_type_name"/>
+        <result column="sys_area_id" property="sys_area_id"/>
+        <result column="sys_org_address_area_name" property="sys_org_address_area_name"/>
+        <result column="sys_org_phone" property="sys_org_phone"/>
+        <result column="sys_org_address" property="sys_org_address"/>
+        <result column="sys_org_representative" property="sys_org_representative"/>
+        <result column="sys_org_finance_operator" property="sys_org_finance_operator"/>
+        <result column="sys_org_finance_operator_phone" property="sys_org_finance_operator_phone"/>
+        <result column="sys_org_code" property="sys_org_code"/>
+        <result column="sys_dic_id" property="sys_dic_id"/>
+        <result column="sys_org_credit_code" property="sys_org_credit_code"/>
+        <result column="sys_org_licence" property="sys_org_licence"/>
+        <result column="sys_org_reg_capital" property="sys_org_reg_capital"/>
+        <result column="sys_org_issuance_day" property="sys_org_issuance_day"/>
+        <result column="sys_org_code_number" property="sys_org_code_number"/>
+        <result column="sys_org_reg_number" property="sys_org_reg_number"/>
+        <result column="sys_org_notes" property="sys_org_notes"/>
+        <result column="sys_org_used" property="sys_org_used"/>
+        <result column="sys_org_current_query_times" property="sys_org_current_query_times"/>
+        <result column="sys_org_current_limit_query_times" property="sys_org_current_limit_query_times"/>
+        <result column="sys_org_type" property="sys_org_type"/>
+        <result column="sys_org_service_center_call" property="sys_org_service_center_call"/>
+        <result column="sys_org_service_center_name" property="sys_org_service_center_name"/>
+        <result column="sys_org_credit_report" property="sys_org_credit_report"/>
+        <result column="sys_org_logo" property="sys_org_logo"/>
+        <result column="sys_org_affiliation_area_id" property="sys_org_affiliation_area_id"/>
+        <result column="sys_org_status" property="sys_org_status"/>
+        <result column="sys_org_time" property="sys_org_time"/>
+        <collection property="subSysOrg" select="querySubSysOrg" ofType="com.workmanagement.model.SysOrg"
+                    javaType="ArrayList" column="sys_org_id"/>
+    </resultMap>
+	<!-- 映射子机构2 -->
+    <resultMap type="com.workmanagement.model.SysOrg" id="sysOrgMap2">
+        <id column="sys_org_id" property="sys_org_id"/>
+        <result column="sys_org_upid" property="sys_org_upid"/>
+        <result column="sys_org_financial_code" property="sys_org_financial_code"/>
+        <result column="sys_org_name" property="sys_org_name"/>
+        <result column="sys_org_type_id" property="sys_org_type_id"/>
+        <result column="sys_org_type_name" property="sys_org_type_name"/>
+        <result column="sys_area_id" property="sys_area_id"/>
+        <result column="sys_org_address_area_name" property="sys_org_address_area_name"/>
+        <result column="sys_org_phone" property="sys_org_phone"/>
+        <result column="sys_org_address" property="sys_org_address"/>
+        <result column="sys_org_representative" property="sys_org_representative"/>
+        <result column="sys_org_finance_operator" property="sys_org_finance_operator"/>
+        <result column="sys_org_finance_operator_phone" property="sys_org_finance_operator_phone"/>
+        <result column="sys_org_code" property="sys_org_code"/>
+        <result column="sys_dic_id" property="sys_dic_id"/>
+        <result column="sys_org_credit_code" property="sys_org_credit_code"/>
+        <result column="sys_org_licence" property="sys_org_licence"/>
+        <result column="sys_org_reg_capital" property="sys_org_reg_capital"/>
+        <result column="sys_org_issuance_day" property="sys_org_issuance_day"/>
+        <result column="sys_org_code_number" property="sys_org_code_number"/>
+        <result column="sys_org_reg_number" property="sys_org_reg_number"/>
+        <result column="sys_org_notes" property="sys_org_notes"/>
+        <result column="sys_org_used" property="sys_org_used"/>
+        <result column="sys_org_current_query_times" property="sys_org_current_query_times"/>
+        <result column="sys_org_current_limit_query_times" property="sys_org_current_limit_query_times"/>
+        <result column="sys_org_type" property="sys_org_type"/>
+        <result column="sys_org_service_center_call" property="sys_org_service_center_call"/>
+        <result column="sys_org_service_center_name" property="sys_org_service_center_name"/>
+        <result column="sys_org_credit_report" property="sys_org_credit_report"/>
+        <result column="sys_org_logo" property="sys_org_logo"/>
+        <result column="sys_org_affiliation_area_id" property="sys_org_affiliation_area_id"/>
+        <result column="sys_org_status" property="sys_org_status"/>
+        <result column="sys_org_time" property="sys_org_time"/>
+        <collection property="subSysOrg" select="querySubSysOrg2" ofType="com.workmanagement.model.SysOrg"
+                    javaType="ArrayList" column="sys_org_id"/>
+    </resultMap>
+    <!-- 映射父机构 -->
+    <resultMap type="com.workmanagement.model.SysOrg" id="parentSysOrgMap">
+        <id column="sys_org_id" property="sys_org_id"/>
+        <result column="sys_org_upid" property="sys_org_upid"/>
+        <result column="sys_org_financial_code" property="sys_org_financial_code"/>
+        <result column="sys_org_name" property="sys_org_name"/>
+        <result column="sys_org_type_id" property="sys_org_type_id"/>
+        <result column="sys_org_type_name" property="sys_org_type_name"/>
+        <result column="sys_area_id" property="sys_area_id"/>
+        <result column="sys_org_address_area_name" property="sys_org_address_area_name"/>
+        <result column="sys_org_phone" property="sys_org_phone"/>
+        <result column="sys_org_address" property="sys_org_address"/>
+        <result column="sys_org_representative" property="sys_org_representative"/>
+        <result column="sys_org_finance_operator" property="sys_org_finance_operator"/>
+        <result column="sys_org_finance_operator_phone" property="sys_org_finance_operator_phone"/>
+        <result column="sys_org_code" property="sys_org_code"/>
+        <result column="sys_dic_id" property="sys_dic_id"/>
+        <result column="sys_org_credit_code" property="sys_org_credit_code"/>
+        <result column="sys_org_licence" property="sys_org_licence"/>
+        <result column="sys_org_reg_capital" property="sys_org_reg_capital"/>
+        <result column="sys_org_issuance_day" property="sys_org_issuance_day"/>
+        <result column="sys_org_code_number" property="sys_org_code_number"/>
+        <result column="sys_org_reg_number" property="sys_org_reg_number"/>
+        <result column="sys_org_notes" property="sys_org_notes"/>
+        <result column="sys_org_used" property="sys_org_used"/>
+        <result column="sys_org_current_query_times" property="sys_org_current_query_times"/>
+        <result column="sys_org_current_limit_query_times" property="sys_org_current_limit_query_times"/>
+        <result column="sys_org_type" property="sys_org_type"/>
+        <result column="sys_org_service_center_call" property="sys_org_service_center_call"/>
+        <result column="sys_org_service_center_name" property="sys_org_service_center_name"/>
+        <result column="sys_org_credit_report" property="sys_org_credit_report"/>
+        <result column="sys_org_logo" property="sys_org_logo"/>
+        <result column="sys_org_affiliation_area_id" property="sys_org_affiliation_area_id"/>
+        <result column="sys_org_status" property="sys_org_status"/>
+        <result column="sys_org_time" property="sys_org_time"/>
+        <collection property="subSysOrg" select="queryParentSysOrg" ofType="com.workmanagement.model.SysOrg"
+                    javaType="ArrayList" column="sys_org_upid"/>
+    </resultMap>
+
+    <!-- 获取所有机构金融机构编码-->
+    <select id="querySysorgInancialCode" resultType="java.lang.String">
+		SELECT sys_org_financial_code FROM sys_org_tb
+	</select>
+
+    <!-- 通过机构金融机构编码查询机构 -->
+    <select id="querySysorgByFinancialCode" resultType="com.workmanagement.model.SysOrg">
+		SELECT * FROM sys_org_tb WHERE sys_org_financial_code = #{financialCode}
+	</select>
+
+    <!-- 通过所在区域ID查询机构 -->
+    <select id="querySysOrgByAddressAreaId" resultType="com.workmanagement.model.SysOrg">
+		SELECT * FROM sys_org_tb WHERE sys_area_id = #{aid}
+	</select>
+
+    <select id="queryOrgByAreaIdHaveSub" resultMap="sysOrgMap">
+		SELECT * FROM sys_org_tb WHERE sys_area_id = #{aid}
+	</select>
+
+    <!-- 通过机构类型ID查询机构 -->
+    <select id="querySysOrgByTypeId" resultType="com.workmanagement.model.SysOrg">
+		SELECT * FROM sys_org_tb WHERE  sys_org_type_id = #{tid}
+	</select>
+    <!-- 通过机构ID查询机构 没有状态标识-->
+    <select id="queryInstitutionsByIdWithNoStatus" resultType="com.workmanagement.model.SysOrg">
+		SELECT * FROM sys_org_tb WHERE sys_org_id = #{parseInt}
+	</select>
+
+    <!-- 通过ID查询机构并映射父机构 -->
+    <select id="queryParentInstitutionsById" resultMap="parentSysOrgMap">
+		SELECT * FROM sys_org_tb WHERE sys_org_id = #{id} 
+	</select>
+
+    <!-- 查询父机构 -->
+    <select id="queryParentSysOrg" resultMap="parentSysOrgMap">
+		SELECT * FROM sys_org_tb WHERE sys_org_id = #{parent} 
+	</select>
+
+    <!-- 通过名称和机构代码查询机构 -->
+    <select id="queryInstitutionsByCodeAndName" resultType="com.workmanagement.model.SysOrg">
+		SELECT * FROM sys_org_tb WHERE (sys_org_name = #{name} OR sys_org_financial_code = #{code}) 
+	</select>
+
+    <!-- 删除机构 -->
+    <delete id="delInstitutionsById">
+		DELETE sys_org_tb WHERE sys_org_id = #{id} AND sys_org_used = 0
+	</delete>
+
+    <!-- 查詢机构列表 -->
+    <select id="queryInstitution" resultMap="sysOrgMap">
+        SELECT s.*, t.sys_org_type_name AS sys_org_type_name,
+        p.sys_org_name AS sys_org_upname
+        FROM sys_org_tb s
+        LEFT JOIN sys_org_tb p ON s.sys_org_upid = p.sys_org_id
+        LEFT JOIN sys_org_type_tb t ON t.sys_org_type_id = s.sys_org_type_id
+        <where>
+            1=1
+            <if test="param.upid==null">AND s.sys_org_upid is NULL</if>
+            <if test="param.type!=null">AND s.sys_org_type=#{param.type}</if>
+            <if test="param.insti_id!=null">
+                AND (s.sys_org_upid is NULL OR s.sys_org_id = #{param.insti_id})
+            </if>
+            <if test="param.area_id!=null">
+                AND s.sys_area_id IN
+                <foreach collection="param.area_id" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="param.affiliationArea!=null">AND s.sys_org_affiliation_area_id=#{param.affiliationArea}</if>
+            <if test="param.orgName!=null">AND s.sys_org_name like '%${param.orgName}%'</if>
+            <if test="param.name!=null">AND s.sys_org_name = '${param.name}'</if>
+            <if test="param.orgNameOrcode!=null">AND (s.sys_org_name like '%${param.orgNameOrcode}%' OR
+                s.sys_org_financial_code like '%${param.orgNameOrcode}%')
+            </if>
+            <if test="param.orgIds!=null">
+                AND s.sys_org_id IN
+                <foreach collection="param.orgIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="param.typeId!=null">AND s.sys_org_type_id = #{param.typeId}</if>
+        </where>
+        ORDER BY s.sys_org_financial_code
+    </select>
+
+    <!-- 查询子机构 -->
+    <select id="querySubSysOrg" resultMap="sysOrgMap">
+		SELECT i.*,
+			   p.sys_org_name AS sys_org_upname, 
+			   type.sys_org_type_name AS sys_org_type_name,
+			   address.sys_area_name AS sys_org_address_area_name
+		FROM sys_org_tb i
+		LEFT JOIN sys_org_tb p ON i.sys_org_upid = p.sys_org_id
+		LEFT JOIN sys_org_type_tb type ON type.sys_org_type_id = i.sys_org_type_id
+		LEFT JOIN sys_area_tb address ON address.sys_area_id = i.sys_area_id
+		WHERE  i.sys_org_upid = #{sys_org_id}
+		ORDER BY i.sys_org_financial_code desc 
+	</select>
+	<!-- 查询子机构2 -->
+    <select id="querySubSysOrg2" resultMap="defaultSysOrgMap">
+		SELECT i.*,
+			   p.sys_org_name AS sys_org_upname, 
+			   type.sys_org_type_name AS sys_org_type_name,
+			   address.sys_area_name AS sys_org_address_area_name
+		FROM sys_org_tb i
+		LEFT JOIN sys_org_tb p ON i.sys_org_upid = p.sys_org_id
+		LEFT JOIN sys_org_type_tb type ON type.sys_org_type_id = i.sys_org_type_id
+		LEFT JOIN sys_area_tb address ON address.sys_area_id = i.sys_area_id
+		WHERE  i.sys_org_upid = #{sys_org_id}
+		ORDER BY i.sys_org_financial_code desc 
+	</select>
+
+    <!-- 通过ID查询机构 -->
+    <select id="queryInstitutionsById" resultMap="sysOrgMap">
+        SELECT i.*,
+        p.sys_org_name AS sys_org_upname,
+        type.sys_org_type_name AS sys_org_type_name,
+        address.sys_area_name AS sys_org_address_area_name
+        FROM sys_org_tb i
+        LEFT JOIN sys_org_tb p ON i.sys_org_upid = p.sys_org_id
+        LEFT JOIN sys_org_type_tb type ON type.sys_org_type_id = i.sys_org_type_id
+        LEFT JOIN sys_area_tb address ON address.sys_area_id = i.sys_area_id
+        <where>
+            i.sys_org_id = #{id}
+        </where>
+    </select>
+
+    <!-- 新增机构 -->
+    <insert id="insertInstitutions" parameterType="com.workmanagement.model.SysOrg">
+		INSERT INTO 
+		sys_org_tb(sys_org_upid, sys_org_financial_code, sys_org_name, sys_org_type_id, sys_area_id, sys_org_phone,
+					sys_org_address, sys_org_representative, sys_org_finance_operator, sys_org_finance_operator_phone, sys_org_code, sys_org_credit_code,
+					sys_org_licence, sys_org_reg_capital, sys_org_issuance_day, sys_org_code_number, sys_org_reg_number, sys_org_notes,sys_dic_id,sys_org_type,
+					sys_org_service_center_call,sys_org_service_center_name,sys_org_credit_report,sys_org_logo,sys_org_affiliation_area_id,sys_org_current_query_times,
+					sys_org_status,sys_org_time,sys_org_current_limit_query_times) 
+		VALUES(#{sys_org_upid}, #{sys_org_financial_code}, #{sys_org_name}, #{sys_org_type_id}, #{sys_area_id}, #{sys_org_phone},
+				#{sys_org_address}, #{sys_org_representative}, #{sys_org_finance_operator}, #{sys_org_finance_operator_phone}, #{sys_org_code}, #{sys_org_credit_code},
+				#{sys_org_licence}, #{sys_org_reg_capital}, #{sys_org_issuance_day}, #{sys_org_code_number}, #{sys_org_reg_number}, #{sys_org_notes}, #{sys_dic_id},#{sys_org_type},
+				#{sys_org_service_center_call},#{sys_org_service_center_name},#{sys_org_credit_report},#{sys_org_logo},#{sys_org_affiliation_area_id},#{sys_org_current_query_times},
+				#{sys_org_status},#{sys_org_time},#{sys_org_current_limit_query_times})
+	</insert>
+
+    <!-- 更新机构 -->
+    <update id="updateInstitutions" parameterType="com.workmanagement.model.SysOrg">
+        UPDATE sys_org_tb
+        <set>
+            sys_dic_id = #{sys_dic_id},
+            sys_org_upid = #{sys_org_upid},
+            sys_area_id = #{sys_area_id},
+            sys_org_affiliation_area_id = #{sys_org_affiliation_area_id},
+            <if test="sys_org_status!=null">sys_org_status = #{sys_org_status},</if>
+            <if test="sys_org_time!=null">sys_org_time = #{sys_org_time},</if>
+            <if test="sys_org_financial_code!=null">sys_org_financial_code = #{sys_org_financial_code},</if>
+            <if test="sys_org_name!=null">sys_org_name = #{sys_org_name},</if>
+            <if test="sys_org_type_id!=null">sys_org_type_id = #{sys_org_type_id},</if>
+            <if test="sys_org_phone!=null">sys_org_phone = #{sys_org_phone},</if>
+            <if test="sys_org_address!=null">sys_org_address = #{sys_org_address},</if>
+            <if test="sys_org_representative!=null">sys_org_representative = #{sys_org_representative},</if>
+            <if test="sys_org_finance_operator!=null">sys_org_finance_operator = #{sys_org_finance_operator},</if>
+            <if test="sys_org_finance_operator_phone!=null">sys_org_finance_operator_phone =
+                #{sys_org_finance_operator_phone},
+            </if>
+            <if test="sys_org_code!=null">sys_org_code = #{sys_org_code},</if>
+            <if test="sys_org_credit_code!=null">sys_org_credit_code = #{sys_org_credit_code},</if>
+            <if test="sys_org_licence!=null">sys_org_licence = #{sys_org_licence},</if>
+            <if test="sys_org_reg_capital!=null">sys_org_reg_capital = #{sys_org_reg_capital},</if>
+            <if test="sys_org_issuance_day!=null">sys_org_issuance_day = #{sys_org_issuance_day},</if>
+            <if test="sys_org_code_number!=null">sys_org_code_number = #{sys_org_code_number},</if>
+            <if test="sys_org_reg_number!=null">sys_org_reg_number = #{sys_org_reg_number},</if>
+            <if test="sys_org_notes!=null">sys_org_notes = #{sys_org_notes},</if>
+            <if test="sys_org_used!=null">sys_org_used = #{sys_org_used},</if>
+            <if test="sys_org_type!=null">sys_org_type = #{sys_org_type},</if>
+            <if test="sys_org_current_query_times!=null">sys_org_current_query_times = #{sys_org_current_query_times},</if>
+            <if test="sys_org_current_limit_query_times!=null">sys_org_current_limit_query_times = #{sys_org_current_limit_query_times},</if>
+            <if test="sys_org_service_center_call!=null">sys_org_service_center_call = #{sys_org_service_center_call},</if>
+            <if test="sys_org_service_center_name!=null">sys_org_service_center_name = #{sys_org_service_center_name},</if>
+            <if test="sys_org_credit_report!=null">sys_org_credit_report = #{sys_org_credit_report},</if>
+            <if test="sys_org_logo!=null">sys_org_logo = #{sys_org_logo}</if>
+        </set>
+        WHERE sys_org_id = #{sys_org_id}
+    </update>
+
+    <select id="getAllIds" resultType="int">
+        SELECT SYS_ORG_ID FROM sys_org_tb
+    </select>
+
+    <select id="queryAll" resultType="com.workmanagement.model.SysOrg">
+		SELECT * FROM sys_org_tb 
+	</select>
+    <!-- 根据机构类型id查询机构类型上级id -->
+    <select id="queryInstitutionTypeUpidById" resultType="Integer">
+		SELECT tp.sys_org_type_upid FROM sys_org_type_tb tp where tp.sys_org_type_id= #{sys_org_type_id}
+	</select>
+    <!-- 通过多个地区id查询这些地区下是否有金融机构存在-->
+    <select id="querySysOrgByAreaIds" resultType="com.workmanagement.model.SysOrg">
+        SELECT * FROM sys_org_tb WHERE sys_area_id in
+        <foreach collection="ids" item="id" open="(" separator=","
+                 close=")">
+            #{id}
+        </foreach>
+    </select>
+    <!-- 根据机构名称查询机构id -->
+    <select id="queryInstitutionIdByName" resultType="Integer">
+		SELECT t.sys_org_id FROM sys_org_tb t where t.sys_org_name= #{upname}
+	</select>
+    <!-- 根据机构名称查询机构id -->
+    <select id="getSysOrgByName" resultMap="defaultSysOrgMap">
+		SELECT * FROM sys_org_tb where sys_org_name=#{orgName}
+	</select>
+    <!-- 模糊查询  通过机构类别名称查询机构类别-->
+    <select id="queryInstitutionByName" resultType="com.workmanagement.model.SysOrg">
+		SELECT *  FROM sys_org_tb t WHERE t.sys_org_name like  '%${orgName}%' 
+		AND t.sys_org_id=#{id} ORDER BY t.sys_org_financial_code
+	</select>
+    <!-- 根据机构名称模糊查询  通过机构类别名称查询机构类别-->
+    <select id="queryInstitutionmohu" resultType="com.workmanagement.model.SysOrg">
+		SELECT *  FROM sys_org_tb t WHERE t.sys_org_name like  '%${orgName}%' 
+	</select>
+
+    <!--查询机构全部信息 -->
+    <select id="queryOrgAll" resultType="com.workmanagement.model.SysOrg">
+        SELECT i.*,
+        p.sys_org_name AS sys_org_upname,
+        type.sys_org_type_name AS sys_org_type_name,
+        address.sys_area_name AS sys_org_address_area_name
+        FROM sys_org_tb i
+        LEFT JOIN sys_org_tb p ON i.sys_org_upid = p.sys_org_id
+        LEFT JOIN sys_org_type_tb type ON type.sys_org_type_id = i.sys_org_type_id
+        LEFT JOIN sys_area_tb address ON address.sys_area_id = i.sys_area_id
+        WHERE
+        1=1
+        <if test="orgName!=null">
+            AND i.sys_org_name like '%${orgName}%'
+        </if>
+        <if test="type!=null">AND i.sys_org_type=#{type}</if>
+        ORDER BY i.sys_org_financial_code
+    </select>
+    <!-- 根据机构id查询子机构 -->
+    <select id="querySubInstitutionById" resultType="com.workmanagement.model.SysOrg">
+		SELECT * FROM sys_org_tb t where t.sys_org_upid= #{id}
+	</select>
+
+    <select id="querySysOrgByOrgIds" resultType="com.workmanagement.model.SysOrg">
+        SELECT * FROM sys_org_tb where sys_org_id IN
+        <foreach collection="orgids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getSysOrgIdsByOrgIds" resultType="int">
+        SELECT sys_org_id FROM sys_org_tb where sys_area_id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getByIdNotHaveSub" parameterType="int" resultMap="defaultSysOrgMap">
+		SELECT * FROM sys_org_tb WHERE sys_org_id = #{sysOrgId}
+	</select>
+	
+	<select id="queryOrgOrSubOrgById"  resultMap="defaultSysOrgMap">
+		SELECT * FROM sys_org_tb LEFT JOIN SYS_AREA_TB ON sys_org_tb.SYS_AREA_ID = sys_area_tb.SYS_AREA_ID WHERE (sys_org_id = #{id} OR sys_org_upid=#{id})
+		<if test="area!=null">
+			or(sys_area_tb.SYS_AREA_ID = #{area} OR sys_area_tb.SYS_AREA_UPID = #{area})
+		</if>
+	</select>
+	<select id="queryInstitutionId"  resultType="Integer">
+		SELECT sys_org_id FROM sys_org_tb s
+		<where>
+			1=1
+			<if test="param.area_id!=null">
+                AND s.sys_area_id IN
+                <foreach collection="param.area_id" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="param.affiliationArea!=null">AND s.sys_org_affiliation_area_id=#{param.affiliationArea}</if>
+		</where>
+	</select>
+
+	<!--查询机构不带映射  -->
+    <select id="querySysOrg" resultMap="defaultSysOrgMap">
+        SELECT s.*, t.sys_org_type_name AS sys_org_type_name,
+        p.sys_org_name AS sys_org_upname
+        FROM sys_org_tb s
+        LEFT JOIN sys_org_tb p ON s.sys_org_upid = p.sys_org_id
+        LEFT JOIN sys_org_type_tb t ON t.sys_org_type_id = s.sys_org_type_id
+        <where>
+            1=1
+            <if test="param.type!=null">AND s.sys_org_type=#{param.type}</if>
+            <if test="param.insti_id!=null">
+                AND (s.sys_org_upid is NULL OR s.sys_org_id = #{param.insti_id})
+            </if>
+            <if test="param.area_id!=null">
+                AND s.sys_area_id IN
+                <foreach collection="param.area_id" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="param.affiliationArea!=null">AND s.sys_org_affiliation_area_id=#{param.affiliationArea}</if>
+            <if test="param.orgName!=null">AND s.sys_org_name like '%${param.orgName}%'</if>
+            <if test="param.name!=null">AND s.sys_org_name = '${param.name}'</if>
+            <if test="param.orgNameOrcode!=null">AND (s.sys_org_name like '%${param.orgNameOrcode}%' OR
+                s.sys_org_financial_code like '%${param.orgNameOrcode}%')
+            </if>
+            <if test="param.orgIds!=null">
+                AND s.sys_org_id IN
+                <foreach collection="param.orgIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="param.typeId!=null">AND s.sys_org_type_id = #{param.typeId}</if>
+        </where>
+        ORDER BY s.sys_org_financial_code
+    </select>
+    
+    <!-- 查詢机构列表映射一级子机构 -->
+    <select id="selectSysOrg" resultMap="sysOrgMap2" parameterType="map">
+        SELECT s.*, t.sys_org_type_name AS sys_org_type_name,
+        p.sys_org_name AS sys_org_upname
+        FROM sys_org_tb s
+        LEFT JOIN sys_org_tb p ON s.sys_org_upid = p.sys_org_id
+        LEFT JOIN sys_org_type_tb t ON t.sys_org_type_id = s.sys_org_type_id
+        <where>
+            1=1
+            <if test="upid!=null">AND s.sys_org_upid is NULL</if>
+            <if test="type!=null">AND s.sys_org_type=#{type}</if>
+            <if test="insti_id!=null">
+                AND (s.sys_org_upid is NULL OR s.sys_org_id = #{insti_id})
+            </if>
+            <if test="area_id!=null">
+                AND s.sys_area_id IN
+                <foreach collection="area_id" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="affiliationArea!=null">AND s.sys_org_affiliation_area_id=#{param.affiliationArea}</if>
+            <if test="orgName!=null">AND s.sys_org_name like '%${orgName}%'</if>
+            <if test="name!=null">AND s.sys_org_name = '${name}'</if>
+            <if test="orgNameOrcode!=null">AND (s.sys_org_name like '%${orgNameOrcode}%' OR
+                s.sys_org_financial_code like '%${orgNameOrcode}%')
+            </if>
+            <if test="orgIds!=null">
+                AND s.sys_org_id IN
+                <foreach collection="orgIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="typeId!=null">AND s.sys_org_type_id = #{typeId}</if>
+        </where>
+        ORDER BY s.sys_org_financial_code
+    </select>
+    
+    <!-- 根据地区和类别查詢机构列表映射一级子机构 -->
+    <select id="selectOneSysOrgByAreaAndType" resultMap="sysOrgMap2">
+    	SELECT * FROM SYS_ORG_TB s
+    	<where> 
+    		 1=1
+            <if test="param.affiliationArea!=null">AND s.sys_org_affiliation_area_id=#{param.affiliationArea}</if>
+            <if test="param.typeId!=null">AND s.sys_org_type_id = #{param.typeId}</if>
+            <if test="param.area_id!=null">
+                AND s.sys_area_id IN
+                <foreach collection="param.area_id" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+			 AND (s.SYS_ORG_UPID NOT IN (SELECT SYS_ORG_ID FROM SYS_ORG_TB so
+			 	<where>
+                    <if test="param.affiliationArea!=null">AND so.sys_org_affiliation_area_id=#{param.affiliationArea}</if>
+                    <if test="param.typeId!=null">AND so.sys_org_type_id = #{param.typeId}</if>
+                    <if test="param.area_id!=null">
+		                AND so.sys_area_id IN
+                        <foreach collection="param.area_id" item="id" open="(" separator="," close=")">
+		                    #{id}
+		                </foreach>
+		            </if>
+			 	</where>
+			 	) OR
+			 s.SYS_ORG_UPID IS NULL)
+    	</where>
+        ORDER BY s.sys_org_financial_code
+    </select>
+
+    <select id="getOrgHaveOneSub" resultMap="sysOrgMap2" parameterType="int">
+        SELECT * FROM SYS_ORG_TB WHERE SYS_ORG_ID = #{orgId}
+    </select>
+</mapper>

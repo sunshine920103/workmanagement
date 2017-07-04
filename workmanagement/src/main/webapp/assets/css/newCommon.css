@@ -1,0 +1,637 @@
+		*{
+				margin: 0px;
+				padding: 0px;
+		
+			}
+			.fuck{
+				position:absolute;
+				top:6px;
+				left:6px;
+				font-size:11px;
+				color:#909090;
+			}
+			.smallBtn{
+				width: 85px;
+				height:30px;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				background-color:rgb(56,165,226);
+  				color: white;
+				font-size:11px;
+			}
+			.bigBtn{
+				width: 85px;
+				height:26px;
+				line-height: 26px;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				margin-left:20px;
+				background-color:rgb(56,165,226);
+  				color: white;
+				font-size:11px;
+			}
+			.btnEx{
+				width: 65px;
+				height: 26px;
+				line-height: 26px;
+				border: none;
+				outline: none;
+				font-size:11px
+			}
+			.marginL10{
+				margin-left: 10px;
+			}
+			.marginL20{
+				margin-left: 20px;
+			}
+			.marginR10{
+				margin-right: 10px;
+			}
+			.marginLR30{
+				margin: 0px 30px;
+			}
+			.marginL30{
+				margin-left:30px;
+			}
+			.marginR40{
+				margin-right:40px;
+			}
+			.marginT20{
+				margin-top:20px;
+			}
+			.marginT10{
+				margin-top:10px;
+			}
+			.margin40301030{
+				margin: 40px 30px 10px 30px;
+			}
+			.margin60301030{
+				margin:60px 30px 10px 30px;
+			}
+			.margin10303030{
+				margin: 10px 30px 30px 30px;
+			}
+			.margin2030{
+				margin:20px 30px;
+			}
+			.marginB30{
+				margin-bottom: 30px;;
+			}
+			.marginB5{
+				margin-bottom:5px;
+			}
+			.marginB20{
+				margin-bottom:20px;
+			}
+			.fontSize12{
+				font-size: 12px;
+			}
+			.firstTRBorderT{
+				border-top: 1px solid #dadada;
+			}
+			.changeFont{
+				color: rgb(56,165,226);
+			}
+			.delFont{
+				color: red;
+			}
+			.warmFont{
+				color: #dadada;
+				line-height:20px;
+			}
+			.floatRight{
+				float: right;
+			}
+			.floatLeft{
+				float: left;
+			}
+			.fontBold{
+				font-weight:bold;
+			}
+			.textLeft{
+				text-align: left;
+			}
+			.textRight{
+				text-align: right;
+			}
+			.textCenter{
+				text-align:center;
+			}
+			.paddingR10{
+				padding-right: 10px;
+			}
+			.paddingLR10{
+				padding: 0px 10px;
+			}
+			.paddingL5{
+				padding-left: 5px;
+			}
+			.paddingL20{
+				padding-left:20px;
+			}
+			.paddingB30{
+				padding-bottom: 30px;
+			}
+			.cursorPointer{
+				cursor: pointer;
+			}
+			.noUnderline{
+				text-decoration: none;
+			}
+			
+			.hasUnderline{
+				text-decoration: underline;
+				margin-right:10px;
+			}
+			.hasUnderline:hover{
+				color: black;
+				text-decoration: none;
+			}
+			.firstTRFont{
+				color: #323232;
+				font-weight: bold;
+			}
+			.sysInfoBox{
+				_margin-right:0px;
+				*width:800px;
+				height: auto;
+				font-size: 12px;
+				padding:0px 0px 30px;
+			
+			}
+			.sysInfoBox .leftPart{
+				*width:380px;
+				float: left;
+				width: 47%;
+				border: 1px solid #dadada;
+				*margin-right: 20px;
+				margin-right: 2%;
+				_margin-right:10px;
+			}
+			.sysInfoBox .leftPart table{
+				width: 100%;
+			}
+			.sysInfoBox .leftPart table td{
+		
+				padding: 6px 8px;
+				border-top: 1px solid #DADADA;
+				font-size:12px;
+			}
+			.sysInfoBox .rightPart{
+				float: right;
+				width: 47%;
+				*width:380px;
+				min-height:135px;
+				height:auto !important;
+				height:135px;
+				overflow:visible;
+				padding: 15px 5px;
+				border: 1px solid #dadada;
+			}
+			.solueFloat{
+				display:inline;
+				overflow: hidden;
+			}
+			.sysInfoBox .rightPart .queryTime{
+				float: left;
+				width: 20%;
+				padding: 3% 3%;
+			}
+			.queryTimeNum{
+				font-size: 40px;
+				font-weight: bold;
+				color: rgb(56,165,226);
+				cursor: pointer;
+			}
+			.sysInfoBox .rightPart .loginInfo{
+				float: left;
+				width: 100%;
+				margin-left: 10%;
+			}
+			.sysInfoBox .rightPart .loginInfo p{
+				height: auto;
+				line-height: 24px;
+				
+			}
+			.sysInfoBox .rightPart .loginInfo .leftCol{
+				display: inline-block;
+				width: 40%;
+				font-size: 12px;
+				color: #969696;
+				vertical-align: top;
+			}
+			.sysInfoBox .rightPart .loginInfo .rightCol{
+				display: inline-block;
+				width: 60%;
+				font-size: 12px;
+				color: black;
+				vertical-align: top;
+			}
+			.eachList{
+				width:90%;
+				border: 1px solid #dadada;
+				
+			}
+			.eachList table{
+				width: 100%;
+			}
+			.eachList table td{
+				padding: 6px 8px;
+				font-size: 12px;
+				text-align: left;
+				border-left: 1px solid #dadada;
+				border-top: 1px solid #dadada;
+			}
+			.eachList table .textCenter{
+				text-align: center;
+			}
+			.eachList table .noBorderL{
+				border-left: 0px;
+			}
+			
+			
+			.inlineBlock{
+				display: inline-block;
+			}
+			.margin5{
+				margin: 5px;
+			}
+
+			.mainOrange{
+				color:red;
+			    vertical-align: middle;
+			}
+			.sureBtn {
+  				background-color:rgb(56,165,226);
+  				color: white;
+  				font-size: 11px;
+			}
+			.resetBtn {
+  				background-color:rgb(247, 91, 91);
+  				color: white;	
+  				font-size: 11px;
+			}
+			.warmFont {
+  				color: #909090;
+			}
+			.cancleBtn {
+			  background-color: #a4a4a4;
+			  color: white;
+			  font-size: 11px;
+			}
+			.titleFont1 {
+			  padding-left: 10px;
+			  height: 30px;
+			  line-height: 30px;
+			  font-size: 14px;
+			  text-align: left;
+			  color: #333;
+			  background: #e5e5e5;
+			}
+			.titleFont1Ex{
+			  border: 1px solid #dadada;
+			  border-bottom: 0px;
+			}
+			.showListBox .marginT10{
+				margin-top: 0px;
+			}
+			.showListBox{
+			  margin: 10px 15px 30px;
+			  text-align: center;
+			  border: 1px solid #dadada;
+			  font-size: 12px;
+			  zoom:1;
+			}
+			
+			.showListBox table {
+		 	  width: 96%;
+			  margin: 30px auto 0px;
+			  border-top: 1px solid #dadada;
+			  border-left: 1px solid #dadada;
+			}
+			.showListBox .marginB0{
+				margin-bottom:0px;
+			}
+			.showListBox .marginB20{
+				margin-bottom:20px;
+			}
+			.showListBox .marginT0{
+				margin-top:0px;
+			}
+			.showListBox table .firstTRFont{
+				font-weight: bold;
+			}
+			.showListBox table tr td {
+			text-align: left;
+			  padding: 6px 8px;
+			  border-right: 1px solid #dadada;
+			  border-bottom: 1px solid #dadada;
+			  font-size:12px;
+			}
+			.showListBox table tr td input,.showListBox table tr td a,.showListBox table tr td p{
+				font-size:12px;
+			}
+			.showListBox table tr .textCenter{
+				text-align: center;
+			}
+			.showListBox .showBtnBox {
+			  margin: 30px auto;
+			  width: 100%;
+			  height: 50px;
+			  text-align: center;
+			  clear: both;
+			}
+			.showListBox .showBtnBox .sureBtn,
+			.showListBox .showBtnBox .resetBtn,
+			.showListBox .showBtnBox .cancleBtn,
+			.sureBtnEx{
+				
+				width: 65px;
+				height: 26px;
+				line-height: 26px;
+				outline: none;
+				border: none;
+				cursor: pointer;
+				font-size: 11px;
+			}
+			.showListBox .showBtnBox .cancleBtn{
+				margin-right: 40px;;
+				font-size: 11px;
+			}
+			.showListBox .showBtnBox .marginR40{
+				margin-right: 40px;
+			}
+			.showListBox .noBorderT{
+				border-top: 0px;
+			}
+			.showListBox table tr .firstTD{
+				text-align: right;
+			}
+			.showListBox table tr .secondTD{
+				text-align: left;
+			}
+			.inputSty{
+				padding: 2px 5px;
+				border: 1px solid #dadada;
+				height: 21px;
+				font-size: 11px;
+				width:180px;
+			}
+			.verticalMiddle{
+				vertical-align: middle;
+			}
+			.eachInformationSearch{
+				width: 100%;
+  				min-width: 550px;
+  				font-size: 12px;
+  				zoom:1;
+			}
+			.eachInformationSearch .queryInputBox{
+				margin: 20px 0px;
+			}
+			.eachInformationSearch .marginLR30{
+				margin-right:30px;
+				margin-left:30px;
+			}
+			.eachInformationSearch .queryInputBox .inputKuang{
+				 width: 450px;
+  				height: 18px;
+  				padding: 6px 8px;
+  				line-height: 20px;
+  				border: solid #dadada 1px;
+  				font-size:12px;
+			}
+			.eachInformationSearch .queryInputBox .sureBtn,
+			.eachInformationSearch .queryInputBox .resetBtn{
+				width: 65px;
+  				height: 26px;
+  				line-height: 26px;
+  				border: none;
+  				outline: none;
+  				cursor: pointer;
+  				margin-left: 20px;
+  				font-size: 11px;
+			}
+			.eachInformationSearch .listBox{
+				min-width: 80%;
+  				margin: 10px 30px 20px;
+			}
+			.eachInformationSearch .listBox table{
+				width: 100%;
+  				border-top: 1px solid #dadada;
+			  	border-left: 1px solid #dadada;
+			}
+			.eachInformationSearch .listBox .noBorderT{
+				border-top: 0px;
+			}
+			.eachInformationSearch .listBox table td{
+				padding: 6px 6px;
+				text-align: left;
+				border-right: 1px solid #dadada;
+			  	border-bottom: 1px solid #dadada;
+			  	font-size:12px;
+			}
+			.eachInformationSearch .listBox .firstTRFont{
+				font-weight: bold;
+			}
+			
+			.tabBoxScore {
+			  margin: 20px 30px 0px;
+			}
+			.tabBoxScore span {
+			  color: gray;
+			  display: inline-block;
+			  padding: 10px 25px;
+			  border-right: 1px solid #dadada;
+			  border-top: 1px solid #dadada;
+			  cursor: pointer;
+			}
+			.tabBoxScore span:hover {
+			  color: black;
+			}
+			.tabBoxScore .singleQuery {
+			  border-left: 1px solid #dadada;
+			}
+			.hasBorderScore {
+			  border: 1px solid #dadada;
+			  margin: 0px 30px;
+			}
+			
+			#poplayer{
+				top:10%;
+				width: 270px;
+				height: 370px;
+				position: fixed;
+			}
+			#poplayer .borderBox{
+				border: 1px solid #dadada;
+				width: 100%;
+				height: 100%;
+				background: #fff;
+			}
+			#poplayer .borderBox .titleFont1{
+				border: none;
+				border-bottom: 1px solid #dadada;
+			}
+			#poplayer .borderBox .listBox{
+				height:265px;
+				padding: 10px;
+				overflow: auto;
+				border-bottom:1px solid #dadada;
+				position:relative;
+				left:0px;
+				top:0px;
+			}
+			#poplayer .borderBox .listBox table{
+				font-size: 12px;
+			}
+			#poplayer .btnBox{
+				border-top: 0px;
+				background-color: white;
+				padding:10px;
+				text-align:center;
+				
+			}
+			#poplayer .btnBox .cancleBtn,
+			#poplayer .btnBox .sureBtn,
+			#poplayer .btnBox .resetBtn{
+				width: 70px;
+				height:30px;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				font-size:11px;
+			}
+			#poplayer .btnBox .cancleBtn{
+				margin-right:40px;
+			}
+			.inputKuang{
+			    width: 450px;
+			    height: 18px;
+			    padding: 6px 8px;
+			    line-height: 30px;
+			    border: solid #dadada 1px;
+			 }
+			 .marginT5{
+			 	margin-top:5px;
+			 }
+			 .marginT30{
+			 	margin-top:30px;
+			 }
+			 .marginTB20{
+			 	margin:20px 0px;
+			 }
+			 .margin52050{
+			 	margin:5px 20px 5px 5px;
+			 }
+			 .textLeft{
+				text-align: left;
+			}
+			.noBorder{
+				border: none;
+			}
+			.width75{
+				width: 70%;
+				_width:70%;
+			}
+			.showListBox .textLeft{
+				text-align: left;
+			}
+			.marginTB1020{
+				margin: 10px 0px 20px;
+			}
+			.fyLiStyle{
+				list-style: none;
+				text-decoration: none;
+				padding: 6px 10px;
+				border-bottom:1px solid #dadada;
+			}
+			
+			.fyLiStyle a{
+				font-size:12px;
+				color:black;
+			}
+			.liStyle a:hover{
+				color:rgb(56,165,226);
+			}
+			#max{
+			    display:inline;
+				overflow: auto;
+				float:left;
+				width: 16%;
+				_width:25%;
+				*width:20%;
+				min-width: 180px;
+				height: 450px;
+				margin: 20px 30px;
+				border: 1px solid rgb(56,165,226);
+			}
+			#add{
+				background-color: transparent;
+				padding: 2px;
+				color: white;
+				border: none;
+				outline: none;
+			}
+			.titleFont2{
+				font-size: 14px;	
+				background-color: rgb(56,165,226);
+				color: white;
+			}
+			.titleFont2 span{
+				display: inline-block;
+				padding: 5px 5px 5px 10px;
+			}
+			.titleFont2 input{
+				cursor: pointer;
+				font-size: 20px;
+				padding-left:10px;
+			}
+			
+			.leftListBox{
+				display:inline;
+				overflow: auto;
+				float:left;
+				width: 18%;
+				_width:25%;
+				*width:20%;
+				min-width: 180px;
+				height: 450px;
+				margin: 20px 30px;
+				border: 1px solid rgb(56,165,226);
+			}
+			
+			.littleAdd{
+				background-color: transparent;
+				padding: 2px;
+				color: white;
+				border: none;
+				outline: none;
+			}
+			.showListBox .marginL0{
+				margin-left: 0px;
+			}
+			.marginL20{
+				margin-left:20px;
+			}
+			.clearFloat{
+				clear:both;
+			}
+			.padding35{
+				padding: 3px 5px;
+				
+			}
+			.borderRa4{
+				border-radius: 4px;
+			}
+			.bgTransparent{
+				background-color: transparent;
+			}
+			.redWarm1,.redWarm2,.redWarm3,.redWarm4,.redWarm5,.redWarm6,.fontLength{
+				display: inline-block;
+				font-size: 12px;
+				padding: 3px 6px;
+				color: red;
+			}

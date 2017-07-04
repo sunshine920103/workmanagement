@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysCheckDao">
+    <resultMap type="com.workmanagement.model.SysCheck" id="defaultMap">
+        <id column="sys_check_id" property="sysCheckId"/>
+        <result column="sys_check_items" property="sysCheckItems"/>
+        <result column="sys_check_formula" property="sysCheckFormula"/>
+        <result column="sys_check_ctime" property="sysCheckCTime"/>
+        <result column="sys_check_sdate" property="sysCheckSDate"/>
+        <result column="sys_check_edate" property="sysCheckEDate"/>
+        <result column="index_id" property="indexId"/>
+        <result column="org_creator_id" property="orgCreatorId"/>
+        <result column="sys_check_explain" property="sysCheckExplain"/>
+        <result column="sys_area_id" property="sysAreaId"/>
+    </resultMap>
+
+    <!--添加一条数据-->
+    <insert id="insertOne" parameterType="com.workmanagement.model.SysCheck" useGeneratedKeys="true"
+            keyProperty="sysCheckId">
+		INSERT INTO sys_check_tb(sys_check_items,sys_check_formula,sys_check_ctime,sys_check_sdate,
+        sys_check_edate,index_id,org_creator_id,sys_check_explain,sys_area_id)
+		VALUES (#{sysCheckItems},#{sysCheckFormula},#{sysCheckCTime},#{sysCheckSDate},#{sysCheckEDate},
+        #{indexId},#{orgCreatorId},#{sysCheckExplain,jdbcType=VARCHAR},#{sysAreaId})
+	</insert>
+
+    <select id="getAll" resultMap="defaultMap">
+        SELECT * FROM SYS_CHECK_TB WHERE index_id IS NOT NULL
+        ORDER BY sys_check_id DESC
+    </select>
+
+    <!--根据主键获取一条数据-->
+    <select id="getOneById" resultMap="defaultMap" parameterType="int">
+		SELECT * FROM sys_check_tb WHERE sys_check_id=#{sysCheckId}
+	</select>
+
+    <!--根据地区 ids 获取多个校验规则-->
+    <select id="getSomeByAreaIds" resultMap="defaultMap">
+        SELECT * FROM sys_check_tb WHERE sys_area_id IN
+        <foreach collection="sysAreaIds" item="sysAreaId" open="(" separator="," close=")">
+            #{sysAreaId}
+        </foreach>
+        ORDER BY sys_check_id DESC
+    </select>
+
+    <!--根据主键删除一条数据-->
+    <delete id="delOneById" parameterType="int">
+		DELETE FROM sys_check_tb WHERE sys_check_id=#{sysCheckId}
+	</delete>
+
+    <!--根据指标大类以及 地区 ids 获取数据-->
+    <select id="getSysCheckByIndexIdAndAreaIdsAndTime" resultMap="defaultMap">
+        SELECT * FROM sys_check_tb WHERE index_id=#{indexId} AND sys_area_id IN
+        <foreach collection="sysAreaIds" item="sysAreaId" open="(" separator="," close=")">
+            #{sysAreaId}
+        </foreach>
+        AND (sys_check_sdate &lt;= #{thisDate} AND (sys_check_edate &gt;= #{thisDate} OR sys_check_edate is NULL))
+        ORDER BY sys_check_id ASC
+    </select>
+
+    <update id="updateOne" parameterType="com.workmanagement.model.SysCheck">
+        UPDATE sys_check_tb
+        <trim prefix="set" suffixOverrides=",">
+            <if test="sysCheckItems!=null">
+                sys_check_items=#{sysCheckItems},
+            </if>
+            <if test="sysCheckFormula!=null">
+                sys_check_formula=#{sysCheckFormula},
+            </if>
+            <if test="sysCheckSDate!=null">
+                sys_check_sdate=#{sysCheckSDate},
+            </if>
+            <if test="sysCheckEDate!=null">
+                sys_check_edate=#{sysCheckEDate},
+            </if>
+            <if test="sysCheckEDate==null">
+                sys_check_edate=NULL,
+            </if>
+            <if test="indexId!=null">
+                index_id=#{indexId},
+            </if>
+            <if test="orgCreatorId!=null">
+                org_creator_id=#{orgCreatorId},
+            </if>
+            <if test="sysCheckExplain!=null">
+                sys_check_explain=#{sysCheckExplain},
+            </if>
+            <if test="sysCheckExplain==null">
+                sys_check_explain=NULL,
+            </if>
+        </trim>
+        WHERE sys_check_id=#{sysCheckId}
+    </update>
+
+    <!--========================其他用途================================================================-->
+
+    <select id="getYxsxSxed" resultType="double">
+        select sum(index_yxsx_sxed) from index_yxsx_tb where to_char(record_date,'YYYY-MM') = #{recordTime}
+        and default_index_item_id = #{indexItemId} AND index_yxsx_sxywfsdjrjg = #{yxnbpjjg}
+    </select>
+
+    <select id="getNotUpdYxsxSxed" resultType="double">
+        select sum(index_yxsx_sxed) from index_yxsx_tb where to_char(record_date,'YYYY-MM') = #{recordTime}
+        and default_index_item_id = #{indexItemId} AND index_yxsx_sxywfsdjrjg = #{yxnbpjjg}
+        <if test="indexYxsxIds!=null">
+            AND index_yxsx_id NOT IN
+            <foreach collection="indexYxsxIds" open="(" close=")" separator="," item="id">
+                #{id}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getYxdkHtje" resultType="double">
+        select sum(index_yxdk_htje) from index_yxdk_tb where to_char(record_date,'YYYY-MM') = #{recordTime}
+        and default_index_item_id = #{indexItemId} AND index_yxdk_dkywfsdjrjg = #{dkywfsdjrjg}
+    </select>
+
+    <select id="getNotUpdYxdkHtje" resultType="double">
+        select sum(index_yxdk_htje) from index_yxdk_tb where to_char(record_date,'YYYY-MM') = #{recordTime}
+        and default_index_item_id = #{indexItemId} AND index_yxdk_dkywfsdjrjg = #{dkywfsdjrjg}
+        <if test="indexYxdkIds!=null">
+            AND index_yxdk_id NOT IN
+            <foreach collection="indexYxdkIds" open="(" close=")" separator="," item="id">
+                #{id}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getMapByOnly" resultType="map" parameterType="map">
+        SELECT * FROM ${table} WHERE SYS_ORG_ID = #{sysOrgId} AND SYS_AREA_ID = #{sysAreaId}
+        AND default_index_item_id = #{indexItemId} AND record_date = #{recordTime} ${value}
+    </select>
+
+    <!--========================俩码的验证开关================================================================-->
+
+
+    <insert id="insertCode" parameterType="string">
+        INSERT INTO SYS_CHECK_TB(SYS_CHECK_ITEMS,sys_check_formula,sys_check_ctime)
+        VALUES (#{type},#{type},current TIMESTAMP)
+    </insert>
+
+    <delete id="delCode" parameterType="string">
+        DELETE FROM SYS_CHECK_TB WHERE SYS_CHECK_ITEMS=#{type} AND sys_check_formula=#{type}
+    </delete>
+
+    <select id="selCode" parameterType="string" resultType="int">
+        SELECT COUNT(0) FROM SYS_CHECK_TB WHERE SYS_CHECK_ITEMS=#{type} AND sys_check_formula=#{type}
+    </select>
+</mapper>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.DefaultIndexItemDao">
+
+    <resultMap type="com.workmanagement.model.DefaultIndexItem" id="defaultIndexItemId">
+        <id column="default_index_item_id" property="defaultIndexItemId"/>
+        <result column="code_credit" property="codeCredit"/>
+        <result column="code_org" property="codeOrg"/>
+        <result column="default_index_item_oldid" property="defaultIndexItemOldId"/>
+        <result column="default_index_item_time" property="defaultIndexItemTime"/>
+        <result column="sys_area_id" property="sys_area_id"/>
+        <result column="combine_status" property="combine_status"/>
+        <result column="qymc" property="qymc"/>
+        <result column="sys_org_id" property="orgId"/>
+    </resultMap>
+
+    <resultMap type="com.workmanagement.model.DefaultIndexItem" id="defaultIndexItemQymc">
+        <id column="default_index_item_id" property="defaultIndexItemId"/>
+        <result column="code_credit" property="codeCredit"/>
+        <result column="code_org" property="codeOrg"/>
+        <result column="default_index_item_oldid" property="defaultIndexItemOldId"/>
+        <result column="default_index_item_time" property="defaultIndexItemTime"/>
+        <result column="index_jbxx_qymc" property="qymc"/>
+    </resultMap>
+
+    <!-- 根据二码查询对应的系信息 -->
+    <select id="queryBycode" resultMap="defaultIndexItemId">
+        SELECT * FROM DEFAULT_INDEX_ITEM_TB
+        <where>
+            (CODE_CREDIT = #{codeCredit} or CODE_ORG = #{codeOrg}) 
+            <if test="qymc!=null">
+            	and qymc= #{qymc} 
+            </if>
+             and sys_area_id = #{sys_area_id}
+            and combine_status = 1
+        </where>
+    </select>
+
+    <!-- 保存二码 -->
+    <insert id="dinsert" parameterType="com.workmanagement.model.DefaultIndexItem" useGeneratedKeys="true"
+            keyProperty="defaultIndexItemId">
+		insert into DEFAULT_INDEX_ITEM_TB(CODE_CREDIT,CODE_ORG,sys_area_id,qymc)  values(#{codeCredit},#{codeOrg},#{sys_area_id},#{qymc})
+	</insert>
+
+    <!-- 根据社会信用码查询  -->
+ 	<select id="queryByCridet" resultMap="defaultIndexItemId">
+       SELECT * FROM  DEFAULT_INDEX_ITEM_TB where code_credit = #{codeCredit} order by DEFAULT_INDEX_ITEM_ID ASC
+    </select>
+
+	<!-- 根据id查询 -->
+ 	<select id="queryById" resultMap="defaultIndexItemId">
+	   SELECT a.*,(SELECT SYS_ORG_ID FROM (SELECT row_number()OVER(ORDER BY RECORD_DATE DESC) AS r,sys_org_id FROM INDEX_JBXX_TB WHERE DEFAULT_INDEX_ITEM_ID = #{id} ) WHERE  r = 1)FROM DEFAULT_INDEX_ITEM_TB a WHERE DEFAULT_INDEX_ITEM_ID = #{id}
+
+    </select>
+    
+    <!-- 根据id查询 -->
+ 	<select id="getById" resultMap="defaultIndexItemId">
+	   SELECT * FROM DEFAULT_INDEX_ITEM_TB where default_index_item_id = #{id}
+    </select>
+    <!-- 根据组织机构码查询  -->
+ 	<select id="queryByOrg" resultMap="defaultIndexItemId">
+       SELECT * FROM  DEFAULT_INDEX_ITEM_TB where code_org = #{codeOrg}
+    </select>
+
+
+    <update id="updateDefaultIndexItem" parameterType="com.workmanagement.model.DefaultIndexItem">
+        UPDATE DEFAULT_INDEX_ITEM_TB
+        <set>
+            <if test="codeCredit!=null">CODE_CREDIT=#{codeCredit},</if>
+            <if test="codeOrg!=null">CODE_ORG=#{codeOrg},</if>
+            <if test="defaultIndexItemOldId!=null">DEFAULT_INDEX_ITEM_OLDID=#{defaultIndexItemOldId},</if>
+            <if test="defaultIndexItemTime!=null">DEFAULT_INDEX_ITEM_TIME=#{defaultIndexItemTime},</if>
+            <if test="sys_area_id!=null">sys_area_id=#{sys_area_id},</if>
+            <if test="combine_status!=null">combine_status=#{combine_status},</if>
+            <if test="qymc!=null">qymc=#{qymc},</if>
+        </set>
+        WHERE DEFAULT_INDEX_ITEM_ID=#{defaultIndexItemId}
+    </update>
+
+    <delete id="delectDefaultIndexItem">
+		DELETE FROM  DEFAULT_INDEX_ITEM_TB
+			WHERE DEFAULT_INDEX_ITEM_ID=#{id}
+	</delete>
+
+    <select id="queryByCodeAndCredit" resultMap="defaultIndexItemQymc">
+        SELECT a.*,b.index_jbxx_qymc FROM DEFAULT_INDEX_ITEM_TB a
+        LEFT JOIN index_jbxx_tb b ON a.DEFAULT_INDEX_ITEM_id=b.DEFAULT_INDEX_ITEM_id
+        WHERE 1=1
+        <if test="codeCredit!=null">
+            and a.CODE_CREDIT=#{codeCredit}
+        </if>
+        <if test="codeOrg!=null">
+            AND a.CODE_ORG=#{codeOrg}
+        </if>
+    </select>
+
+    <select id="queryByAll" resultMap="defaultIndexItemQymc">
+        SELECT * FROM DEFAULT_INDEX_ITEM_TB
+
+        WHERE 1=1
+        <if test="codeCredit!=null">
+            and CODE_CREDIT=#{codeCredit}
+        </if>
+        <if test="codeOrg!=null">
+            AND CODE_ORG=#{codeOrg}
+        </if>
+        <if test="qymc!=null">
+            and QYMC = #{qymc}
+        </if>
+        and SYS_AREA_ID =#{area}
+    </select>
+
+    <!-- 根据组织机构码查询对应的系信息 -->
+    <select id="getByCodeOrg" resultMap="defaultIndexItemId">
+		SELECT * FROM DEFAULT_INDEX_ITEM_TB WHERE CODE_ORG=#{codeOrg} and sys_area_id = #{areaId} and combine_status = 1
+	</select>
+
+    <!-- 根据统一社会信用码查询对应的系信息 -->
+    <select id="getByCredit" resultMap="defaultIndexItemId">
+		SELECT * FROM DEFAULT_INDEX_ITEM_TB WHERE CODE_CREDIT=#{codeCredit} and sys_area_id = #{areaId} AND combine_status = 1
+	</select>
+
+    <!-- 根据二码查询对应的系信息 -->
+    <select id="getByCreditOrCode" resultMap="defaultIndexItemId">
+        SELECT * FROM DEFAULT_INDEX_ITEM_TB WHERE
+        CODE_CREDIT=#{values} AND combine_status = 1 AND SYS_AREA_ID = #{areaId} OR
+        CODE_ORG=#{values} AND combine_status = 1 AND SYS_AREA_ID = #{areaId}
+    </select>
+
+    <!--通过sql查询数据-->
+    <select id="queryDataBySql" resultMap="defaultIndexItemId" parameterType="string">
+		${querySql}
+	</select>
+	
+	
+	<select id="queryByComPanyShow" resultMap="defaultIndexItemQymc">
+        SELECT * FROM DEFAULT_INDEX_ITEM_TB left join sys_companyshow_tb on DEFAULT_INDEX_ITEM_TB.DEFAULT_INDEX_ITEM_ID = sys_companyshow_tb.DEFAULT_INDEX_ITEM_ID
+        WHERE 1=1
+        <if test="codeCredit!=null">
+            and CODE_CREDIT=#{codeCredit}
+        </if>
+        <if test="codeOrg!=null">
+            AND CODE_ORG=#{codeOrg}
+        </if>
+        <if test="qymc!=null">
+            and QYMC = #{qymc}
+        </if>
+        <if test="SYS_ORG_ID!=NULL">
+        	AND SYS_ORG_ID = #{SYS_ORG_ID} 
+        </if>
+        and SYS_AREA_ID =#{area}
+    </select>
+    
+    
+    <insert id="insertDefaultIndexItemCombine" parameterType="com.workmanagement.model.DefaultIndexItemCombine">
+    	INSERT INTO DEFAULT_INDEX_ITEM_COMBINE_TB
+		(CODE_CREDIT_ID, CODE_ORG_ID, CODE_CREDIT_ORGID, CODE_ORG_ORGID, STUTA,sub_time,ORG_STUTA)
+		VALUES(#{code_credit_id},#{code_org_id},#{code_credit_orgid}, #{code_org_orgid}, 1,#{sub_time},1)
+    </insert>
+    
+    <select id="queryDefaultIndexItemCombine" resultType="com.workmanagement.model.DefaultIndexItemCombine">
+    	select * from DEFAULT_INDEX_ITEM_COMBINE_TB
+    	<where>
+    	 1=1
+    	<if test="orgId!=null">
+    		and (CODE_CREDIT_ORGID =#{orgId} or CODE_ORG_ORGID=#{orgId})
+    	</if>
+    	and (stuta = 1 or org_stuta = 1)
+    	  order by sub_time desc
+    	</where>
+    </select>
+    
+    <select id="queryDefaultIndexItemCombineTop" resultType="com.workmanagement.model.DefaultIndexItemCombine">
+    	select * from (
+    		select row_number()over(order by DEFAULT_INDEX_ITEM_COMBINE_id desc) as r,DEFAULT_INDEX_ITEM_COMBINE_TB.* from DEFAULT_INDEX_ITEM_COMBINE_TB
+    	) as a where a.r = 1
+    	
+    </select>
+    
+    <!-- 根据二码查询对应的系信息 -->
+    <select id="queryByTime" resultMap="defaultIndexItemId">
+        SELECT * FROM DEFAULT_INDEX_ITEM_TB
+        <where>
+        1=1
+        	<if test="begin!=null">
+            	and DEFAULT_INDEX_ITEM_TIME = #{begin}
+            </if>
+            <if test="id!=null">
+            	and DEFAULT_INDEX_ITEM_id = #{id}
+            </if>
+        </where>
+    </select>
+    <update id="updateDefaultIndexItemCombine" parameterType="com.workmanagement.model.DefaultIndexItemCombine">
+    	UPDATE DEFAULT_INDEX_ITEM_COMBINE_TB
+		<set>
+			<if test="stuta!=null">STUTA=#{stuta},</if>
+			<if test="org_stuta!=null">org_STUTA=#{org_stuta},</if>
+		</set>
+		WHERE DEFAULT_INDEX_ITEM_COMBINE_ID=#{default_index_item_combine_id}
+    	
+    </update>
+    
+    
+    
+    <select id="queryAllByName" resultMap="defaultIndexItemQymc">
+        SELECT * FROM DEFAULT_INDEX_ITEM_TB
+
+        WHERE 1=1
+        <if test="codeCredit!=null">
+            and CODE_CREDIT=#{codeCredit}
+        </if>
+        <if test="codeOrg!=null">
+            AND CODE_ORG=#{codeOrg}
+        </if>
+        <if test="qymc!=null">
+            and QYMC = #{qymc}
+        </if>
+        <if test="area!=null">
+       	 and SYS_AREA_ID =#{area}
+        </if>
+    </select>
+</mapper>

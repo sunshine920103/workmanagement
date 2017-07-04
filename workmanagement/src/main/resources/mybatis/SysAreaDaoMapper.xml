@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysAreaDao">
+
+	<resultMap type="com.workmanagement.model.SysArea" id="sysArea">
+		<id column="sys_area_id" property="sysAreaId" />
+		<result column="sys_area_upid" property="sysAreaUpid" />
+		<result column="sys_area_name" property="sysAreaName" />
+		<result column="sys_area_code" property="sysAreaCode" />
+		<result column="sys_area_type" property="sysAreaType" />
+		<result column="sys_area_notes" property="sysAreaNotes" />
+		<result column="sys_area_used" property="sysAreaUsed" />
+		<result column="dic_id" property="dicId" />
+	</resultMap>
+	<resultMap type="com.workmanagement.model.SysArea" id="sysArea2">
+		<id column="sys_area_id" property="sysAreaId" />
+		<result column="sys_area_upid" property="sysAreaUpid" />
+		<result column="sys_area_name" property="sysAreaName" />
+		<result column="sys_area_code" property="sysAreaCode" />
+		<result column="sys_area_type" property="sysAreaType" />
+		<result column="sys_area_notes" property="sysAreaNotes" />
+		<result column="sys_area_used" property="sysAreaUsed" />
+		<result column="dic_id" property="dicId" />
+		<collection property="subArea" select="querySubArea2" ofType="com.workmanagement.model.SysArea" javaType="ArrayList" column="sys_area_id" />
+	</resultMap>
+	<!-- 子地区映射 -->
+	<resultMap type="com.workmanagement.model.SysArea" id="areaMap">
+		<id column="sys_area_id" property="sysAreaId" />
+		<result column="sys_area_upid" property="sysAreaUpid" />
+		<result column="sys_area_name" property="sysAreaName" />
+		<result column="sys_area_code" property="sysAreaCode" />
+		<result column="sys_area_type" property="sysAreaType" />
+		<result column="sys_area_notes" property="sysAreaNotes" />
+		<result column="sys_area_used" property="sysAreaUsed" />
+		<result column="dic_id" property="dicId" />
+		<collection property="subArea" select="querySubArea" ofType="com.workmanagement.model.SysArea" javaType="ArrayList" column="sys_area_id" />
+	</resultMap>
+	
+	<!-- 父地区映射 -->
+	<resultMap type="com.workmanagement.model.SysArea" id="parentAreaMap">
+		<id column="sys_area_id" property="sysAreaId"/>
+		<result column="sys_area_upid" property="sysAreaName"/>
+		<result column="sys_area_name" property="sysAreaName"/>
+		<result column="sys_area_code" property="sysAreaCode"/>
+		<result column="sys_area_type" property="sysAreaType"/>
+		<result column="sys_area_notes" property="sysAreaNotes"/>
+		<result column="sys_area_used" property="sysAreaUsed"/>
+		<result column="dic_id" property="dicId" />
+		<collection property="subArea" select="queryParentbArea" ofType="com.workmanagement.model.SysArea" javaType="ArrayList" column="sys_area_upid" />
+	</resultMap>
+	
+		<!-- 查询子地区 -->
+	<select id="querySubArea2" resultMap="sysArea">
+		SELECT * FROM sys_area_tb 
+		<where>
+			sys_area_upid = #{sys_area_id}
+		</where>
+		order by sys_area_code DESC
+	</select>
+	
+	<!-- 查询子地区 -->
+	<select id="querySubArea" resultMap="areaMap">
+		SELECT * FROM sys_area_tb 
+		<where>
+			sys_area_upid = #{sys_area_id}
+		</where>
+		order by sys_area_code DESC
+	</select> 
+	
+	<!-- 查询父地区 -->
+	<select id="queryParentbArea" resultMap="parentAreaMap">
+		SELECT * FROM sys_area_tb
+		<where>
+			sys_area_id = #{sys_area_upid}
+		</where>
+	</select>
+	
+	<!-- 根据id查询地区及子映射的子地区 -->
+	<select id="queryAreaById" resultMap="areaMap">
+        SELECT * FROM sys_area_tb WHERE sys_area_id = #{id}
+	</select>
+	
+	<!-- 根据id查询地区及子映射的子地区 -->
+	<select id="queryAreaById2" resultMap="sysArea2">
+        SELECT * FROM sys_area_tb WHERE sys_area_id = #{id}
+	</select>
+	
+	<!-- 根据id查询地区，无上下级关联 -->
+	<select id="queryAreaById3" resultMap="sysArea">
+        SELECT * FROM sys_area_tb WHERE sys_area_id = #{id}
+	</select>
+	
+	<!-- 通过ID查询地区并映射父地区 -->
+	<select id="queryParentAreasById" resultMap="parentAreaMap">
+        SELECT * FROM sys_area_tb WHERE sys_area_id = #{id}
+	</select>
+	
+	
+	<!-- 更新地区 -->
+	<update id="updateArea" parameterType="com.workmanagement.model.SysArea" >
+		UPDATE sys_area_tb
+		<set>
+			<if test="sysAreaUpid!=null">sys_area_upid = #{sysAreaUpid},</if>
+			<if test="sysAreaName!=null">sys_area_name = #{sysAreaName},</if>
+			<if test="sysAreaCode!=null">sys_area_code = #{sysAreaCode},</if>
+			<if test="sysAreaType!=null">sys_area_type = #{sysAreaType},</if>
+			<if test="sysAreaNotes!=null">sys_area_notes = #{sysAreaNotes},</if>
+			<if test="sysAreaUsed!=null">sys_area_used = #{sysAreaUsed}</if>
+		</set>
+		WHERE sys_area_id = #{sysAreaId}
+	</update>
+	
+	<!-- 保存地区 -->
+	<insert id="insertArea" parameterType="com.workmanagement.model.SysArea">
+		INSERT INTO
+		sys_area_tb(sys_area_upid,sys_area_name,sys_area_code,sys_area_type,sys_area_notes,dic_id)
+		VALUES(#{sysAreaUpid},#{sysAreaName},#{sysAreaCode},#{sysAreaType},#{sysAreaNotes},181)
+	</insert>
+	
+	<!-- 通过名称和行政代码查询地区 -->
+	<select id="queryAreaByNameAndCode" resultMap="sysArea">
+		SELECT * FROM sys_area_tb
+		<where>
+			sys_area_name = #{name,jdbcType=VARCHAR} OR sys_area_code = #{code,jdbcType=VARCHAR}
+		</where>
+	</select>
+	
+	<!-- 通过行政代码查询地区 -->
+	<select id="queryAreaByCode" resultMap="sysArea">
+		SELECT * FROM sys_area_tb
+		<where>
+			sys_area_code = #{code}
+		</where>
+	</select>
+	
+	<!-- 通过名字查询地区,字典转换用 -->
+	<select id="queryAreaByName" parameterType="java.lang.String" resultMap="parentAreaMap">
+		SELECT * FROM sys_area_tb
+		<where>
+			sys_area_name = #{name}
+		</where>
+	</select>
+	
+	<!-- 删除地区 -->
+	<delete id="delAreaByIds">
+		DELETE FROM sys_area_tb WHERE sys_area_id IN
+		<foreach collection="ids" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	
+	<!-- 查询没有被使用的地区的数量，用于在删除地区的时候做判断 -->
+	<select id="queryUnusedAreaTotalByIds" resultType="int">
+		SELECT COUNT(1) FROM sys_area_tb WHERE sys_area_used = 0 AND
+		sys_area_id IN
+		<foreach collection="ids" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</select>
+
+
+	<!--通过名称获取 地区区域码 -->
+	<select id="queryCodeByName" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT sys_area_code
+		FROM sys_area_tb WHERE  sys_area_name =
+		#{address}
+	</select>
+	<!-- 模糊查询 -->
+	<select id="search" parameterType="java.lang.String" resultMap="sysArea">
+		SELECT * FROM 
+		(select * from sys_area_tb where  sys_area_name like '%${condition}%' or sys_area_code like '%${condition}%') s
+		where s.sys_area_code like '51%' 
+	</select>
+	
+	<!-- 模糊查询 -->
+	<select id="search2" parameterType="java.lang.String" resultMap="sysArea">
+		select * from sys_area_tb where  sys_area_name like '%${condition}%' or sys_area_code like '%${condition}%'
+	</select>
+
+	<!--查询所有地区 -->
+	<select id="queryAll" resultMap="sysArea2">
+		SELECT * FROM sys_area_tb where sys_area_type='0' ORDER BY sys_area_code ASC
+	</select>
+
+	<!--查询所有地区2 -->
+	<select id="queryAll2" resultMap="sysArea2">
+		SELECT * FROM sys_area_tb where sys_area_type='0' ORDER BY sys_area_code ASC
+	</select>
+	<!--查询所有地区带下级映射 -->
+	<select id="queryAllAreaWithSub" resultMap="areaMap">
+		SELECT * FROM sys_area_tb where sys_area_type='0' ORDER BY sys_area_code ASC
+	</select>
+
+	<!--查询所有地区 -->
+	<select id="queryAllIds" resultType="int">
+		SELECT sys_area_id FROM sys_area_tb ORDER BY sys_area_code ASC
+	</select>
+
+	<!-- 通过地区id,查询该地区下的所有级别的子地区 -->
+	<select id="querySubAreasById"  resultMap="sysArea">
+	 SELECT z.* FROM SYS_AREA_TB m
+		LEFT JOIN SYS_AREA_TB z ON z.SYS_AREA_UPID = m.SYS_AREA_ID
+		WHERE m.SYS_AREA_ID = #{id}
+	</select>
+
+	<select id="getAreaNotSub" resultMap="sysArea">
+		SELECT * FROM SYS_AREA_TB WHERE SYS_AREA_ID=#{sysAreaId}
+	</select>
+</mapper>

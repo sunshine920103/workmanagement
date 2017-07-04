@@ -1,0 +1,132 @@
+*{
+	margin: 0pt;
+	padding: 0pt;
+	font-size: 11pt;
+}
+*html 
+{ 
+	background-image:url(about:blank); 
+	background-attachment:fixed; 
+} 
+.fontSize10{
+	font-size: 10pt;
+}
+body{
+	background-color: rgb(230,230,230);
+}
+.fontBold{
+	font-weight: bold;
+}
+.textCenter{
+	text-align: center;
+}
+.title0{
+	font-size: 22pt;
+}
+.title1{
+	font-size: 14pt;
+	font-weight: bold;
+	text-align: center;
+	margin: 10mm auto 10mm;
+}
+.title2 span{
+	display: inline-block;
+	margin-left: 5mm;
+	font-size: 10pt;
+}
+.printBtn{
+	position: fixed;
+	_margin-top:20px; 
+	_position:absolute; 
+	_top:expression(eval(document.documentElement.scrollTop)); 
+	top:20px;
+	left:20px;
+	z-index: 100;
+	display: block;
+	width: 120px;
+	height: 30px;
+	border-radius: 4px;
+	background-color: rgb(56,165,226);
+	text-decoration: none;
+	text-align: center;
+	line-height: 30px;
+	color: white;	
+	font-size: 12px;
+}
+.textIndent{
+	font-size: 10pt;
+	text-indent: 2em;
+}
+#divPrint{
+	position: relative;
+	width: 210mm;
+	height: auto;
+	margin: auto;
+	background: white;
+}
+#imgBG{
+	position: absolute;
+	width:100%;
+	z-index: 0;
+}
+#imgBG img{
+	width: 210mm;
+	height: 297mm;
+}
+#printContent{
+	position: relative; 
+	z-index: 100;
+}
+
+.headInfo,.mainContent{
+	padding: 10mm 15mm;
+}
+.headInfo img{
+	margin-top: 20mm;
+}
+.typeTitle{
+	margin-top: 5mm;
+	font-weight: 700;
+}
+.logoImg{
+	width: 30mm;
+}
+.headInfoSpan{
+	display: inline-block;
+	padding-top: 3mm;
+}
+
+.explainDetail p,.InfoSurveyDetail p{
+	font-size: 10pt;
+	line-height: 1.8;
+}
+.InfoSurveyDetail p{
+	text-indent:2em;
+}
+.InfoSurveyDetail p span{
+	font-size: 10pt;
+}
+.eachTableBox{
+	margin-top: 8mm;
+}
+.eachTableBox table{
+	table-layout: fixed;
+	word-break: break-all;
+	width: 180mm;
+	margin: auto;
+	margin-top: 5mm;
+	border-top: 2px solid black;
+	border-right: 2px solid black;
+	border-bottom: 1px solid black;
+	border-left: 1px solid black;
+}
+.eachTableBox table tr td{
+	text-align: center;
+	font-size: 10pt;
+	padding: 2mm;
+	border-bottom: 1px solid black;
+	border-left: 1px solid black;
+}
+.eachTableBox table tr .textLeft{
+	text-align: left;
+}

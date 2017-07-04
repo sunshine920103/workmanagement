@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"  ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.AdminObjModelDao">
+<!-- 异议处理列表 -->
+	<resultMap type="com.workmanagement.model.AdminObjModel" id="adminObjMap">
+		<id column="sys_operate_id"  property="sysOperateId"/>
+		<result column="sys_user_id" property="sysUserId"/>
+		<result column="sys_org_id" property="sysOrgId"/>
+		<result column="index_item_id" property="indexItemId"/>
+		<result column="sys_operate_status" property="sysOperateStatus"/>
+		<result column="default_index_item_id" property="defaultIndexItemId"/>
+		<result column="record_date" property="recordDate"/>
+		<result column="sys_operate_time" property="sysOperateTime"/>
+		<result column="auth_file" property="authFile"/>  
+		<result column="report_org_id" property="reportOrgId"/>  
+		<result column="data_id" property="dataId"/>  
+		
+	 <!-- <collection property="sysOperateListModel" select="" ofType="com.workmanagement.model.SysOperateListModel" javaType="ArrayList" column="sys_operate_id" /> -->
+	</resultMap>
+	<!-- 异议处理详情表 -->
+	<resultMap type="com.workmanagement.model.SysOperateListModel" id="sysOperateListMap">
+		<id column="sys_operate_list_id" property="sysOperateListId"/>
+		<result column="sys_operate_id" property="sysOperateId"/>
+		<result column="sys_operate_time" property="sysOperateTime"/>
+		<result column="index_item_id" property="indexItemId"/>
+		<result column="org_explain" property="orgExplain"/>
+		<result column="server_explain" property="serverExplain"/>
+		<result column="maininfo_explain" property="maininfoExplain"/>
+		<result column="mark" property="mark"/>  
+	</resultMap>
+	<insert id="insert" useGeneratedKeys="true" keyProperty="sysOperateId" parameterType="com.workmanagement.model.AdminObjModel">
+		 insert into sys_operate_tb(sys_user_id,sys_org_id,index_item_id,default_index_item_id,record_date,sys_operate_time,auth_file,sys_operate_status,report_org_id,date_id)
+	 					 values(#{sysUserId},#{sysOrgId},#{indexItemId},#{defaultIndexItemId},#{recordDate},#{sysOperateTime},#{authFile},1,#{reportOrgId},#{dataId})
+	</insert>
+	<!-- 更新 -->
+	<update id="update" parameterType="com.workmanagement.model.AdminObjModel">
+		UPDATE sys_operate_tb
+		<set>
+			<if test="sysOperateStatus!=null">sys_operate_status=#{sysOperateStatus},</if>
+			<if test="recordDate!=null">record_date=#{recordDate},</if>
+			<if test="sysOperateTime!=null">sys_operate_time=#{sysOperateTime}</if>
+		</set>
+		WHERE sys_operate_id = #{sysOperateId}
+	</update>
+	<!-- 更新 -->
+	<update id="updateStatus" parameterType="com.workmanagement.model.AdminObjModel">
+		UPDATE sys_operate_tb
+		<set>
+			<if test="sysOrgId!=null">sys_org_id=#{sysOrgId},</if>
+			<if test="sysOperateStatus!=null">sys_operate_status=#{sysOperateStatus}</if>
+		</set>
+		WHERE sys_operate_id=#{sysOperateId}
+	</update>
+	<!-- 更新 时间-->
+	<update id="updateTime" parameterType="com.workmanagement.model.AdminObjModel">
+		UPDATE sys_operate_tb
+		<set>
+			<if test="sysOperateStatus!=null">sys_operate_time=#{sysOperateTime}</if>
+		</set>
+		WHERE index_item_id = #{indexItemId}
+	</update>
+	<!-- 更新异议处理表信息-->
+	<update id="updateOperate" parameterType="com.workmanagement.model.AdminObjModel">
+		UPDATE sys_operate_tb
+		set
+			<if test="sysOperateTime!=null">sys_operate_time=#{sysOperateTime}</if>
+		
+		WHERE index_item_id = #{indexItemId} and record_date=#{recordDate} and sys_org_id=#{sysOrgId} and default_index_item_id=#{defaultIndexItemId} 
+	</update>
+	<!--添加数据到异议处理表  -->
+	<insert id="insertOperate" useGeneratedKeys="true" keyProperty="sysOperateId" parameterType="com.workmanagement.model.AdminObjModel">
+		 insert into sys_operate_tb(sys_user_id,index_item_id,default_index_item_id,record_date,sys_operate_time,auth_file,sys_operate_status,report_org_id,data_id)
+	 					 values(#{sysUserId},#{indexItemId},#{defaultIndexItemId},#{recordDate},#{sysOperateTime},#{authFile},0,#{reportOrgId},#{dataId})
+	</insert>
+	
+	<!--根据id查询是否存在数据  -->
+	<select id="selectOperateByItemId" resultMap="adminObjMap">
+		select * from sys_operate_tb where  sys_operate_id=#{sysOperateId}
+	</select>
+	<!--查询全部异议处理信息 -->
+	<select id="queryAll" resultMap="adminObjMap">
+		select * from sys_operate_tb 
+	</select>
+	<!-- 添加指标大类对应的指标项到list 表 -->
+	<insert id="insertItem">
+		INSERT INTO SYS_OPERATE_LIST_TB(SYS_OPERATE_ID,INDEX_ITEM_ID,SYS_OPERATE_TIME,SERVER_EXPLAIN,MARK) VALUES(#{sysOperateId},#{indexItemId},#{sysOperateTime},#{serverExplain},#{mark})
+	</insert>
+	
+		<!-- 更新 异议处理list表-->
+	<update id="updateItem" parameterType="com.workmanagement.model.SysOperateListModel">
+		UPDATE SYS_OPERATE_LIST_TB
+		<set>
+			<if test="sysOperateListId!=null">sys_operate_list_id=#{sysOperateListId},</if>
+			<if test="sysOperateId!=null">sys_operate_id=#{sysOperateId},</if> 
+			<if test="sysOperateTime!=null">sys_operate_time=#{sysOperateTime},</if>
+			<if test="indexItemId!=null">index_item_id=#{indexItemId},</if>
+			<if test="orgExplain!=null">org_explain=#{orgExplain},</if>
+			<if test="serverExplain!=null">server_explain=#{serverExplain},</if>
+			<if test="mark!=null">mark=#{mark},</if>
+			<if test="maininfoExplain!=null">maininfo_explain=#{maininfoExplain}</if>
+		</set>
+		WHERE index_item_id = #{indexItemId} and sys_operate_id=#{sysOperateId}
+	</update>
+	
+		<!--根据指标项id查询是否存在数据  -->
+	<select id="selectOperateListByItemId" resultMap="adminObjMap">
+		select * from sys_operate_list_tb where index_item_id=#{indexItemId} AND SYS_OPERATE_ID=#{sysOperateId}
+	</select>
+	<!--根据指标大类和企业二码id和上报机构id和时间查询对应数据  -->
+	<select id="selectOperateByQueryAll"  resultType="Map">
+			SELECT *  FROM  SYS_OPERATE_LIST_TB ltb
+				LEFT JOIN SYS_OPERATE_TB otb ON ltb.SYS_OPERATE_ID=otb.SYS_OPERATE_ID
+				WHERE otb.SYS_ORG_ID=#{SYS_ORG_ID} AND otb.RECORD_DATE=#{RECORD_DATE} AND  otb.DEFAULT_INDEX_ITEM_ID=#{DEFAULT_INDEX_ITEM_ID} AND otb.INDEX_ITEM_ID=#{INDEX_ITEM_ID}
+	</select>
+	<!--根据异议处理表id查询异议处理详细信息-->
+	<select id="selectOperateByIdAll"  resultType="Map">
+			SELECT *  FROM  SYS_OPERATE_LIST_TB ltb
+				LEFT JOIN SYS_OPERATE_TB otb ON ltb.SYS_OPERATE_ID=otb.SYS_OPERATE_ID
+				WHERE otb.SYS_OPERATE_ID=#{sysOperateId}
+	</select>
+	<!-- 查询异议详情表 -->
+	<select id="selectOperateList" resultMap="sysOperateListMap">
+		SELECT * FROM SYS_OPERATE_LIST_TB WHERE SYS_OPERATE_ID=#{sysOperateId} 
+	</select>
+	<!-- queryMarkByOperateId -->
+	<select id="queryMarkByOperateId" resultMap="sysOperateListMap">
+		SELECT * FROM SYS_OPERATE_LIST_TB WHERE SYS_OPERATE_ID=#{sysOperateId} AND mark=1
+	</select>
+	<!-- 查询异议表id-->
+	<select id="selectOperateId" resultMap="adminObjMap" >
+		SELECT * FROM SYS_OPERATE_TB WHERE RECORD_DATE=#{RECORD_DATE} AND INDEX_ITEM_ID=#{INDEX_ITEM_ID} AND DEFAULT_INDEX_ITEM_ID=#{DEFAULT_INDEX_ITEM_ID} AND SYS_ORG_ID=#{SYS_ORG_ID}
+	</select>
+	<!-- 通过指标大类id和动态表id查询数据 -->
+	<select id="selectSysOperateIdByDataIdAndIndexItemId"  resultMap="adminObjMap" >
+		SELECT * FROM SYS_OPERATE_TB so WHERE so.DATA_ID=#{dataId} AND so.INDEX_ITEM_ID=#{indexItemId}
+	</select>
+	<!--  删除异议处理表信息-->
+	<delete id="delOperateByDataId">
+		DELETE FROM SYS_OPERATE_TB WHERE SYS_OPERATE_ID=#{sysOperateId}
+	</delete>
+	<!--  删除异议处理详情表表信息-->
+	<delete id="delOperateListByOperateId">
+		DELETE SYS_OPERATE_LIST_TB WHERE SYS_OPERATE_LIST_TB.SYS_OPERATE_ID=#{sysOperateId}
+	</delete>
+
+</mapper>

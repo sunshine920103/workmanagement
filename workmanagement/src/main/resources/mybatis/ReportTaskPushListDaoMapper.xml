@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.ReportTaskPushListDao">
+	<resultMap type="com.workmanagement.model.ReportTaskPushList" id="reportTaskPushListMap">
+		<id column="report_task_push_list_id" property="reportTaskPushListId"/>
+		<result column="report_task_push_set_id" property="reportTaskPushSetId"/>
+		<result column="sys_org_id" property="sysOrgId"/>
+		<result column="report_task_push_status" property="reportTaskPushStatus"/>
+		<result column="report_task_push_set_name" property="reportTaskPushSetName"/>
+		<result column="report_task_push_list_endtime" property="reportTaskPushListEndTime"/>
+		<result column="report_task_push_set_type" property="reportTaskPushSetType"/>
+		<result column="sys_org_name" property="sysOrgName"/>
+	</resultMap>
+	<!-- 查询列表 -->
+	<!-- <select id="queryReportTaskPushLists"  resultMap="reportTaskPushListMap">
+		SELECT * FROM report_task_push_list_tb 
+		<if test="limit!=null">
+			LIMIT #{limit} OFFSET #{offset}
+		</if>
+	</select> -->
+	<select id="queryReportTaskPushLists"  resultMap="reportTaskPushListMap">
+		SELECT * FROM  (
+			SELECT report_task_push_list_id,report_task_push_list_tb.report_task_push_set_id,sys_org_id, report_task_push_set_name,report_task_push_list_endtime,
+			report_task_push_status,
+					ROW_NUMBER() OVER(ORDER BY report_task_push_list_id DESC ) AS cpbid  
+			FROM report_task_push_list_tb left join REPORT_TASK_PUSH_SET_TB on report_task_push_list_tb.report_task_push_set_id = REPORT_TASK_PUSH_SET_TB.report_task_push_set_id
+			<where>
+				<if test="reportTaskPushSetId!=null">
+					 report_task_push_list_tb.report_task_push_set_id=#{reportTaskPushSetId} 
+				</if>
+				<if test="notReportTaskPushStatus!=null">
+					 and report_task_push_status != #{notReportTaskPushStatus} 
+				</if>
+				<if test="reportTaskPushOrgId!=null">
+					 and sys_org_id = #{reportTaskPushOrgId}
+				</if>
+			</where>
+		 ) AS a 
+		 <if test="limit!=null">
+		 <![CDATA[
+			WHERE  a.cpbid > #{limit} AND a.cpbid <= #{offset}
+		 ]]>
+		 </if>
+	</select>
+	<!-- 查询总数 -->
+	<select id="queryReportTaskPushLists_count" resultType="int">
+		SELECT COUNT(0) FROM report_task_push_list_tb left join REPORT_TASK_PUSH_SET_TB on report_task_push_list_tb.report_task_push_set_id = REPORT_TASK_PUSH_SET_TB.report_task_push_set_id
+		<where>
+				<if test="reportTaskPushSetId!=null">
+					 report_task_push_list_tb.report_task_push_set_id=#{reportTaskPushSetId} 
+				</if>
+				<if test="notReportTaskPushStatus!=null">
+					 and report_task_push_status != #{notReportTaskPushStatus} 
+				</if>
+				<if test="reportTaskPushOrgId!=null">
+					 and sys_org_id = #{reportTaskPushOrgId}
+				</if>
+		</where>
+	</select>	
+	<!-- 通过ID查询 -->
+	<select id="getReportTaskPushListById" resultMap="reportTaskPushListMap">
+		SELECT * FROM report_task_push_list_tb WHERE report_task_push_list_id = #{reportTaskPushListId}
+	</select>
+	<!-- 报送任务 -->
+	<select id="unfinishedReportTaskPushList" resultMap="reportTaskPushListMap">
+		SELECT * FROM report_task_push_list_tb WHERE report_task_push_status = 0 
+		and sys_org_id= #{sysOrgId} 
+		and report_task_push_set_id IN(
+			select report_task_push_set_id from report_task_push_set_tb where report_task_push_set_template_id= #{reportTaskPushSetTempLateId} 
+			and report_task_push_set_type=#{reportTaskPushSetType} and report_task_push_set_status=0
+		) 
+		order by report_task_push_list_id ASC fetch first 1 rows only
+	</select>
+	
+	<delete id="delete">
+		delete report_task_push_list_tb WHERE report_task_push_list_id=#{reportTaskPushListId}
+	</delete>
+	<!-- 保存 -->
+	<insert id="insert" parameterType="com.workmanagement.model.ReportTaskPushList" useGeneratedKeys="true" keyProperty="reportTaskPushListId">
+		INSERT INTO report_task_push_list_tb(report_task_push_set_id,report_task_push_list_endtime,
+		sys_org_id,report_task_push_status)VALUES(#{reportTaskPushSetId},#{reportTaskPushListEndTime},#{sysOrgId},0)
+	</insert>
+	<!-- 更新 -->
+	<update id="update" parameterType="com.workmanagement.model.ReportTaskPushList">
+		UPDATE report_task_push_list_tb
+		<set>
+			<if test="reportTaskPushSetId!=null">report_task_push_set_id=#{reportTaskPushSetId},</if>
+			<if test="sysOrgId!=null">sys_org_id=#{sysOrgId},</if>
+			<if test="reportTaskPushStatus!=null">report_task_push_status=#{reportTaskPushStatus}</if>
+		</set>
+		WHERE report_task_push_list_id = #{reportTaskPushListId}
+	</update>
+	<select id="queryAll" resultMap="reportTaskPushListMap">
+		SELECT listtb.report_task_push_status,
+		settb.report_task_push_set_name,listtb.report_task_push_list_endtime,settb.report_task_push_set_type,listtb.sys_org_name
+		FROM (SELECT ltb.*,tb.SYS_ORG_NAME,tb.SYS_AREA_ID FROM report_task_push_list_tb ltb LEFT JOIN sys_org_tb tb ON ltb.SYS_ORG_ID=tb.SYS_ORG_ID) AS listtb
+		LEFT JOIN (SELECT * FROM report_task_push_set_tb stb LEFT JOIN sys_org_tb tb ON stb.SYS_ORG_CREATE_ID=tb.SYS_ORG_ID) AS settb 
+		ON listtb.report_task_push_set_id =settb.report_task_push_set_id 
+		<where>
+		1=1
+		<if test="param.task_name!=null">AND settb.report_task_push_set_name like '%${param.task_name}%'</if>
+		<if test="param.taskType!=null">AND listtb.report_task_push_status =#{param.taskType}</if>
+		<if test="param.task_begin!=null">AND listtb.report_task_push_list_endtime Between #{param.task_begin} And #{param.task_end}  </if>
+		<if test="param.area_id!=null">
+			 AND (listtb.SYS_AREA_ID IN
+					<foreach collection="param.area_id" item="id" open="(" separator="," close=")">
+						#{id}
+					</foreach>
+				OR 
+				settb.SYS_AREA_ID IN
+					<foreach collection="param.area_id" item="id" open="(" separator="," close=")">
+						#{id}
+					</foreach>)
+		</if>
+		
+	    
+		</where>
+		ORDER BY listtb.report_task_push_list_endtime DESC
+	</select>
+	<!-- 根据状态查询-->
+	<select id="queryReportTaskPushListByStatus" resultMap="reportTaskPushListMap">
+		SELECT * FROM report_task_push_list_tb WHERE report_task_push_status = #{i} 
+	</select>
+	<select id="queryList" resultMap="reportTaskPushListMap">
+		SELECT * FROM report_task_push_list_tb
+	</select>
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.ReportTaskPushSetDao">
+	<resultMap type="com.workmanagement.model.ReportTaskPushSet" id="reportTaskPushSetMap">
+		<id column="report_task_push_set_id" property="reportTaskPushSetId"/>
+		<result column="report_task_push_set_name" property="reportTaskPushSetName"/>
+		<result column="report_task_push_set_cycle" property="reportTaskPushSetCycle"/>
+		<result column="report_task_push_set_time" property="reportTaskPushSetTime"/>
+		<result column="report_task_push_set_type" property="reportTaskPushSetType"/>
+		<result column="report_task_push_set_endtime" property="reportTaskPushSetEndTime"/>
+		<result column="report_task_push_set_template_id" property="reportTaskPushSetTempLateId"/>
+		<result column="sys_org_create_id" property="sysOrgCreateId"/>
+		<result column="sys_org_excute_ids" property="sysOrgExcuteIds"/>
+		<result column="report_task_push_set_status" property="reportTaskPushSetStatus"/>
+	</resultMap>
+	<!-- 查询列表 -->
+	<select id="queryReportTaskPushSets"  resultMap="reportTaskPushSetMap">
+		SELECT * FROM  report_task_push_set_tb pst WHERE pst.sys_org_create_id=#{id}  
+	</select>
+	<!-- 查询总数 -->
+	<select id="queryReportTaskPushSets_count" resultType="int">
+		SELECT COUNT(0) FROM report_task_push_set_tb
+		<where>
+				 	<if test="reportTaskPushSetStatus!=null">
+				 		  report_task_push_set_status=#{reportTaskPushSetStatus}
+				 	</if>
+				 	<if test="orgIds!=null">
+						AND report_task_push_set_org_id IN
+						<foreach collection="orgIds" item="id" open="(" separator="," close=")">
+							#{id}
+						</foreach>
+					</if>
+		</where>
+	</select>	
+	<!-- 通过ID删除任务 -->
+	<delete id="deleteTaskById" parameterType="Integer">
+		DELETE FROM report_task_push_set_tb pst WHERE pst.report_task_push_set_id=#{reportTaskPushSetId}
+	</delete>
+	<!-- 通过ID查询 -->
+	<select id="getReportTaskPushSetById" resultMap="reportTaskPushSetMap">
+		SELECT pst.*,ot.sys_org_name AS reportTaskPushSetOrgName
+		FROM report_task_push_set_tb  pst
+		LEFT JOIN sys_org_tb ot ON pst.sys_org_create_id =ot.sys_org_id
+		WHERE report_task_push_set_id = #{reportTaskPushSetId}
+	</select>
+	<!-- 保存 -->
+	<insert id="insert" parameterType="com.workmanagement.model.ReportTaskPushSet" useGeneratedKeys="true" keyProperty="reportTaskPushSetId">
+		INSERT INTO report_task_push_set_tb(report_task_push_set_name,report_task_push_set_cycle,
+		report_task_push_set_time,report_task_push_set_status,report_task_push_set_type,report_task_push_set_template_id,sys_org_create_id,
+		sys_org_excute_ids,report_task_push_set_endtime)VALUES(#{reportTaskPushSetName},#{reportTaskPushSetCycle},
+		#{reportTaskPushSetTime},#{reportTaskPushSetStatus},#{reportTaskPushSetType},#{reportTaskPushSetTempLateId},#{sysOrgCreateId},#{sysOrgExcuteIds},
+		#{reportTaskPushSetEndTime})
+	</insert>
+	<!-- 更新 -->
+	<update id="update" parameterType="com.workmanagement.model.ReportTaskPushSet">
+		UPDATE report_task_push_set_tb
+		<set>
+			<if test="reportTaskPushSetName!=null">report_task_push_set_name=#{reportTaskPushSetName},</if>
+			<if test="reportTaskPushSetCycle!=null">report_task_push_set_cycle=#{reportTaskPushSetCycle},</if>
+			<if test="reportTaskPushSetTime!=null">report_task_push_set_time=#{reportTaskPushSetTime},</if>
+			<if test="reportTaskPushSetStatus!=null">report_task_push_set_status=#{reportTaskPushSetStatus},</if>
+			<if test="reportTaskPushSetType!=null">report_task_push_set_type=#{reportTaskPushSetType},</if>
+			<if test="reportTaskPushSetTempLateId!=null">report_task_push_set_template_id=#{reportTaskPushSetTempLateId},</if>
+			<if test="sysOrgCreateId!=null">sys_org_create_id=#{sysOrgCreateId},</if>
+			<if test="sysOrgExcuteIds!=null">sys_org_excute_ids=#{sysOrgExcuteIds},</if>
+			<if test="reportTaskPushSetEndTime!=null">report_task_push_set_endtime=#{reportTaskPushSetEndTime}</if>
+		</set>
+		WHERE report_task_push_set_id = #{reportTaskPushSetId}
+	</update>
+	<!-- 查询所有任务 -->
+	<select id="queryReportTaskPushSetsAll" resultMap="reportTaskPushSetMap">
+		SELECT * FROM report_task_push_set_tb 
+	</select>
+	<select id="queryReportTaskPushSetByEndTime" resultMap="reportTaskPushSetMap">
+		SELECT * FROM report_task_push_set_tb pst WHERE pst.report_task_push_set_endtime=#{parse}
+	</select>
+</mapper>

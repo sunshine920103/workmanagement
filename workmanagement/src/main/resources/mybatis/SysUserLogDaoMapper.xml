@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysUserLogDao">
+
+    <resultMap type="com.workmanagement.model.SysUserLog" id="sysUserLogMap">
+        <id column="sys_user_log_id" property="sysUserLogId"/>
+        <result column="sys_org_id" property="sysOrgId"/>
+        <result column="sys_user_log_org_name" property="sysUserLogOrgName"/>
+        <result column="sys_user_log_user_name" property="sysUserLogUserName"/>
+        <result column="sys_user_log_role_name" property="sysUserLogRoleName"/>
+        <result column="sys_user_log_menu_name" property="sysUserLogMenuName"/>
+        <result column="sys_user_log_enterprise_code" property="sysUserLogEnterpriseCode"/>
+        <result column="index_id" property="indexId" jdbcType="VARCHAR"/>
+        <result column="index_item_id" property="indexItemId" jdbcType="VARCHAR"/>
+        <result column="sys_user_log_old_value" property="sysUserLogOldValue"/>
+        <result column="sys_user_log_new_value" property="sysUserLogNewValue"/>
+        <result column="sys_user_log_time" property="sysUserLogTime"/>
+        <result column="sys_user_log_operate_type" property="sysUserLogOperateType"/>
+        <result column="sys_user_log_auth_file" property="sysUserLogAuthFile"/>
+        <result column="sys_user_log_result" property="sysUserLogResult"/>
+        <result column="sys_user_log_count" property="sysUserLogCount"/>
+        <result column="sys_user_log_query_user_condition" property="sysUserLogQueryUserCondition"/>
+        <result column="sys_user_log_query_sql" property="sysUserLogQuerySql"/>
+        <result column="sys_user_log_url" property="sysUserLogUrl"/>
+        <result column="sys_user_log_file" property="sysUserLogFile"/>
+        <result column="index_name" property="indexName"/>
+        <result column="index_item_name" property="indexItemName"/>
+        <result column="sys_user_log_ip" property="sysUserLogIp"/>
+    </resultMap>
+
+    <insert id="insertOneLog" parameterType="com.workmanagement.model.SysUserLog">
+		INSERT INTO sys_user_log_tb(sys_org_id,sys_user_log_org_name,sys_user_log_user_name,sys_user_log_role_name,
+		sys_user_log_menu_name,sys_user_log_enterprise_code,index_id,index_item_id,sys_user_log_old_value,
+		sys_user_log_new_value,sys_user_log_time,sys_user_log_operate_type,sys_user_log_auth_file,sys_user_log_result,
+		sys_user_log_count,sys_user_log_query_user_condition,sys_user_log_query_sql,sys_user_log_url,sys_user_log_file,sys_user_log_ip)
+		VALUES(#{sysOrgId,jdbcType=VARCHAR},#{sysUserLogOrgName,jdbcType=VARCHAR},#{sysUserLogUserName,jdbcType=VARCHAR},#{sysUserLogRoleName,jdbcType=VARCHAR},#{sysUserLogMenuName,jdbcType=VARCHAR},
+			#{sysUserLogEnterpriseCode,jdbcType=VARCHAR},#{indexId,jdbcType=VARCHAR},#{indexItemId,jdbcType=VARCHAR},#{sysUserLogOldValue,jdbcType=VARCHAR},#{sysUserLogNewValue,jdbcType=VARCHAR},
+			#{sysUserLogTime,jdbcType=VARCHAR},#{sysUserLogOperateType,jdbcType=VARCHAR},#{sysUserLogAuthFile,jdbcType=VARCHAR},#{sysUserLogResult,jdbcType=VARCHAR},#{sysUserLogCount,jdbcType=VARCHAR},
+			#{sysUserLogQueryUserCondition,jdbcType=VARCHAR},#{sysUserLogQuerySql,jdbcType=VARCHAR},#{sysUserLogUrl,jdbcType=VARCHAR},#{sysUserLogFile,jdbcType=VARCHAR},#{sysUserLogIp,jdbcType=VARCHAR})
+	</insert>
+
+    <select id="selectBySome" resultMap="sysUserLogMap" parameterType="map">
+        SELECT sult.*,it.index_name,iit.index_item_name FROM sys_user_log_tb AS sult
+        LEFT JOIN index_tb AS it ON it.index_id=sult.index_id
+        LEFT JOIN index_item_tb AS iit ON iit.index_item_id=sult.index_item_id
+        WHERE
+        <trim prefixOverrides="AND">
+            <if test="sysUserLogOrgName!=null">
+                AND sult.sys_user_log_org_name=#{sysUserLogOrgName}
+            </if>
+            <if test="sysUserLogMenuName!=null">
+                AND sult.sys_user_log_menu_name LIKE '%'||#{sysUserLogMenuName}||'%'
+            </if>
+            <if test="sysUserLogOperateType!=null">
+                AND sult.sys_user_log_operate_type=#{sysUserLogOperateType}
+            </if>
+            <if test="sysUserLogUserNameOrEnterpriseCode!=null">
+                AND (sult.sys_user_log_user_name LIKE #{sysUserLogUserNameOrEnterpriseCode}
+                OR sult.sys_user_log_enterprise_code LIKE #{sysUserLogUserNameOrEnterpriseCode})
+            </if>
+            <if test="areaId!=null">
+                AND sult.sys_org_id in (select sot.sys_org_id from sys_org_tb AS sot where SYS_ORG_AFFILIATION_AREA_ID =
+                #{areaId})
+            </if>
+            <if test="SysOrgList!=null">
+                AND sult.SYS_ORG_ID IN
+                <foreach collection="SysOrgList" item="org" open="(" close=")" separator=",">
+                    #{org.sys_org_id}
+                </foreach>
+            </if>
+            <if test="startTime!=null">
+                AND sult.sys_user_log_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+            ORDER BY sys_user_log_id DESC
+        </trim>
+    </select>
+
+    <select id="selectAll" resultMap="sysUserLogMap">
+        SELECT sult.*,it.index_name,iit.index_item_name FROM (sys_user_log_tb AS sult LEFT JOIN index_tb AS it ON
+        it.index_id=sult.index_id) LEFT JOIN index_item_tb AS iit ON iit.index_item_id=sult.index_item_id
+        WHERE 1=1
+        <if test="areaId!=null">
+            AND sult.sys_org_id in (select sot.sys_org_id from sys_org_tb AS sot where SYS_ORG_AFFILIATION_AREA_ID =
+            #{areaId})
+        </if>
+        <if test="SysOrgList!=null">
+            AND sult.SYS_ORG_ID IN
+            <foreach collection="SysOrgList" item="org" open="(" close=")" separator=",">
+                #{org.sys_org_id}
+            </foreach>
+        </if>
+        ORDER BY sys_user_log_id DESC
+    </select>
+
+    <select id="selectOne" resultMap="sysUserLogMap" parameterType="int">
+		SELECT sult.*,it.index_name,iit.index_item_name FROM (sys_user_log_tb AS sult LEFT JOIN index_tb AS it ON
+		it.index_id=sult.index_id) LEFT JOIN index_item_tb AS iit ON iit.index_item_id=sult.index_item_id WHERE
+		 sys_user_log_id=#{sysUserLogId ,jdbcType=VARCHAR}
+	</select>
+
+    <select id="getMenus" resultType="com.workmanagement.model.SysMenu">
+		SELECT * FROM SYS_MENU_TB WHERE SYS_MENU_PARENT_ID IN(66,67,68)
+		OR SYS_MENU_PARENT_ID IN (
+		SELECT SYS_MENU_ID FROM SYS_MENU_TB WHERE SYS_MENU_PARENT_ID IN(66,67,68)
+		)
+	</select>
+
+    <select id="getByOrgId" parameterType="int" resultMap="sysUserLogMap">
+		select * from SYS_USER_LOG_TB WHERE SYS_ORG_ID = #{sysOrgId} ORDER BY sys_user_log_id DESC
+	</select>
+
+    <select id="getByUserName" resultMap="sysUserLogMap">
+        select * from SYS_USER_LOG_TB WHERE SYS_USER_LOG_USER_NAME = #{userName}
+        AND SYS_ORG_ID = #{sysOrgId}
+        ORDER BY sys_user_log_id DESC
+	</select>
+
+    <select id="getCountOfThisOrgQueryNum" resultType="int">
+        SELECT COUNT(0) FROM SYS_USER_LOG_TB WHERE to_char(SYS_USER_LOG_TIME,'YYYY-MM')=#{logTime}
+        AND SYS_ORG_ID = #{orgId} AND SYS_USER_LOG_OPERATE_TYPE=4
+        <if test="userName!=null">
+            AND SYS_USER_LOG_USER_NAME = #{userName}
+        </if>
+    </select>
+
+    <select id="getThisOrgQueryData" resultMap="sysUserLogMap">
+        SELECT * FROM SYS_USER_LOG_TB WHERE to_char(SYS_USER_LOG_TIME,'YYYY-MM')=#{logTime}
+        AND SYS_ORG_ID = #{orgId} AND SYS_USER_LOG_OPERATE_TYPE=4
+        <if test="userName!=null">
+            AND SYS_USER_LOG_USER_NAME = #{userName}
+        </if>
+        ORDER BY sys_user_log_id DESC
+    </select>
+</mapper>

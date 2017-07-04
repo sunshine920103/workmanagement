@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.DicContentDao">
+
+	<resultMap type="com.workmanagement.model.DicContent" id="dicContentMap">
+		<id column="dic_content_id" property="dicContentId"/>
+		<result column="dic_id" property="dicId"/>
+		<result column="dic_content_code" property="dicContentCode"/>
+		<result column="dic_content_value" property="dicContentValue"/>
+	</resultMap>
+
+	<!-- 指标包含指标项的一对多映射 -->
+	<resultMap type="com.workmanagement.model.IndexTb" id="indexTbMap">
+		<id property="indexId" column="index_id"/>
+		<result property="indexName" column="index_name"/>
+		<result property="indexCode" column="index_code"/>
+		<result property="sysAreaId" column="sys_area_id"/>
+		<result property="indexNumber" column="index_number"/>
+		<result property="indexNotes" column="index_notes"/>
+		<result property="indexUsed" column="index_used"/>
+		<result property="indexCreateTime" column="index_create_time"/>
+		<result property="sys_user_id" column="sys_user_id"/>
+		<result property="sys_org_id" column="sys_org_id"/>
+		<result property="indexType" column="index_type"/>
+	</resultMap>
+
+	<!-- 根据主键获取数据字典详细项 -->
+	<select id="getDicContentById"  resultMap="dicContentMap" parameterType="int">
+		SELECT * FROM dic_content_tb WHERE dic_content_id=#{dicContentId}
+	</select>
+
+	<!-- 根据数据字典id（外键）获取这个数据字典下的所有字典详情表 -->
+	<select id="getDicContentsByDicId"  resultMap="dicContentMap" parameterType="int">
+		SELECT * FROM dic_content_tb WHERE dic_id=#{dicId} ORDER BY DIC_CONTENT_CODE ASC
+	</select>
+
+	<!--根据主键删除一条数据字典详细项-->
+	<delete id="delOneDicContentById" parameterType="int">
+		DELETE FROM dic_content_tb WHERE dic_content_id=#{dicContentId}
+	</delete>
+
+	<!--根据dic_id删除多条数据字典详细项-->
+	<delete id="delDicContentsByDicId" parameterType="int">
+		DELETE FROM dic_content_tb WHERE dic_id=#{dicId}
+	</delete>
+
+	<!--添加一条数据字典详细项-->
+	<insert id="insertOneContent" parameterType="com.workmanagement.model.DicContent" useGeneratedKeys="true" keyProperty="dicId">
+		INSERT INTO dic_content_tb(dic_id,dic_content_code,dic_content_value)
+		VALUES (#{dicId},#{dicContentCode},#{dicContentValue})
+	</insert>
+
+	<!--更新一条数据字典详细项-->
+	<update id="updateOneContent" parameterType="com.workmanagement.model.DicContent">
+		UPDATE dic_content_tb
+		<trim prefix="set" suffixOverrides=",">
+			<if test="dicId!=null">dic_id=#{dicId},</if>
+			<if test="dicContentCode!=null">dic_content_code=#{dicContentCode},</if>
+			<if test="dicContentValue!=null">dic_content_value=#{dicContentValue}</if>
+		</trim>
+		WHERE dic_content_id = #{dicContentId}
+	</update>
+
+	<!--查询输入的字典代码在表内是否被使用-->
+	<select id="isDicContentCodeBeUsed" resultType="int">
+		SELECT COUNT(0) FROM dic_content_tb WHERE dic_id=#{dicId} AND dic_content_code=#{dicContentCode}
+	</select>
+
+	<!--查询输入的指标值在表内是否被使用-->
+	<select id="isDicContentValueBeUsed" resultType="int">
+		SELECT COUNT(0) FROM dic_content_tb WHERE dic_id=#{dicId} AND dic_content_value=#{dicContentValue}
+	</select>
+
+	<!--查询该字典详情表是否被其他表引用-->
+	<select id="isThisBeUsed" resultType="int" parameterType="int">
+		SELECT COUNT(0) FROM dic_exchange_tb WHERE dic_content_id=#{dicContentId}
+	</select>
+
+	<select id="getIndexCodeByDicCBeUsed" parameterType="int" resultMap="indexTbMap">
+		SELECT * FROM INDEX_TB WHERE INDEX_ID IN
+		(SELECT INDEX_ID FROM INDEX_ITEM_TB WHERE DIC_ID IN
+		(SELECT DIC_ID FROM DIC_CONTENT_TB WHERE DIC_CONTENT_ID = #{dicContentId}))
+	</select>
+
+	<select id="getIndexItemCode" resultType="string">
+		SELECT INDEX_ITEM_CODE FROM INDEX_ITEM_TB WHERE DIC_ID IN
+		(SELECT DIC_ID FROM DIC_CONTENT_TB WHERE DIC_CONTENT_ID = #{dicContentId})
+		AND INDEX_ID = #{indexId}
+	</select>
+
+	<select id="getCount" resultType="int" parameterType="string">
+		${querySql}
+	</select>
+
+	<insert id="insert" parameterType="com.workmanagement.model.DicContent" >
+		INSERT INTO dic_content_tb(dic_id,dic_content_value,dic_content_code)
+		VALUES(#{dicId},#{dicContentValue},#{dicContentCode})
+	</insert>
+	
+	<!-- 获取字典下，代码的个数 -->
+	<select id="selectDicContentNames" resultType="java.lang.Integer">
+		SELECT COUNT(0) FROM dic_content_tb WHERE dic_id=#{dicId} AND dic_content_value=#{dicContentValue} 
+	</select>
+
+	<select id="isContentValueHaved" parameterType="string" resultType="int">
+		SELECT COUNT(0) FROM dic_content_tb WHERE dic_content_value=#{dicContentValue}
+	</select>
+
+	<select id="getDicIdByDicContentValue" parameterType="string" resultMap="dicContentMap">
+		SELECT * FROM dic_content_tb WHERE dic_content_value=#{dicContentValue}
+	</select>
+	<!--   查询所有的数据字典数据  -->
+	<select id="queryAllContent"  resultMap="dicContentMap">
+		SELECT * FROM dic_content_tb
+	</select>
+
+	<!--   该数据字典通过id或者指标值或者代码  -->
+	<select id="queryContentByDicIdAndValues"  resultMap="dicContentMap">
+		SELECT * FROM dic_content_tb WHERE dic_id=#{dicId} AND dic_content_value=#{values}
+		OR dic_id=#{dicId} AND dic_content_code=#{values}
+	</select>
+	
+	<!-- 根据数据字典id和指标的值，查询数据字典（唯一值） -->
+	<select id="getDicIdByDicContentValueAndDicId"  resultMap="dicContentMap">
+		SELECT * FROM dic_content_tb WHERE dic_id=#{dicId} AND dic_content_value=#{dicContentValue} 
+	</select>
+	
+	<!-- 根据数据字典id和指标的值（代号），查询数据字典（唯一值） -->
+	<select id="getDicContentByDicIDAndCode"  resultMap="dicContentMap">
+		SELECT * FROM dic_content_tb WHERE dic_id=#{dicId} AND dic_content_code=#{dicContentCode} 
+	</select>
+	
+	
+</mapper>

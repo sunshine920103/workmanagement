@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+			http://www.springframework.org/schema/security 
+			http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+	<security:http pattern="/assets/**" security="none"/>
+	<security:http pattern="/ws/**" security="none"/>
+	<security:http pattern="/pages/**" security="none"/>
+	<security:http pattern="/login.jhtml" security="none"/>
+	<security:http pattern="/upload/**" security="none"/>
+    <security:http pattern="/favicon.ico" security="none"/>
+    
+	<security:http auto-config="true" use-expressions="true" access-denied-page="/denied.jhtml">
+		<security:intercept-url pattern="/admin/reportIndex/flash.jhtml" access="permitAll()"/>
+		<security:intercept-url pattern="/admin/**" access="isAuthenticated()"/>
+		<security:form-login
+				login-page="/login.jhtml" 
+				authentication-failure-handler-ref="authenticationFailureHandler"
+				authentication-success-handler-ref="authenticationSuccessHandler"
+				default-target-url="/index.jhtml"
+				always-use-default-target="true"/>
+		<security:logout 
+				invalidate-session="false" 
+				logout-success-url="/login.jhtml" 
+				logout-url="/logout.jhtml" 
+				delete-cookies="JSESSIONID"/>
+		<security:session-management invalid-session-url="/login.jhtml">
+		  <!--   <security:concurrency-control max-sessions="1" error-if-maximum-exceeded="false" expired-url="/login.jhtml"/>  -->
+		</security:session-management>
+		
+		<security:custom-filter ref="myFilterSecurityInterceptor" before="FILTER_SECURITY_INTERCEPTOR"/> 
+	</security:http>
+	
+	<bean id="authenticationFailureHandler" class="com.workmanagement.security.LoginFailureHandler">  
+        <property name="defaultTargetUrl" value="/login.jhtml"></property>  
+        <property name="forwardToDestination" value="false"></property>  
+    </bean>
+	
+	<bean id="authenticationSuccessHandler" class="com.workmanagement.security.LoginSuccessHandler">  
+        <property name="defaultTargetUrl" value="/admin/index.jhtml"></property>  
+        <property name="forwardToDestination" value="false"></property>  
+    </bean>  
+    
+	<bean id="myFilterSecurityInterceptor" class="com.workmanagement.security.MyFilterSecurityInterceptor">
+		<property name="authenticationManager" ref="authenticationManager"/>
+		<property name="accessDecisionManager" ref="myAccessDecisionManager"/>
+		<property name="securityMetadataSource" ref="myInvocationSecurityMetadataSource"/>
+	</bean>
+	
+	<bean id="myAccessDecisionManager" class="com.workmanagement.security.MyAccessDecisionManager"/>
+	
+	<bean id="myInvocationSecurityMetadataSource" init-method="loadResourceDefine" class="com.workmanagement.security.MyInvocationSecurityMetadataSource"></bean>
+	
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider ref="authenticationProvider"></security:authentication-provider>
+	</security:authentication-manager>
+	
+	<bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	<bean id="userDetailsService" class="com.workmanagement.security.DefaultUserDetailsService" />
+	
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">  
+        <property name="basename" value="classpath:messages/spring/messages_zh_CN" />  
+    </bean>
+	
+	<bean id="authenticationProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+        <property name="userDetailsService" ref="userDetailsService" />
+        <property name="passwordEncoder" ref="passwordEncoder" />
+        <property name="messageSource" ref="messageSource" />
+    </bean>
+</beans>

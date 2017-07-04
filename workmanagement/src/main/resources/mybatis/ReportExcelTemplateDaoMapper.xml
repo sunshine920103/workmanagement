@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.ReportExcelTemplateDao">
+
+	<resultMap type="com.workmanagement.model.ReportExcelTemplate" id="reportExcelTemplateMap">
+		<id column="report_excel_template_id" property="reportExcelTemplateId" />
+		<result column="report_excel_template_name" property="reportExcelTemplateName" />
+		<result column="sys_area_id" property="sysAreaId" />
+		<result column="report_excel_template_area_name" property="reportExcelTemplateAreaName" />
+		<result column="report_excel_template_status" property="reportExcelTemplateStatus" />
+		<result column="report_excel_template_path" property="reportExcelTemplatePath" />
+		<result column="report_excel_template_index_item_set" property="reportExcelTemplateIndexItemSet" />
+		<result column="sys_org_id" property="sysOrgId" />
+		<result column="index_id" property="indexId" />		
+		<result column="create_user_id" property="createUserId" />	
+		<result column="create_time" property="createTime" />	
+	</resultMap>
+	
+	<!-- 映射地区 -->
+	<resultMap type="com.workmanagement.model.SysArea" id="sysAreaMap">
+		<id column="sys_area_id" property="sysAreaId" />
+		<result column="sys_area_upid" property="sysAreaUpid" />
+		<result column="sys_area_name" property="sysAreaName" />
+		<result column="sys_area_code" property="sysAreaCode" />
+		<result column="sys_area_type" property="sysAreaType" />
+		<result column="sys_area_notes" property="sysAreaNotes" />
+		<result column="sys_area_used" property="sysAreaUsed" />
+	</resultMap>
+	
+	<!-- 映射指标项 -->
+	<resultMap id="indexItemTbMap" type="com.workmanagement.model.IndexItemTb">
+		<id property="indexItemId" column="index_item_id"/>
+		<result property="indexId" column="index_id"/>
+		<result property="indexItemName" column="index_item_name"/>
+		<result property="indexItemCode" column="index_item_code"/>
+		<result property="indexItemNumber" column="index_item_number"/>
+		<result property="sysAreaId" column="sys_area_id"/>
+		<result property="indexItemUsed" column="index_item_used"/>
+		<result property="indexItemType" column="index_item_type"/>
+		<result property="dicId" column="dic_id"/>
+		<result property="indexItemImportUnique" column="index_item_import_unique"/>
+		<result property="indexItemEmpty" column="index_item_empty"/>
+		<result property="indexItemNetId" column="index_item_net_id"/>
+		<result property="indexItemNotes" column="index_item_notes"/>
+		<result property="indexItemCreateTime" column="index_item_create_time"/>
+		<result property="sys_user_id" column="sys_user_id"/>
+		<result property="sys_org_id" column="sys_org_id"/>
+		<result property="indexItemAliasName" column="index_item_alias_name"/>
+		<result property="varLength" column="var_length"/>
+	</resultMap>
+	
+	<!-- 映射指标大类 -->
+	<resultMap type="com.workmanagement.model.IndexTb" id="indexTbMap" >
+		<id property="indexId" column="index_id"/> 
+		<result property="indexName" column="index_name" />
+		<result property="indexCode" column="index_code" />
+		<result property="sysAreaId" column="sys_area_id" />
+		<result property="indexNumber" column="index_number" />
+		<result property="indexNotes" column="index_notes" />
+		<result property="indexUsed" column="index_used" />
+		<result property="indexCreateTime" column="index_create_time" />
+		<result property="sys_user_id" column="sys_user_id" />
+		<result property="sys_org_id" column="sys_org_id" />
+	</resultMap>
+	
+	<!-- 映射别名 -->
+	<resultMap type="com.workmanagement.model.IndexItemAlias" id="indexItemAliasMap">
+		<id property="indexItemAliasId" column="index_item_alias_id"/>
+		<result property="indexItemAliasName" column="index_item_alias_name"/>
+		<result property="indexItemId" column="index_item_id"/>
+		<result property="sysAreaId" column="sys_area_id"/>
+	</resultMap>
+	
+	<!--查询excel模板列表 -->
+	<select id="queryReportExcelTemplateList" resultMap="reportExcelTemplateMap">
+		SELECT * FROM REPORT_EXCEL_TEMPLATE_TB
+		WHERE 1=1
+		<if test="areaId!=null">
+			AND SYS_AREA_ID = 252
+		</if>
+		<if test="excelName!=null">
+			AND REPORT_EXCEL_TEMPLATE_NAME LIKE '%${excelName}%'
+		</if>
+		ORDER BY REPORT_EXCEL_TEMPLATE_STATUS
+	</select>
+	<!--查询指标大类启用时，对应的excel模板列表 -->
+	<select id="queryExcelTempsWitchIndexIsUsing" resultMap="reportExcelTemplateMap">
+		SELECT * FROM REPORT_EXCEL_TEMPLATE_TB e
+		left join index_tb i on  i.index_id =e.index_id
+		WHERE e.REPORT_EXCEL_TEMPLATE_STATUS = 0 and i.index_used =1
+		<if test="areaId!=null">
+			AND e.SYS_AREA_ID IN
+			<foreach collection="areaId" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+	</select>
+	
+	<!--查询excel模板列表  模糊查询 -->
+	<select id="queryReportExcelTemplate" resultMap="reportExcelTemplateMap">
+		SELECT * FROM REPORT_EXCEL_TEMPLATE_TB 
+		WHERE REPORT_EXCEL_TEMPLATE_NAME LIKE '%${name}%'
+		<if test="map.areaId!=null">
+			AND SYS_AREA_ID IN
+			<foreach collection="map.areaId" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+	</select>
+	
+	<!--查询所有地区 -->
+	<select id="queryAreaAll" resultMap="sysAreaMap">
+		SELECT * FROM sys_area_tb 
+	</select> 
+	
+	<!--获取所有code-->
+	<select id="selectAllIndexCode" resultType="java.lang.Object">
+		SELECT index_code FROM index_tb 
+		where index_used=1 
+		<if test="areaId!=null">
+			AND SYS_AREA_ID IN
+			<foreach collection="areaId" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+		ORDER BY index_id asc
+	</select>
+	<!--获取所有name-->
+	<select id="selectAllIndexName" resultType="java.lang.Object">
+		SELECT index_name FROM index_tb 
+		where index_used=1 
+		<if test="areaId!=null">
+			AND SYS_AREA_ID IN
+			<foreach collection="areaId" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+		ORDER BY index_id asc
+	</select>
+	<!--获取所有id-->
+	<select id="selectAllIndexId" resultType="java.lang.Object">
+		SELECT index_id FROM index_tb 
+		where index_used=1
+		<if test="areaId!=null">
+			AND SYS_AREA_ID IN
+			<foreach collection="areaId" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if> 
+		ORDER BY index_id asc
+	</select>
+	
+	<!-- 查询大指标下的小指标 -->
+	<select id="queryIndexItemsByIndex" resultMap="indexItemTbMap">
+		SELECT 	* FROM index_item_tb 
+		WHERE 	INDEX_ITEM_USED=1 
+				and index_id=(SELECT index_id FROM index_tb WHERE index_id=#{indexId})
+		 <if test="areaId!=null">
+				AND SYS_AREA_ID IN
+			<foreach collection="areaId" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+	</select>
+	
+	<!--通過ID获取大指标  -->
+	<select id="queryIndexTbById" resultMap="indexTbMap">
+		SELECT * FROM index_tb
+		WHERE index_id = #{id}
+	</select>
+	
+	
+	<!--获取所有name-->
+	<select id="allReportExcelTemplateName" resultType="java.lang.Object">
+		SELECT report_excel_template_name 
+		FROM report_excel_template_tb 
+		WHERE 1=1
+		<if test="areaId!=null">
+			<if test="areaType!=1">
+				AND SYS_AREA_ID IN
+				<foreach collection="areaId" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test="areaType==1">
+				AND SYS_AREA_ID=#{areaId}
+			</if>	
+		</if>
+		ORDER BY report_excel_template_id asc
+	</select>
+	
+	<!-- 保存 -->
+	<insert id="insertReportExcelTemplate" parameterType="com.workmanagement.model.ReportExcelTemplate">
+		INSERT INTO REPORT_EXCEL_TEMPLATE_TB(
+			REPORT_EXCEL_TEMPLATE_NAME,
+			SYS_AREA_ID,
+			REPORT_EXCEL_TEMPLATE_AREA_NAME,
+			REPORT_EXCEL_TEMPLATE_STATUS,
+			REPORT_EXCEL_TEMPLATE_PATH,
+			REPORT_EXCEL_TEMPLATE_INDEX_ITEM_SET,
+			SYS_ORG_ID,
+			INDEX_ID,
+			CREATE_USER_ID,
+			CREATE_TIME
+		)VALUES(
+			#{reportExcelTemplateName},
+			#{sysAreaId},
+			#{reportExcelTemplateAreaName},
+			#{reportExcelTemplateStatus},
+			#{reportExcelTemplatePath},
+			#{reportExcelTemplateIndexItemSet},
+			#{sysOrgId},
+			#{indexId},
+			#{createUserId},
+			#{createTime}
+		)
+	</insert>
+	
+	<!-- 通过ID查询 -->
+	<select id="queryReportExcelTemplateById" resultMap="reportExcelTemplateMap">
+		SELECT * FROM report_excel_template_tb WHERE report_excel_template_id = #{reportExcelTemplateId}
+	</select>
+	<!-- 通过name查询 -->
+	<select id="queryReportExcelTemplateByName" resultMap="reportExcelTemplateMap">
+		SELECT * FROM report_excel_template_tb WHERE report_excel_template_name = #{reportExcelTemplateName}
+	</select>
+	
+	<!-- 删除模板 -->
+	<update id="delReportExcelTemplate">
+		DELETE REPORT_EXCEL_TEMPLATE_TB WHERE REPORT_EXCEL_TEMPLATE_ID=#{id}
+	</update>
+	
+	<!-- 通过id和地区查询别名 -->
+	<select id="queryIndexItemAlias" resultMap="indexItemAliasMap">
+		SELECT * FROM INDEX_ITEM_ALIAS_TB WHERE SYS_AREA_ID=#{aid}
+	</select>
+	
+	<!-- 通过id和地区查询别名 -->
+	<select id="queryIndexItemTbByCode" resultMap="indexItemTbMap">
+		SELECT * FROM index_item_tb 
+		WHERE index_item_code = #{code}
+	</select>
+	
+	<select id="queryIndexIdByCount" resultType="Integer">
+		SELECT COUNT(*) FROM REPORT_EXCEL_TEMPLATE_TB WHERE INDEX_ID=#{indexId}
+	</select>
+
+</mapper>

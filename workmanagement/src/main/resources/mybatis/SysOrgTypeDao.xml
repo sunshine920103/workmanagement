@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysOrgTypeDao">
+    <!--机构类别未映射 -->
+    <resultMap type="com.workmanagement.model.SysOrgType" id="sysOrgTypeTwoMap">
+        <id column="sys_org_type_id" property="sys_org_type_id"/>
+        <result column="sys_org_type_upid" property="sys_org_type_upid"/>
+        <result column="sys_org_type_name" property="sys_org_type_name"/>
+        <result column="sys_org_type_notes" property="sys_org_type_notes"/>
+        <result column="sys_org_type_used" property="sys_org_type_used"/>
+        <result column="sys_org_type_type" property="sys_org_type_type"/>
+        <result column="sys_org_type_upname" property="sys_org_type_upname"/>
+    </resultMap>
+    <!-- 子机构类别映射 -->
+    <resultMap type="com.workmanagement.model.SysOrgType" id="sysOrgTypeMap">
+        <id column="sys_org_type_id" property="sys_org_type_id"/>
+        <result column="sys_org_type_upid" property="sys_org_type_upid"/>
+        <result column="sys_org_type_name" property="sys_org_type_name"/>
+        <result column="sys_org_type_notes" property="sys_org_type_notes"/>
+        <result column="sys_org_type_used" property="sys_org_type_used"/>
+        <result column="sys_org_type_type" property="sys_org_type_type"/>
+        <result column="sys_org_type_upname" property="sys_org_type_upname"/>
+        <collection property="subSysOrgType" select="querySubSysOrgType" ofType="com.workmanagement.model.SysOrgType"
+                    javaType="ArrayList" column="sys_org_type_id"/>
+    </resultMap>
+    <!-- 父机构类别映射 -->
+    <resultMap type="com.workmanagement.model.SysOrgType" id="parentSysOrgTypeMap">
+        <id column="sys_org_type_id" property="sys_org_type_id"/>
+        <result column="sys_org_type_upid" property="sys_org_type_upid"/>
+        <result column="sys_org_type_name" property="sys_org_type_name"/>
+        <result column="sys_org_type_notes" property="sys_org_type_notes"/>
+        <result column="sys_org_type_used" property="sys_org_type_used"/>
+        <result column="sys_org_type_type" property="sys_org_type_type"/>
+        <collection property="subSysOrgType" select="queryParentSysOrgType" ofType="com.workmanagement.model.SysOrgType"
+                    javaType="ArrayList" column="sys_org_type_upid"/>
+    </resultMap>
+    <!-- 通过机构类别ID查询机构类别 -->
+    <select id="queryInstitutionsTypeByCode" resultMap="sysOrgTypeMap">
+		SELECT * FROM sys_org_type_tb WHERE  sys_org_type_code = #{orgTypeCode}
+	</select>
+
+    <select id="getTypesByOrgIds" resultType="int">
+        SELECT DISTINCT sott.SYS_ORG_TYPE_ID FROM SYS_ORG_TYPE_TB as sott WHERE sott.SYS_ORG_TYPE_ID IN (
+        SELECT sot.SYS_ORG_TYPE_ID FROM SYS_ORG_TB as sot WHERE sot.SYS_ORG_ID IN
+        <foreach collection="orgs" item="org" open="(" close=")" separator=",">
+            #{org.sys_org_id}
+        </foreach>
+        )
+    </select>
+
+    <select id="getTpsByTpIds" resultMap="sysOrgTypeTwoMap">
+        SELECT * FROM SYS_ORG_TYPE_TB WHERE SYS_ORG_TYPE_ID IN
+        <foreach collection="typeIds" item="typeId" open="(" close=")" separator=",">
+            #{typeId}
+        </foreach>
+    </select>
+
+    <select id="getUpsByTypeIds" resultMap="sysOrgTypeTwoMap">
+        SELECT * FROM SYS_ORG_TYPE_TB WHERE SYS_ORG_TYPE_ID IN
+        <foreach collection="typeIds" item="typeId" open="(" close=")" separator=",">
+            #{typeId}
+        </foreach>
+        AND SYS_ORG_TYPE_UPID is NULL
+    </select>
+
+    <select id="getSubTypeByIds" resultMap="sysOrgTypeTwoMap">
+        SELECT * FROM SYS_ORG_TYPE_TB WHERE SYS_ORG_TYPE_ID IN
+        <foreach collection="typeIds" item="typeId" open="(" close=")" separator=",">
+            #{typeId}
+        </foreach>
+        AND SYS_ORG_TYPE_UPID = #{upId}
+    </select>
+
+    <!--不获取下级机构类别带子类别byid-->
+    <select id="getTypeByIdNotSub" resultMap="sysOrgTypeTwoMap">
+        select * from SYS_ORG_TYPE_TB WHERE SYS_ORG_TYPE_ID = #{typeId}
+    </select>
+
+    <!--根据地区获取到被使用的机构类别-->
+    <select id="getTypesByAreaIds" resultType="int">
+        SELECT DISTINCT sott.SYS_ORG_TYPE_ID FROM SYS_ORG_TYPE_TB as sott WHERE sott.SYS_ORG_TYPE_ID IN (
+        SELECT sot.SYS_ORG_TYPE_ID FROM SYS_ORG_TB AS sot WHERE sot.SYS_AREA_ID IN
+        <foreach collection="areaIds" open="(" close=")" item="areaId" separator=",">
+            #{areaId}
+        </foreach>
+        )
+    </select>
+
+    <!-- 查询父机构类型 -->
+    <select id="queryParentSysOrgType" resultMap="parentSysOrgTypeMap">
+        SELECT * FROM sys_org_type_tb
+        <where>
+            sys_org_type_id = #{sys_org_type_upid}
+        </where>
+    </select>
+    <!-- 通过upid查询父机构类型 -->
+    <select id="queryInstitutionsTypeByUpid" resultMap="parentSysOrgTypeMap">
+        SELECT * FROM sys_org_type_tb
+        <where>
+            sys_org_type_id = #{upid}
+        </where>
+    </select>
+    <!-- 查询子机构类型 -->
+    <select id="querySubSysOrgType" resultMap="sysOrgTypeMap">
+		SELECT i.*,p.sys_org_type_name AS sys_org_type_upname FROM sys_org_type_tb i
+		LEFT JOIN sys_org_type_tb p ON i.sys_org_type_upid = p.sys_org_type_id
+		WHERE  i.sys_org_type_upid = #{sys_org_type_id}
+		ORDER BY i.sys_org_type_id desc
+    </select>
+    <!-- 通过ID查询机构类型并映射父机构类型 -->
+    <select id="queryParentInstitutionsTypeById" resultMap="parentSysOrgTypeMap">
+		SELECT * FROM sys_org_type_tb WHERE  sys_org_type_id = #{id} 
+	</select>
+
+    <!-- 通过名称和代码查询机构类型 -->
+    <select id="queryUniqueInstiType" resultType="com.workmanagement.model.SysOrgType">
+        SELECT * FROM sys_org_type_tb
+        <where>
+            (sys_org_type_name = #{name} OR sys_org_type_code = #{code})
+        </where>
+    </select>
+
+    <!-- 删除机构类别 -->
+    <delete id="delInstitutionsTypeById">
+		DELETE sys_org_type_tb  WHERE sys_org_type_id = #{id} AND sys_org_type_used = 0
+	</delete>
+
+    <!-- 保存机构类别 -->
+    <insert id="saveInstitutionsType" parameterType="com.workmanagement.model.SysOrgType">
+		INSERT INTO 
+		sys_org_type_tb(sys_org_type_upid,sys_org_type_name,sys_org_type_notes,sys_org_type_type) 
+		VALUES(#{sys_org_type_upid},#{sys_org_type_name},#{sys_org_type_notes},#{sys_org_type_type})
+	</insert>
+
+    <!-- 更新机构类别 -->
+    <update id="updateInstitutionsType" parameterType="com.workmanagement.model.SysOrgType">
+        UPDATE sys_org_type_tb
+        <set>
+            sys_org_type_upid = #{sys_org_type_upid},
+            <if test="sys_org_type_name!=null">sys_org_type_name = #{sys_org_type_name},</if>
+            <if test="sys_org_type_code!=null">sys_org_type_code = #{sys_org_type_code},</if>
+            <if test="sys_org_type_used!=null">sys_org_type_used = #{sys_org_type_used},</if>
+            <if test="sys_org_type_notes!=null">sys_org_type_notes = #{sys_org_type_notes},</if>
+            <if test="sys_org_type_type!=null">sys_org_type_type = #{sys_org_type_type}</if>
+        </set>
+        WHERE sys_org_type_id = #{sys_org_type_id}
+    </update>
+
+    <!-- 通過ID查詢机构类别 -->
+    <select id="queryInstitutionsTypeById" resultMap="sysOrgTypeMap">
+		SELECT i.*, p.sys_org_type_name AS sys_org_type_upname 
+		FROM sys_org_type_tb i 
+		LEFT JOIN sys_org_type_tb p ON i.sys_org_type_upid = p.sys_org_type_id
+		WHERE  i.sys_org_type_id = #{id}
+    </select>
+
+    <!-- 查詢一級机构类型列表 -->
+    <select id="queryInstitutionType" resultMap="sysOrgTypeMap">
+        SELECT * FROM sys_org_type_tb ty WHERE ty.sys_org_type_upid is NULL
+        <if test="type!=null">AND ty.sys_org_type_type=#{type}</if>
+        <if test="used!=null">AND ty.sys_org_type_used=#{used}</if>
+        ORDER BY ty.sys_org_type_id asc
+    </select>
+
+    <!-- 查询子机构类型 -->
+    <select id="queryInstitutionTypeByTid" resultType="com.workmanagement.model.SysOrgType">
+		SELECT * FROM sys_org_type_tb WHERE  sys_org_type_upid = #{sys_org_type_id} OR sys_org_type_id= #{sys_org_type_id}
+		ORDER BY sys_org_type_id asc
+    </select>
+    <select id="queryAll" resultType="com.workmanagement.model.SysOrgType">
+		SELECT * FROM sys_org_type_tb ty ORDER BY ty.sys_org_type_id asc
+	</select>
+    <select id="queryOrgTypeAll" resultType="com.workmanagement.model.SysOrgType">
+		SELECT * FROM sys_org_type_tb ty WHERE ty.sys_org_type_type=0 ORDER BY ty.sys_org_type_id asc
+	</select>
+    <select id="queryGovTypeAll" resultType="com.workmanagement.model.SysOrgType">
+		SELECT * FROM sys_org_type_tb ty WHERE ty.sys_org_type_type=1 ORDER BY ty.sys_org_type_id asc
+	</select>
+    <select id="queryOrgTypeCodeByName" resultType="String">
+		SELECT ty.sys_org_type_code FROM sys_org_type_tb ty WHERE ty.sys_org_type_name =#{name}
+	</select>
+    <select id="queryTypeAll" resultType="com.workmanagement.model.SysOrgType">
+		SELECT ty.*,p.sys_org_type_name AS sys_org_type_upname
+		FROM sys_org_type_tb ty
+		LEFT JOIN sys_org_type_tb p ON ty.sys_org_type_upid = p.sys_org_type_id
+		WHERE ty.sys_org_type_code=#{code}
+		ORDER BY ty.sys_org_type_id asc
+	</select>
+    <!-- 通过机构名称查询机构类别id-->
+    <select id="queryInstitutionTypeIdByName" resultType="Integer">
+		SELECT ty.sys_org_type_id  FROM sys_org_type_tb ty WHERE ty.sys_org_type_name=#{typename}
+	</select>
+    <!-- 模糊查询  通过机构类别名称查询机构类别-->
+    <select id="queryInstitutionTypeByName" resultMap="sysOrgTypeMap">
+        SELECT * FROM sys_org_type_tb ty
+        WHERE
+        1=1
+        <if test="type!=null">AND ty.sys_org_type_type=#{type}</if>
+        <if test="orgTypeName!=null">
+            AND ty.sys_org_type_name like '%${orgTypeName}%'
+        </if>
+        ORDER BY ty.sys_org_type_id asc
+    </select>
+
+    <select id="queryTypeList" resultMap="sysOrgTypeTwoMap">
+        SELECT * FROM sys_org_type_tb tb
+        <where>
+            1=1
+            <if test="param.typeIds!=null">
+                AND tb.sys_org_type_id IN
+                <foreach collection="param.typeIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY tb.sys_org_type_id asc
+    </select>
+
+    <!--获取最顶级的机构类别带子类别-->
+    <select id="getTopOrgTypes" resultMap="sysOrgTypeMap">
+        select * from SYS_ORG_TYPE_TB WHERE SYS_ORG_TYPE_UPID IS NULL
+	</select>
+
+
+    <!--获取下级机构类别带子类别byid-->
+    <select id="getSubOrgTypesById" resultMap="sysOrgTypeMap">
+        select * from SYS_ORG_TYPE_TB WHERE SYS_ORG_TYPE_UPID = #{typeId}
+    </select>
+
+    <select id="getUpOrgTypesById" resultMap="parentSysOrgTypeMap">
+        select * from SYS_ORG_TYPE_TB WHERE SYS_ORG_TYPE_ID = #{typeId}
+    </select>
+</mapper>

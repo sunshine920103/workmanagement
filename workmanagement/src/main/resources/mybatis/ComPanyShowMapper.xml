@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"  ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.ComPanyShowDao">
+	<resultMap type="com.workmanagement.model.ComPanyShow" id="queryComPanyShows">
+		<id column="SYS_COMPANYSHOW_ID" property="sysComPanyShowId"/>
+			<result column="DEFAULT_INDEX_ITEM_ID" property="defaultItemId"/>
+			<result column="DIC_ID" property="dicId"/>
+			<result column="USERNAME" property="username"/>
+			<result column="QYMC" property="qymc"/>
+			<result column="CODE_CREDIT" property="codeCredit"/>
+			<result column="CODE_ORG" property="codeOrg"/>
+			<result column="SYS_ORG_ID" property="sysOrgId"/>
+			<result column="SYS_AREA_ID" property="sysAreaId"/>
+			<result column="RECODE_DATE" property="recodeDate"/>
+			<result column="index_jbxx_qyzs" property="index_jbxx_qyzs"/>
+			<result column="index_ggxx_xm" property="index_ggxx_xm"/>
+			<result column="index_jbxx_lxdh" property="index_jbxx_lxdh"/>
+	</resultMap>
+	
+	<insert id="insertComPanyShow" parameterType="com.workmanagement.model.ComPanyShow">
+		INSERT INTO SYS_COMPANYSHOW_TB
+			(DEFAULT_INDEX_ITEM_ID, DIC_ID, USERNAME,TIME,SYS_ORG_ID,SYS_AREA_ID,RECODE_DATE)
+			VALUES(#{defaultItemId}, #{dicId}, #{username},#{time},#{sysOrgId},#{sysAreaId},#{recodeDate})
+	</insert>
+	<select id="queryComPanyShow" resultMap="queryComPanyShows">
+		SELECT a.*,b.CODE_CREDIT,b.CODE_ORG,b.QYMC FROM SYS_COMPANYSHOW_TB a LEFT JOIN DEFAULT_INDEX_ITEM_TB b ON a.DEFAULT_INDEX_ITEM_ID = b.DEFAULT_INDEX_ITEM_ID 
+			<where>
+			 1= 1
+			 <if test="area!=null">
+			 	and a.SYS_AREA_ID =  #{area}
+			</if>
+			<if test="id!=null">
+				and SYS_COMPANYSHOW_ID =#{id}
+			</if>
+			<if test="code!=null">
+				and b.CODE_CREDIT =#{code} or b.CODE_ORG =#{code}
+			</if>
+			<if test="name!=null">
+				and QYMC =#{name}
+			</if>
+			<if test="type!=null">
+				 <foreach collection="type" item="id">
+		           and locate(#{id},DIC_ID) !=0
+		        </foreach>
+			</if>
+			<if test="defaultId!=null">
+				and a.DEFAULT_INDEX_ITEM_ID = #{defaultId}
+			</if>
+			<if test="orgid!=null">
+				and a.sys_org_id = #{orgid}
+			</if>
+			<if test="recode!=null">
+				and recode_date >= #{recode}
+			</if>
+			<if test="recode1!=null">
+				 <![CDATA[
+				and recode_date <=#{recode1}
+				 ]]>
+			</if>
+			<if test="begin!=null">
+				and (RECODE_DATE BETWEEN #{begin}  and #{end}) 
+			</if>
+			<if test="defaultIds!=null">
+				and a.DEFAULT_INDEX_ITEM_ID in 
+				<foreach collection="defaultIds" item="did" open="(" separator="," close=")">
+						#{did}
+					</foreach>
+			</if>
+			order by recode_date desc
+			 </where>
+	</select>
+	
+	<update id="updateComPanyShow" parameterType="com.workmanagement.model.ComPanyShow">
+		UPDATE ADMINISTRATOR.SYS_COMPANYSHOW_TB
+	<set>
+				DIC_ID=#{dicId}
+	</set>
+	WHERE SYS_COMPANYSHOW_ID= #{sysComPanyShowId}
+	</update>
+	
+	<select id="queryAll" resultType="java.util.Map">
+		select * from SYS_COMPANYSHOW_TB 
+		<where>
+		1 = 1
+			<if test="begin!=null">
+			and (RECODE_DATE BETWEEN #{begin}  and #{end}) 
+			</if>
+			<if test="defaultIds!=null">
+				and DEFAULT_INDEX_ITEM_ID in 
+				<foreach collection="defaultIds" item="did" open="(" separator="," close=")">
+						#{did}
+					</foreach>
+			</if>
+			<if test="defaultId!=null">
+			and DEFAULT_INDEX_ITEM_ID = #{defaultId}
+			</if>
+			order by recode_date desc
+		</where>
+	</select>
+	
+	<select id="querySql" resultType="java.util.Map">
+		${sql}
+	</select>
+</mapper>

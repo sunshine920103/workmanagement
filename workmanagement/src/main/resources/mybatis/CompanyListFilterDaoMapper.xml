@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"  ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.CompanyListFilterDao">
+	
+	<select id="queryType" resultType="java.util.Map">
+		SELECT CAPTION_,FILENAME_ FROM EBI41_RPT_BBPT3 WHERE EXTTYPE_='doc'
+	</select>
+	
+	<select id="queryPing" resultType="java.util.Map">
+		select CAPTION_,FILENAME_ from EBI41_RPT_BBPT3 where PARENTDIR_='/信用评分/固定评分模板/'
+	</select>
+	
+	<insert id="insert" parameterType="com.workmanagement.model.CreditReportQuery">
+		insert into 
+			CREDIT_REPORT_QUERY_TB(CREDIT_CODE,ORG_CODE,ENTERPRISE_NAME,SERVICE_CENTER_NAME,SERVICE_CENTER_PHNOE,DATE,CREDIT_REPORT_TYPE
+			,QUERY_REASON,AUTH_FILE,OPERATE_TIME,OPERATOR,SYS_ORG_ID)
+			values(#{creditCode},#{orgCode},#{enterpriseName},#{serviceCenterName},#{serviceCenterPhnoe},
+			#{date},#{creditReportType},#{queryReason},#{authFile},#{operateTime},#{operator},#{orgId})	
+	</insert>
+	<update id="updateCreditReportQuery">
+		UPDATE CREDIT_REPORT_QUERY_TB
+			SET ISEXCEPTION =#{key}
+		WHERE OPERATE_TIME=#{time}
+	</update>
+	
+	
+	<select id="queryNum" resultType="java.lang.Integer">
+		SELECT COUNT(0) FROM CREDIT_REPORT_QUERY_TB WHERE SYS_ORG_ID = #{orgId} AND OPERATE_TIME BETWEEN #{begin} AND #{end}
+	</select>
+</mapper>

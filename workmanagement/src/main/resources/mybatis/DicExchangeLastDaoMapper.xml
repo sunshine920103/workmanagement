@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"  ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.DicExchangeLastDao">
+	<resultMap type="com.workmanagement.model.DicExchangeLast" id="dicExchangeLastMap">
+		<id column="dic_exchange_id" property="dicExchangeId"/>
+		<result column="dic_id" property="dicId"/>
+		<result column="dic_exchange_name" property="dicExchangeName"/>
+		<result column="dic_exchange_code" property="dicExchangeCode"/>
+		<result column="dic_exchange_value" property="dicExchangeValue"/>
+		<result column="dic_exchange_time" property="dicExchangeTime"/>
+		<result column="sys_area_id" property="dicAreaId"/>
+		<result column="sysAreaName" property="sysAreaName"/>
+	<!-- 	<collection property="DicExchangeLast" select="queryDicExchangeHistoryList" ofType="com.workmanagement.model.DicExchangeLast" javaType="ArrayList" column="dic_exchange_id" />  -->
+	</resultMap>
+	<resultMap type="com.workmanagement.model.DicExchangeLast" id="dicExchangeHistoryMap">
+		<id column="dic_exchange_id" property="dicExchangeId"/>
+		<result column="dic_exchange_id" property="dicExchangeId"/>
+		<result column="dic_exchange_name" property="dicExchangeName"/>
+		<result column="dic_exchange_code" property="dicExchangeCode"/>
+		<result column="dic_exchange_value" property="dicExchangeValue"/>
+		<result column="dic_exchange_time" property="dicExchangeTime"/>
+	</resultMap>
+	
+	<!-- 查询关联的子类集合     未修改 -->
+	<select id="queryDicExchangeHistoryList" resultMap="dicExchangeHistoryMap">
+		select * from dic_exchange_tb WHERE dic_exchange_id=#{dicExchangeId}
+	</select> 
+	<!-- 查询列表 -->
+	<!-- <select id="queryDicExchangeLasts" resultMap="dicExchangeLastMap">
+		SELECT * FROM dic_exchange_last_tb
+		<if test="limit!=null">
+			LIMIT #{limit} OFFSET #{offset}
+		</if>
+	</select> -->
+<!--  	<select id="queryDicExchangeLasts" resultMap="dicExchangeLastMap">
+		SELECT * FROM  (
+			SELECT dic_exchange_id, dic_content_id, dic_exchange_name, dic_exchange_code, dic_exchange_value,dic_exchange_time, sys_area_id,
+					ROW_NUMBER() OVER(ORDER BY dic_exchange_id DESC ) AS cpbid  
+			FROM dic_exchange_tb 
+		 ) AS a 
+		 <if test="limit!=null">
+		 <![CDATA[
+			where  a.cpbid > #{limit} AND a.cpbid <= #{offset}
+		 ]]>
+		 </if>
+	</select>  -->
+	<!-- 通过地区id查询汇率 -->
+	<select id="queryDicExchangeLasts" resultMap="dicExchangeLastMap">
+		
+	SELECT t.* ,sy.SYS_AREA_NAME as sysAreaName  FROM DIC_EXCHANGE_TB t,
+		(select DIC_EXCHANGE_NAME,max(DIC_EXCHANGE_TIME) m from (SELECT * FROM DIC_EXCHANGE_TB WHERE SYS_AREA_ID=#{sysAreaId}) group BY DIC_EXCHANGE_NAME,SYS_AREA_ID) AS s 
+		, SYS_AREA_TB sy  
+		WHERE t.DIC_EXCHANGE_NAME=s.DIC_EXCHANGE_NAME
+		AND t.SYS_AREA_ID=sy.SYS_AREA_ID
+		AND t.DIC_EXCHANGE_TIME=s.m
+	
+	</select>
+	
+	<!-- 查询所有汇率 -->
+	
+		<select id="queryAllDicExchange" resultMap="dicExchangeLastMap">
+		
+		SELECT t.*,sy.SYS_AREA_NAME as sysAreaName FROM DIC_EXCHANGE_TB t,
+			(select DIC_EXCHANGE_NAME,max(DIC_EXCHANGE_TIME) m from (SELECT * FROM DIC_EXCHANGE_TB ) group BY DIC_EXCHANGE_NAME,SYS_AREA_ID) AS s 
+			, SYS_AREA_TB sy  
+			WHERE t.DIC_EXCHANGE_NAME=s.DIC_EXCHANGE_NAME
+			AND t.SYS_AREA_ID=sy.SYS_AREA_ID
+			AND t.DIC_EXCHANGE_TIME=s.m
+		<if test="dicExchangeName!=null"> AND t.DIC_EXCHANGE_NAME=#{dicExchangeName}</if>
+	
+	</select>
+	<!-- <select id="getDicExchangeHistorysByPmid" resultMap="dicExchangeHistoryMap">
+		SELECT * FROM  (
+			SELECT dic_exchange_last_id, dic_id, dic_exchange_name, dic_exchange_code, dic_exchange_value,dic_exchange_time,
+					ROW_NUMBER() OVER(ORDER BY dic_exchange_last_id ASC ) AS cpbid  
+			FROM dic_exchange_last_tb
+		 ) AS a 
+		 <if test="limit!=null">
+		 <![CDATA[
+			WHERE  a.cpbid > #{limit} AND a.cpbid <= #{offset}
+		 ]]>
+		 </if>
+	</select> -->	
+	<!-- 查询总数 -->
+	<select id="queryDicExchangeLasts_count" resultType="int">
+	<!--	SELECT COUNT(0) FROM dic_exchange_tb   -->
+		SELECT count(0) FROM (SELECT DIC_EXCHANGE_NAME FROM DIC_EXCHANGE_TB GROUP BY DIC_EXCHANGE_NAME)
+	</select>	
+	<!-- 查询该币种今天是否有上报过 -->
+	<select id="countTodayDicExchangeName" resultType="int">
+		SELECT count(0) from DIC_EXCHANGE_TB where DIC_EXCHANGE_TIME >=#{today} and DIC_EXCHANGE_NAME=#{dicExchangeName}
+	</select>
+	
+	<!-- 通过ID查询 -->
+	<select id="getDicExchangeLastById" resultMap="dicExchangeLastMap">
+		SELECT * FROM dic_exchange_tb WHERE dic_exchange_id = #{dicExchangeId} 
+	</select>
+	<!-- 通过名字查询所有数据 -->
+	<select id="getDicExchangeLastByDicExchangeName" resultMap="dicExchangeLastMap">
+	<!--  SELECT * FROM dic_exchange_tb WHERE dic_exchange_name = #{dicExchangeName} -->	
+		SELECT t.* FROM DIC_EXCHANGE_TB t,
+			(select DIC_EXCHANGE_NAME,max(DIC_EXCHANGE_TIME) m from DIC_EXCHANGE_TB group BY DIC_EXCHANGE_NAME) AS s 
+			WHERE	 t.DIC_EXCHANGE_NAME=s.DIC_EXCHANGE_NAME
+			<!-- WHERE t.DIC_EXCHANGE_NAME=#{dicExchangeName}  -->
+			<if test="dicExchangeName!=null">  AND t.DIC_EXCHANGE_NAME=#{dicExchangeName} </if>
+			<if test="sysAreaId!=null">  AND  t.SYS_AREA_ID=#{sysAreaId} </if>
+			 <!-- AND (t.SYS_AREA_ID=#{sysAreaId} ) -->
+	</select>
+	<!-- 通过名字查询所有数据 -->
+	<select id="getDicExchangeLastByDicExchangeName1" resultMap="dicExchangeLastMap">
+		SELECT * FROM dic_exchange_tb WHERE dic_exchange_name = #{dicExchangeName}
+	</select>
+	<!-- 通过名字和时间查询历史数据-->
+	<select id="getDicExchangeLastByHistory" resultMap="dicExchangeLastMap">
+		SELECT * FROM dic_exchange_tb WHERE dic_exchange_name = #{dicExchangeName} and subStr(dic_exchange_time,1,10)=#{dicExchangeTime}
+		<if test="sysAreaId!=null">  and sys_area_id=#{sysAreaId}</if>
+		 <!-- and sys_area_id=#{sysAreaId} -->
+	</select>
+	<!-- 通过代码删除 -->
+	<update id="delDicExchangeLast" parameterType="java.lang.String">
+		<!-- UPDATE dic_exchange_tb SET dic_exchange_l_delete=1 WHERE dic_exchange_code=#{dicExchangeLastCode} -->
+		delete from dic_exchange_tb where dic_exchange_code=#{dicExchangeLastCode}
+	</update>
+	<!-- 保存 -->
+	<insert id="insert" parameterType="com.workmanagement.model.DicExchangeLast" useGeneratedKeys="true" keyProperty="dicExchangeId">
+		INSERT INTO dic_exchange_tb(dic_content_id,dic_exchange_name,dic_exchange_code,dic_exchange_value,dic_exchange_time,sys_area_id)
+		VALUES(#{dicId},#{dicExchangeName},#{dicExchangeCode},#{dicExchangeValue},#{dicExchangeTime},1)
+	</insert>
+	<insert id="insertExchenge" parameterType="com.workmanagement.model.DicExchangeLast" useGeneratedKeys="true" keyProperty="dicExchangeId">
+		INSERT INTO dic_exchange_tb(dic_content_id,dic_exchange_name,dic_exchange_code,dic_exchange_value,dic_exchange_time,sys_area_id)
+		VALUES(#{dicId},#{dicExchangeName},#{dicExchangeCode},#{dicExchangeValue},#{dicExchangeTime},#{dicAreaId})
+	</insert>
+	<!-- 更新 -->
+	<update id="update" parameterType="com.workmanagement.model.DicExchangeLast">
+		UPDATE dic_exchange_tb
+		<set>
+			<if test="dicId!=null">dic_content_id=#{dicId},</if>
+			<if test="dicExchangeName!=null">dic_exchange_name=#{dicExchangeName},</if>
+			<if test="dicExchangeCode!=null">dic_exchange_code=#{dicExchangeCode},</if>
+			<if test="dicExchangeValue!=null">dic_exchange_value=#{dicExchangeValue},</if>
+			<if test="dicExchangeTime!=null">dic_exchange_time=#{dicExchangeTime},</if>
+			<if test="dicAreaId!=null">sys_area_id=#{dicAreaId}</if>
+		</set>
+		WHERE dic_exchange_id = #{dicExchangeId}
+	</update>
+	<!--  修改数据-->
+	<update id="updateExchange" parameterType="com.workmanagement.model.DicExchangeLast">
+		UPDATE dic_exchange_tb
+		<set>
+			<if test="dicId!=null">dic_content_id=#{dicId},</if>
+			<if test="dicExchangeName!=null">dic_exchange_name=#{dicExchangeName},</if>
+			<if test="dicExchangeCode!=null">dic_exchange_code=#{dicExchangeCode},</if>
+			<if test="dicExchangeValue!=null">dic_exchange_value=#{dicExchangeValue},</if>
+			<if test="dicExchangeTime!=null">dic_exchange_time=#{dicExchangeTime},</if>
+			<if test="dicAreaId!=null">sys_area_id=#{dicAreaId}</if>
+		</set>
+		 WHERE dic_exchange_id = #{dicExchangeId} 
+	</update>
+	<!--  修改历史数据-->
+	<update id="updateHistoryExchange" parameterType="com.workmanagement.model.DicExchangeLast">
+		UPDATE dic_exchange_tb
+		<set>
+		
+			<if test="dicExchangeValue!=null">dic_exchange_value=#{dicExchangeValue}</if>
+		
+		</set>
+		WHERE dic_exchange_id = #{dicExchangeId}
+	</update>
+	
+	<select id="issysIndustryName" parameterType="string" resultType="int">
+		SELECT count(0) FROM SYS_INDUSTRY_TB  WHERE SYS_INDUSTRY_NAME=${sysIndustryName}
+	</select>
+	<!--通过地区id，汇率名称，时间查询所有数据 -->
+	<select id="selectAllByAreaAndTime"  resultMap="dicExchangeLastMap" >
+		SELECT d.*,s.SYS_AREA_NAME as sysAreaName FROM DIC_EXCHANGE_TB d
+				, SYS_AREA_TB s 
+				WHERE d.SYS_AREA_ID=s.SYS_AREA_ID
+				<if test="sysAreaId!=null">  AND d.SYS_AREA_ID=#{sysAreaId}  </if>
+				<if test="startTime!=null">  AND  subStr(dic_exchange_time,1,10)  &gt;=  #{startTime}  </if>
+				<if test="endTime!=null">  AND  subStr(dic_exchange_time,1,10) &lt;= #{endTime} </if>
+				  <!-- AND  subStr(dic_exchange_time,1,10) >= #{startTime}  AND  subStr(dic_exchange_time,1,10) <=#{endTime} -->
+	</select>
+</mapper>

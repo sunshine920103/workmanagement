@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.ManualEntryDao">
+	
+	<!-- 映射指标大类 -->
+	<resultMap type="com.workmanagement.model.IndexTb" id="indexTbMap" >
+		<id property="indexId" column="index_id"/> 
+		<result property="indexName" column="index_name" />
+		<result property="indexCode" column="index_code" />
+		<result property="sysAreaId" column="sys_area_id" />
+		<result property="indexNumber" column="index_number" />
+		<result property="indexNotes" column="index_notes" />
+		<result property="indexUsed" column="index_used" />
+		<result property="indexCreateTime" column="index_create_time" />
+		<result property="sys_user_id" column="sys_user_id" />
+		<result property="sys_org_id" column="sys_org_id" />
+	</resultMap>
+	
+	<resultMap type="com.workmanagement.model.DefaultIndexItem" id="defaultIndexItemMap">
+		<id column="default_index_item_id" property="defaultIndexItemId"/>
+		<result column="code_org" property="codeOrg"/>
+		<result column="code_credit" property="codeCredit"/>
+		<result column="default_index_item_oldid" property="defaultIndexItemOldId"/>
+		<result column="default_index_item_time" property="defaultIndexItemTime"/>
+	</resultMap>
+	
+	<resultMap id="indexItemTbMap" type="com.workmanagement.model.IndexItemTb">
+		<id property="indexItemId" column="index_item_id"/>
+		<result property="indexId" column="index_id"/>
+		<result property="indexItemName" column="index_item_name"/>
+		<result property="indexItemCode" column="index_item_code"/>
+		<result property="indexItemNumber" column="index_item_number"/>
+		<result property="sysAreaId" column="sys_area_id"/>
+		<result property="indexItemUsed" column="index_item_used"/>
+		<result property="indexItemType" column="index_item_type"/>
+		<result property="dicId" column="dic_id"/>
+		<result property="indexItemImportUnique" column="index_item_import_unique"/>
+		<result property="indexItemEmpty" column="index_item_empty"/>
+		<result property="indexItemNetId" column="index_item_net_id"/>
+		<result property="indexItemNotes" column="index_item_notes"/>
+		<result property="indexItemCreateTime" column="index_item_create_time"/>
+		<result property="sys_user_id" column="sys_user_id"/>
+		<result property="sys_org_id" column="sys_org_id"/>
+		<result property="indexItemAliasName" column="index_item_alias_name"/>
+	</resultMap>
+	
+	<!-- 映射机构 -->
+	<resultMap type="com.workmanagement.model.SysOrg" id="sysOrgMap">
+		<id column="sys_org_id" property="sys_org_id"/>
+		<result column="sys_org_upid" property="sys_org_upid"/>
+		<result column="sys_org_financial_code" property="sys_org_financial_code"/>
+		<result column="sys_org_name" property="sys_org_name"/>
+		<result column="sys_org_type_id" property="sys_org_type_id"/>
+		<result column="sys_org_type_name" property="sys_org_type_name"/>
+		<result column="sys_area_id" property="sys_area_id"/>
+		<result column="sys_org_address_area_name" property="sys_org_address_area_name"/>
+		<result column="sys_org_phone" property="sys_org_phone"/>
+		<result column="sys_org_address" property="sys_org_address"/>
+		<result column="sys_org_representative" property="sys_org_representative"/>
+		<result column="sys_org_finance_operator" property="sys_org_finance_operator"/>
+		<result column="sys_org_finance_operator_phone" property="sys_org_finance_operator_phone"/>
+		<result column="sys_org_code" property="sys_org_code"/>
+		<result column="sys_org_credit_code" property="sys_org_credit_code"/>
+		<result column="sys_org_licence" property="sys_org_licence"/>
+		<result column="sys_org_reg_capital" property="sys_org_reg_capital"/>
+		<result column="sys_org_issuance_day" property="sys_org_issuance_day"/>
+		<result column="sys_org_code_number" property="sys_org_code_number"/>
+		<result column="sys_org_reg_number" property="sys_org_reg_number"/>
+		<result column="sys_org_notes" property="sys_org_notes"/>
+		<result column="sys_org_used" property="sys_org_used"/>
+		<result column="sys_org_current_query_times" property="sys_org_current_query_times"/>
+		<result column="sys_org_current_limit_query_times" property="sys_org_current_limit_query_times"/>
+		<result column="sys_org_type" property="sys_org_type"/>
+        <result column="sys_org_service_center_call" property="sys_org_service_center_call"/>
+        <result column="sys_org_service_center_name" property="sys_org_service_center_name"/>
+        <result column="sys_org_credit_report" property="sys_org_credit_report"/>
+        <result column="sys_org_logo" property="sys_org_logo"/>
+	</resultMap>
+	
+	<resultMap type="com.workmanagement.model.SysUserLog" id="sysUserLogMap">
+		<id column="sys_user_log_id" property="sysUserLogId"/>
+		<result column="sys_org_id" property="sysOrgId"/>
+		<result column="sys_user_log_org_name" property="sysUserLogOrgName"/>
+		<result column="sys_user_log_user_name" property="sysUserLogUserName"/>
+		<result column="sys_user_log_role_name" property="sysUserLogRoleName"/>
+		<result column="sys_user_log_menu_name" property="sysUserLogMenuName"/>
+		<result column="sys_user_log_enterprise_code" property="sysUserLogEnterpriseCode"/>
+		<result column="index_id" property="indexId"/>
+		<result column="index_item_id" property="indexItemId"/>
+		<result column="sys_user_log_old_value" property="sysUserLogOldValue"/>
+		<result column="sys_user_log_new_value" property="sysUserLogNewValue"/>
+		<result column="sys_user_log_time" property="sysUserLogTime"/>
+		<result column="sys_user_log_operate_type" property="sysUserLogOperateType"/>
+		<result column="sys_user_log_auth_file" property="sysUserLogAuthFile"/>
+		<result column="sys_user_log_result" property="sysUserLogResult"/>
+		<result column="sys_user_log_count" property="sysUserLogCount"/>
+		<result column="sys_user_log_query_user_condition" property="sysUserLogQueryUserCondition"/>
+		<result column="sys_user_log_query_sql" property="sysUserLogQuerySql"/>
+		<result column="sys_user_log_url" property="sysUserLogUrl"/>
+		<result column="sys_user_log_file" property="sysUserLogFile"/>
+		<result column="index_name" property="indexName"/>
+		<result column="index_item_name" property="indexItemName"/>
+	</resultMap>
+	
+	<resultMap type="com.workmanagement.model.DicContent" id="dicContentMap">
+		<id column="dic_content_id" property="dicContentId"/>
+		<result column="dic_id" property="dicId"/>
+		<result column="dic_content_code" property="dicContentCode"/>
+		<result column="dic_content_value" property="dicContentValue"/>
+	</resultMap>
+	
+	<!--查询指标大类 -->
+	<select id="queryIndexTbAll" resultMap="indexTbMap">
+		SELECT * FROM INDEX_TB 
+		WHERE INDEX_USED=1
+		<if test="areaId!=null">
+			AND SYS_AREA_ID IN
+			<foreach collection="areaId" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+		<if test="name!=null">
+			AND INDEX_NAME LIKE '%${name}%'
+		</if>
+	</select> 
+	
+	<!-- 通过机构码查询 -->
+	<select id="queryCodeOrg" resultMap="defaultIndexItemMap">
+		SELECT * FROM default_index_item_tb
+        WHERE code_org=#{codeOrg}
+        AND SYS_AREA_ID=#{areaId}
+	</select>
+	<!-- 通过信用码查询 -->
+	<select id="queryCodeCredit" resultMap="defaultIndexItemMap">
+		SELECT * FROM default_index_item_tb
+        WHERE code_credit=#{codeCredit}
+        AND SYS_AREA_ID=#{areaId}
+	</select>
+	
+	<!-- 通过id查询指标大类 -->
+	<select id="queryIndexTbById" resultMap="indexTbMap">
+		SELECT * FROM INDEX_TB
+        WHERE INDEX_ID=#{id}
+	</select>
+	
+	<!-- 查询临时表数据 -->
+	<select id="temporaryTableList" resultType="java.util.Map">
+		${queryTemporarySql}
+	</select>
+	
+	<!-- 查询手工修改列表 -->
+	<select id="querySysUserLogList" resultType="com.workmanagement.model.SysUserLog">
+		SELECT 	(SELECT INDEXTB.INDEX_NAME FROM INDEX_TB INDEXTB 
+				WHERE INDEXTB.INDEX_ID=USERLOG.INDEX_ID) AS indexName,
+				USERLOG.SYS_USER_LOG_ORG_NAME AS sysUserLogOrgName,
+				USERLOG.SYS_USER_LOG_ID AS sysUserLogId,
+				USERLOG.SYS_USER_LOG_TIME AS sysUserLogTime
+		FROM 	SYS_USER_LOG_TB USERLOG
+		WHERE   USERLOG.SYS_USER_LOG_MENU_NAME='手工录入'
+				and USERLOG.SYS_ORG_ID IN
+		<foreach collection="orgIds" item="id" open="(" separator="," close=")">
+				#{id}
+		</foreach>
+		ORDER BY USERLOG.SYS_USER_LOG_TIME DESC
+	</select>
+
+	<!-- 通过ID查询 -->
+	<select id="getSysUserLogById" resultMap="sysUserLogMap">
+		SELECT * FROM SYS_USER_LOG_TB WHERE SYS_USER_LOG_ID = #{id}
+	</select>
+	
+	<!-- 通过ID查询 -->
+	<select id="getDefaultIndexItemById" resultMap="defaultIndexItemMap">
+		SELECT * FROM default_index_item_tb WHERE default_index_item_id = #{id}
+	</select>
+	
+	<!-- 通過code得到对象 -->
+	<select id="getIndexItemTbByCode" resultMap="indexItemTbMap">
+		SELECT * FROM index_item_tb 
+		WHERE index_item_code = #{code}
+	</select> 
+	
+	<!--通過name获取指标大类  -->
+	<select id="queryIndexTbByIndexName" resultMap="indexTbMap">
+		SELECT * FROM index_tb
+		WHERE index_name = #{name}
+	</select>
+	
+	<update id="updataStatus" parameterType="java.lang.String">
+		${updataStatus}
+	</update>
+	
+	<!-- 查询大指标下的小指标 -->
+	<select id="queryIndexItemsByIndex" resultMap="indexItemTbMap">
+		SELECT * FROM index_item_tb WHERE index_id=(SELECT index_id FROM index_tb WHERE index_id=#{indexId}) 
+	</select>
+	
+	<!--查询机构及下级机构 -->
+	<select id="querySysOrgAll" resultMap="sysOrgMap">
+		SELECT * FROM SYS_ORG_TB 
+		WHERE SYS_ORG_TYPE=0
+		<if test="orgType==1">
+			AND SYS_AREA_ID IN
+			<foreach collection="orgIds" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+		<if test="orgType==2">
+			AND SYS_ORG_ID =#{orgIds}
+		</if>
+		<if test="orgType==3">
+			AND SYS_AREA_ID IN
+			<foreach collection="areaId" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+		<if test="orgType==4">
+			AND SYS_ORG_ID IN
+			<foreach collection="sysOrgIds" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+		<if test="name!=null">
+			AND SYS_ORG_NAME LIKE '%${name}%'
+		</if>
+	</select>
+	
+	<!-- 修改动态表数据 -->
+	<update id="updateIndexTbSql">
+		${updateIndexTbSql}
+	</update>
+	
+	<!-- 查询手工修改历史 -->
+	<select id="querySysUserLog" resultType="com.workmanagement.model.SysUserLog">
+		SELECT 	(SELECT INDEXTB.INDEX_NAME FROM INDEX_TB INDEXTB 
+				WHERE INDEXTB.INDEX_ID=USERLOG.INDEX_ID) AS indexName,
+				(SELECT INDEXITEM.INDEX_ITEM_NAME FROM INDEX_ITEM_TB INDEXITEM 
+				WHERE INDEXITEM.INDEX_ITEM_ID=USERLOG.INDEX_ITEM_ID) AS indexitemName,
+				USERLOG.SYS_USER_LOG_NEW_VALUE AS sysUserLogNewValue,
+				USERLOG.SYS_USER_LOG_OLD_VALUE AS sysUserLogOldValue,
+				USERLOG.SYS_USER_LOG_ORG_NAME AS sysUserLogOrgName,
+				USERLOG.SYS_USER_LOG_TIME AS sysUserLogTime,
+				USERLOG.SYS_USER_LOG_USER_NAME AS sysUserLogUserName
+		FROM 	SYS_USER_LOG_TB USERLOG 
+		WHERE 	USERLOG.SYS_USER_LOG_MENU_NAME='手工录入'
+		        AND USERLOG.INDEX_ID=#{indexId,jdbcType=VARCHAR}
+		ORDER BY USERLOG.SYS_USER_LOG_TIME DESC
+	</select>
+	
+	<select id="queryDicContentByIdAndCode" resultMap="dicContentMap" parameterType="com.workmanagement.model.DicContent">
+		SELECT * FROM DIC_CONTENT_TB 
+		WHERE DIC_ID=#{dicId}
+		<if test="dicContentCode!=null">
+			AND DIC_CONTENT_CODE=#{dicContentCode}
+		</if>
+		<if test="dicContentValue!=null">
+			AND DIC_CONTENT_VALUE=#{dicContentValue}
+		</if>
+	</select>
+	
+	<!-- 通过id修改企业二码 -->
+	<update id="updateDefaultIndexitemCodeCreditById">
+		UPDATE 	DEFAULT_INDEX_ITEM_TB 
+		SET 	CODE_CREDIT=#{codeCredit}
+		WHERE 	DEFAULT_INDEX_ITEM_ID=#{defaultId}
+	</update>
+	
+	<update id="updateDefaultIndexitemCodeOrgById">
+		UPDATE 	DEFAULT_INDEX_ITEM_TB 
+		SET 	CODE_ORG=#{codeOrg} 
+		WHERE 	DEFAULT_INDEX_ITEM_ID=#{defaultId}
+	</update>
+	
+	<!-- 查询是否有重复 -->
+	<select id="queryDefaultIndexItemCountByCodeCredit" resultType="Integer" parameterType="map">
+		SELECT COUNT(*) FROM DEFAULT_INDEX_ITEM_TB 
+		WHERE 	CODE_CREDIT=#{codeCredit}
+				AND SYS_AREA_ID=#{areaId}
+				AND DEFAULT_INDEX_ITEM_ID!=#{defaultId}
+	</select>
+	
+	<select id="queryDefaultIndexItemCountByCodeOrg" resultType="Integer" parameterType="map">
+		SELECT COUNT(*) FROM DEFAULT_INDEX_ITEM_TB 
+		WHERE 	CODE_ORG=#{codeOrg}
+				AND SYS_AREA_ID=#{areaId} 
+				AND DEFAULT_INDEX_ITEM_ID!=#{defaultId}
+	</select>
+
+</mapper>

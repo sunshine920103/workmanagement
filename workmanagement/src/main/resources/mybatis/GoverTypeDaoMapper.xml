@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.GoverTypeDao">
+
+	<resultMap type="com.workmanagement.model.GoverType" id="goverTypeMap">
+		<id column="sys_gov_type_id" property="sysGovTypeId" />
+		<result column="sys_gov_type_code" property="sysGovTypeCode" />
+		<result column="sys_gov_type_name" property="sysGovTypeName" />
+		<result column="sys_gov_type_notes" property="sysGovTypeNotes" />
+		<result column="sys_gov_type_upid" property="sysGovTypeUpid" />
+	</resultMap>
+	
+	<!--查询政府部门类型列表 -->
+	<select id="queryGoverTypeList" resultMap="goverTypeMap" parameterType="com.workmanagement.model.GoverType">
+		SELECT * FROM sys_gov_type_tb
+		WHERE 	1=1
+		<if test="sysGovTypeName!=null">
+				AND sys_gov_type_name LIKE '%${sysGovTypeName}%'
+		</if>
+		order by SYS_GOV_TYPE_CODE
+	</select> 
+	
+	<!-- 通過Name查詢名称是否重复 -->
+	<select id="queryGoverTypeByNameCount" resultType="int" parameterType="com.workmanagement.model.GoverType">
+		SELECT COUNT(*) FROM SYS_GOV_TYPE_TB 
+		WHERE SYS_GOV_TYPE_NAME= #{sysGovTypeName}
+		<if test="sysGovTypeId!=null">
+				AND sys_gov_type_id != #{sysGovTypeId}
+		</if>
+	</select>
+	<!-- 通過Code查詢名称是否重复 -->
+	<select id="queryGoverTypeByCodeCount" resultType="int" parameterType="com.workmanagement.model.GoverType">
+		SELECT COUNT(*) FROM SYS_GOV_TYPE_TB 
+		WHERE SYS_GOV_TYPE_CODE= #{sysGovTypeCode}
+		<if test="sysGovTypeId!=null">
+				AND sys_gov_type_id != #{sysGovTypeId}
+		</if>
+	</select>
+	
+	<!-- 保存政府部门类型 -->
+	<insert id="saveGoverType" parameterType="com.workmanagement.model.GoverType">
+		INSERT INTO sys_gov_type_tb(
+				sys_gov_type_code,
+				sys_gov_type_name,
+				sys_gov_type_notes,
+				sys_gov_type_upid) VALUES(
+				#{sysGovTypeCode},
+				#{sysGovTypeName},
+				#{sysGovTypeNotes},
+				#{sysGovTypeUpid})
+	</insert>
+	
+	<!-- 通過ID查詢政府部门类型 -->
+	<select id="queryGoverTypeById" resultType="com.workmanagement.model.GoverType">
+		SELECT 	GOVTYPE.SYS_GOV_TYPE_ID AS sysGovTypeId,
+				GOVTYPE.SYS_GOV_TYPE_CODE AS sysGovTypeCode,
+				GOVTYPE.SYS_GOV_TYPE_NAME AS sysGovTypeName,
+				GOVTYPE.SYS_GOV_TYPE_UPID AS sysGovTypeUpid,
+				GOVTYPE.SYS_GOV_TYPE_NOTES AS sysGovTypeNotes,
+				(SELECT GOV.SYS_GOV_TYPE_NAME 
+				FROM SYS_GOV_TYPE_TB GOV 
+				WHERE GOV.SYS_GOV_TYPE_ID=GOVTYPE.SYS_GOV_TYPE_UPID) AS sysGovTypeUpname
+		FROM 	SYS_GOV_TYPE_TB GOVTYPE
+		WHERE 	GOVTYPE.SYS_GOV_TYPE_ID= #{id}
+	</select>
+	
+	<!-- 删除机构类别 -->
+	<delete id="delGoverTypeById">
+		DELETE SYS_GOV_TYPE_TB WHERE SYS_GOV_TYPE_ID=#{id}
+	</delete>
+	
+	<!-- 通過ID查詢政府部门数量 -->
+	<select id="queryGoverTypeByIdCount" resultType="int">
+		SELECT COUNT(*) FROM SYS_GOV_TB 
+		WHERE SYS_GOV_TYPE_ID= #{id}
+	</select>
+	
+	<!-- 修改政府部门类型 -->
+	<update id="updateGoverType" parameterType="com.workmanagement.model.GoverType">
+		UPDATE 	SYS_GOV_TYPE_TB
+		<set>
+			<if test="sysGovTypeName!=null">
+				sys_gov_type_name = #{sysGovTypeName},
+			</if>
+			<if test="sysGovTypeCode!=null">
+				sys_gov_type_code = #{sysGovTypeCode},
+			</if>
+				sys_gov_type_notes = #{sysGovTypeNotes}
+		</set>
+		WHERE 	sys_gov_type_id = #{sysGovTypeId}
+	</update>
+	
+	<!-- 通过政府类别名称查找政府代码 -->
+	<select id="queryGoverTypeCodeByName" resultType="String" parameterType="String">
+		SELECT SYS_GOV_TYPE_CODE FROM SYS_GOV_TYPE_TB WHERE SYS_GOV_TYPE_NAME =#{name}
+	</select>
+	
+	<select id="queryTypeAll" resultType="com.workmanagement.model.GoverType">
+		SELECT 	GOVTYPE.SYS_GOV_TYPE_ID AS sysGovTypeId,
+				GOVTYPE.SYS_GOV_TYPE_CODE AS sysGovTypeCode,
+				GOVTYPE.SYS_GOV_TYPE_NAME AS sysGovTypeName,
+				GOVTYPE.SYS_GOV_TYPE_UPID AS sysGovTypeUpid,
+				GOVTYPE.SYS_GOV_TYPE_NOTES AS sysGovTypeNotes,
+				(SELECT GOV.SYS_GOV_TYPE_NAME 
+				FROM SYS_GOV_TYPE_TB GOV 
+				WHERE GOV.SYS_GOV_TYPE_ID=GOVTYPE.SYS_GOV_TYPE_UPID) AS sysGovTypeUpname
+		FROM 	SYS_GOV_TYPE_TB GOVTYPE
+		WHERE 	1=1
+		<if test="name!=null">
+				AND GOVTYPE.SYS_GOV_TYPE_NAME LIKE '%${name}%'
+		</if>
+	</select>
+	
+	<!-- 根据政府类型名称查询 -->
+	<select id="queryGoverTypeIdByName" resultMap="goverTypeMap">
+		SELECT * FROM SYS_GOV_TYPE_TB WHERE SYS_GOV_TYPE_NAME= #{name}
+	</select>
+
+</mapper>

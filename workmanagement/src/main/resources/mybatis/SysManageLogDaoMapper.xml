@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysManageLogDao">
+	
+		<resultMap type="com.workmanagement.model.SysManageLog" id="sysManageLogId">
+		<id column="sys_manage_log_id" property="sysManageLogId"/>
+		<result column="sys_org_id" property="sysOrgId"/>
+		<result column="sys_manage_log_org_name" property="sysManageLogOrgName"/>
+		<result column="sys_manage_log_user_name" property="sysManageLogUserName"/>
+		<result column="sys_manage_log_role_name" property="sysManageLogRoleName"/>
+		<result column="sys_manage_log_menu_name" property="sysManageLogMenuName"/>
+		<result column="sys_manage_log_enterprise_code" property="sysManageLogEnterpriseCode"/>
+		<result column="index_id" property="indexId"/>
+		<result column="index_item_id" property="indexItemId"/>
+		<result column="sys_manage_log_old_value" property="sysManageLogOldValue"/>
+		<result column="sys_manage_log_new_value" property="sysManageLogNewValue"/>
+		<result column="sys_manage_log_time" property="sysManageLogTime"/>
+		<result column="sys_manage_log_operate_type" property="sysManageLogOperateType"/>
+		<result column="sys_manage_log_auth_file" property="sysManageLogAuthFile"/>
+		<result column="sys_manage_log_result" property="sysManageLogResult"/>
+		<result column="sys_manage_log_count" property="sysManageLogCount"/>
+		<result column="sys_manage_log_query_user_condition" property="sysManageLogQueryUserCondition"/>
+		<result column="sys_manage_log_query_sql" property="sysManageLogQuerySql"/>
+		<result column="sys_manage_log_url" property="sysManageLogUrl"/>
+		<result column="sys_manage_log_file" property="sysManageLogFile"/>
+		<result column="index_name" property="indexName"/>
+		<result column="index_item_name" property="indexItemName"/>
+		<result column="sys_manage_log_ip" property="sysManageLogIp"/>
+	</resultMap>
+	
+	<insert id="insertSysManageLogTb" parameterType="com.workmanagement.model.SysManageLog" useGeneratedKeys="true" keyProperty="sysManageLogId">
+		INSERT INTO sys_manage_log_tb(sys_org_id,sys_manage_log_org_name,sys_manage_log_user_name,sys_manage_log_role_name,
+		sys_manage_log_menu_name,sys_manage_log_enterprise_code,index_id,index_item_id,sys_manage_log_old_value,
+		sys_manage_log_new_value,sys_manage_log_time,sys_manage_log_operate_type,sys_manage_log_auth_file,sys_manage_log_result,
+		sys_manage_log_count,sys_manage_log_query_user_condition,sys_manage_log_query_sql,sys_manage_log_url,sys_manage_log_file,sys_manage_log_ip)
+		VALUES(#{sysOrgId,jdbcType=VARCHAR},#{sysManageLogOrgName,jdbcType=VARCHAR},#{sysManageLogUserName,jdbcType=VARCHAR},#{sysManageLogRoleName,jdbcType=VARCHAR},#{sysManageLogMenuName,jdbcType=VARCHAR},
+			#{sysManageLogEnterpriseCode,jdbcType=VARCHAR},#{indexId,jdbcType=VARCHAR},#{indexItemId,jdbcType=VARCHAR},#{sysManageLogOldValue,jdbcType=VARCHAR},#{sysManageLogNewValue,jdbcType=VARCHAR},
+			#{sysManageLogTime,jdbcType=VARCHAR},#{sysManageLogOperateType,jdbcType=VARCHAR},#{sysManageLogAuthFile,jdbcType=VARCHAR},#{sysManageLogResult,jdbcType=VARCHAR},#{sysManageLogCount,jdbcType=VARCHAR},
+			#{sysManageLogQueryUserCondition,jdbcType=VARCHAR},#{sysManageLogQuerySql,jdbcType=VARCHAR},#{sysManageLogUrl,jdbcType=VARCHAR},#{sysManageLogFile,jdbcType=VARCHAR},#{sysManageLogIp,jdbcType=VARCHAR})
+	</insert>
+	
+	
+	
+	<select id="queryAdminLogTbs" resultMap="sysManageLogId">
+		SELECT * FROM sys_manage_log_tb S
+		<where>
+			1=1
+			<if test="key!=null">AND S.sys_manage_log_user_name LIKE '%'||#{key}||'%' OR S.sys_manage_log_menu_name LIKE '%'||#{key}||'%'</if>
+			<if test="menu!=null">AND S.sys_manage_log_menu_name = #{menu}</if>
+			<if test="types!=null">AND S.sys_manage_log_operate_type = #{types}</if>
+			<if test="begin!=null">AND S.sys_manage_log_time BETWEEN #{begin} AND #{end}</if>
+			<if test="id!=null">AND S.sys_manage_log_id =#{id}</if>
+			<if test="instiAll!=null">
+				AND S.sys_org_id IN
+				<foreach collection="instiAll" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>	
+			</if>
+			<if test="orgIn!=null">
+				and S.sys_org_id in (select sys_org_id from sys_org_tb where SYS_ORG_AFFILIATION_AREA_ID = #{orgIn})
+			</if>
+			 order by sys_manage_log_id desc
+		</where>
+	</select>
+	<select id="querySql" resultMap="sysManageLogId">
+		${sql}
+	</select>
+	<select id="queryMenu" resultType="com.workmanagement.model.SysMenu">
+		SELECT * FROM sys_menu_tb WHERE sys_menu_parent_id IN(select sys_menu_id from sys_menu_tb where sys_menu_name ='基础设置' or sys_menu_name ='安全管理' or sys_menu_name ='系统管理')
+	</select>
+</mapper>

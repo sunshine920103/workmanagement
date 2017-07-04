@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysMenuDao">
+	<select id="queryMenu" resultType="com.workmanagement.model.SysMenu">
+		select * from sys_menu_tb 
+		<where>
+		 1=1 
+			<if test="type!=null">
+				and sys_menu_type = #{type}
+			</if>
+			<if test="menuId!=null">
+				and sys_menu_id =#{menuId}
+			</if>
+			<if test="path!=null">
+				and sys_menu_parent_id != 0 and (sys_menu_path = '' OR sys_menu_path IS NULL)
+			</if>
+		</where>
+	</select>
+	<update id="updateMenu" parameterType="com.workmanagement.model.SysMenu">
+		UPDATE SYS_MENU_TB
+		<set>
+		<if test="sys_menu_name!=null">SYS_MENU_NAME=#{sys_menu_name},</if>
+		<if test="sys_menu_path!=null">sys_menu_path=#{sys_menu_path},</if>
+		<if test="sys_menu_parent_id!=null">sys_menu_parent_id=#{sys_menu_parent_id},</if>
+		<if test="sys_menu_weight!=null">sys_menu_weight=#{sys_menu_weight}</if>
+		</set>
+			WHERE SYS_MENU_ID=#{sys_menu_id}
+	</update>
+	<insert id ="insertMenu" parameterType="com.workmanagement.model.SysMenu" useGeneratedKeys="true" keyProperty="sys_menu_id">
+		INSERT INTO SYS_MENU_TB
+			( SYS_MENU_NAME, SYS_MENU_PATH, SYS_MENU_PARENT_ID, SYS_MENU_ICON, SYS_MENU_WEIGHT, SYS_MENU_TYPE)
+			VALUES(#{sys_menu_name}, #{sys_menu_path}, #{sys_menu_parent_id}, #{sys_menu_icon}, #{sys_menu_weight}, 1)
+		
+	</insert>
+	
+	<delete id="deleteMenu" parameterType="java.lang.Integer">
+		DELETE FROM SYS_MENU_TB
+				WHERE SYS_MENU_ID=#{menuId}
+	</delete>
+	
+	<select id="queryMenuName" resultType="com.workmanagement.model.SysMenu" parameterType="java.lang.String">
+		select * from sys_menu_tb where sys_menu_name=#{name}
+	</select>
+	<insert id ="insertRoleMenu">
+		INSERT INTO sys_role_menu_tb VALUES(#{rid},#{mid})
+	</insert>
+</mapper>

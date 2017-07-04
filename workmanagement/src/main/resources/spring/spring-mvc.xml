@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd 
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd"
+	default-autowire="byName">
+	
+     <!-- 使用util properties 避免多mybatis配置时参数初始化问题 -->
+	<util:properties id="dataSourceProps" location="classpath:jdbc.properties"/>
+	
+	<!-- scan all spring supported annotation, but exclude controller here -->
+	<context:component-scan base-package="com.workmanagement">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
+	<mybatis:scan base-package="com.workmanagement.dao" />
+	
+	<!-- <bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource">
+		<property name="driverClass" value="#{dataSourceProps['jdbc.driver']}" />
+		<property name="jdbcUrl" value="#{dataSourceProps['jdbc.url']}" />
+		<property name="username" value="#{dataSourceProps['jdbc.user']}" />
+		<property name="password" value="#{dataSourceProps['jdbc.password']}" />
+		
+		<property name="idleConnectionTestPeriodInMinutes" value="60"/>检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0
+	    <property name="idleMaxAgeInMinutes" value="60"/>连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0
+	    <property name="maxConnectionsPerPartition" value="10"/>每个分区最大的连接数
+	    <property name="minConnectionsPerPartition" value="1"/>每个分区最小的连接数
+	    <property name="partitionCount" value="4"/>分区数，默认值2，最小1，推荐3-4，视应用而定 
+	    <property name="acquireIncrement" value="2"/>当连接池中的连接耗尽的时候一次同时获取的连接数。Default: 1
+	    <property name="statementsCacheSize" value="10"/>缓存prepared statements的大小，默认值：0
+	</bean> -->
+	
+	<!-- 阿里 druid 数据库连接池 -->  
+  	<bean id = "dataSource" class = "com.alibaba.druid.pool.DruidDataSource" destroy-method = "close">    
+       	<!-- 数据库基本信息配置 -->  
+       	<property name = "url" value = "#{dataSourceProps['jdbc.url']}" />    
+       	<property name = "username" value = "#{dataSourceProps['jdbc.user']}" />    
+      	<property name = "password" value = "#{dataSourceProps['jdbc.password']}" />    
+       	<property name = "driverClassName" value = "#{dataSourceProps['jdbc.driver']}" />    
+        <!-- 最大并发连接数 -->  
+       	<property name = "maxActive" value = "500" />  
+       	<!-- 初始化连接数量 -->  
+       	<property name = "initialSize" value = "1" />  
+       	<!-- 配置获取连接等待超时的时间 -->  
+       	<property name = "maxWait" value = "60000" />  
+       	<!-- 最小空闲连接数 -->  
+       	<property name = "minIdle" value = "1" />    
+       	<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->  
+       	<property name = "timeBetweenEvictionRunsMillis" value ="60000" />
+       	<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+       	<property name = "minEvictableIdleTimeMillis" value ="300000" />
+       	<property name="removeAbandonedTimeout" value="3600" />
+       	<property name="removeAbandoned" value="true"></property>
+       	<property name = "testWhileIdle" value = "true" />
+       	<property name = "testOnBorrow" value = "false" />
+       	<property name = "testOnReturn" value = "false" />
+       	<property name="poolPreparedStatements" value = "false" />
+      	<property name = "maxOpenPreparedStatements" value ="100" />
+      	<property name = "filters" value = "stat" />
+  	</bean>  
+	
+	<!-- 加载*mapper。xml -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="mapperLocations" value="classpath:mybatis/*.xml" />
+	</bean>
+	<!-- 配置事务 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<tx:advice id="txAdvice" transaction-manager="transactionManager" >
+		<tx:attributes>
+			<tx:method name="del*" propagation="REQUIRED" rollback-for="java.lang.Exception" no-rollback-for="java.lang.RuntimeException" />
+			<tx:method name="save*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="update*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="add*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="insert*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="find*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
+			<tx:method name="query*" propagation="SUPPORTS" read-only="true"/>
+			<tx:method name="*" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+		<aop:advisor pointcut="execution(* com.workmanagement..*Service.*(..))" advice-ref="txAdvice" />
+	</aop:config>
+	
+	<!-- 异常解析 -->
+	<bean id="exceptionResolver"
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="org.springframework.security.access.AccessDeniedException">error/access-denied</prop>
+				<prop key="net.yingzhuo.me.exception.NonEmptyGroupException">error/non-empty-group</prop>
+			</props>
+		</property>
+		<property name="warnLogCategory" value="以下为警告信息" />
+		<property name="defaultErrorView" value="error" />
+		<property name="defaultStatusCode" value="500" />
+	</bean>
+	<!-- 用于ajax传文件-->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8"></property>
+        <property name="maxInMemorySize" value="10240000"></property>
+    </bean>
+<!-- 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+	    <property name="host" value="smtp.qq.com"></property>
+	    <property name="port" value="465"></property>
+	    <property name="username" value="2332452470@qq.com"></property>
+	    <property name="password" value="yikdzekuhqrfecdf"></property>
+	    <property name="javaMailProperties" >
+	        <props>
+	        	<prop key="mail.smtp.auth">true</prop> 
+	            <prop key="mail.smtp.timeout">25000</prop>
+	            <prop key="mail.smtp.ssl.enable">true</prop> 
+	            <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+	        </props>
+	    </property>
+	</bean> -->
+</beans>

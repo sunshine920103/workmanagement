@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysGoverDao">
+
+	<resultMap type="com.workmanagement.model.SysGover" id="sysGoverMap">
+		<id column="sys_gov_id" property="sysGovId" />
+		<result column="sys_gov_financial_code" property="sysGovFinancialCode" />
+		<result column="sys_gov_name" property="sysGovName" />
+		<result column="sys_gov_upid" property="sysGovUpid" />
+		<result column="sys_gov_type_id" property="sysGovTypeId" />
+		<result column="sys_dic_id" property="sysDicId" />
+		<result column="sys_org_notes" property="sysOrgNotes" />
+		<result column="sys_area_id" property="sysAreaId" />
+	</resultMap>
+	
+	<resultMap type="com.workmanagement.model.Dic" id="dicMap">
+		<id column="dic_id" property="dicId"/>
+		<result column="dic_name" property="dicName"/>
+		<result column="sys_area_id" property="sysAreaId"/>
+	</resultMap>
+	
+	<resultMap type="com.workmanagement.model.SysArea" id="sysArea">
+		<id column="sys_area_id" property="sysAreaId" />
+		<result column="sys_area_upid" property="sysAreaUpid" />
+		<result column="sys_area_name" property="sysAreaName" />
+		<result column="sys_area_code" property="sysAreaCode" />
+		<result column="sys_area_type" property="sysAreaType" />
+		<result column="sys_area_notes" property="sysAreaNotes" />
+		<result column="sys_area_used" property="sysAreaUsed" />
+	</resultMap>
+	
+	<!--查询政府部门列表 -->
+	<select id="querySysGoverList" resultMap="sysGoverMap" parameterType="com.workmanagement.model.SysGover">
+		SELECT * FROM SYS_GOV_TB
+		WHERE 	1=1
+		<if test="sysGovName!=null">
+				AND sys_gov_name LIKE '%${sysGovName}%'
+		</if>
+		order by SYS_GOV_FINANCIAL_CODE
+	</select> 
+	
+	<!-- 通過ID查詢政府部门 -->
+	<select id="querySysGoverById" resultType="com.workmanagement.model.SysGover">
+		SELECT 	GOVTB.SYS_GOV_ID AS sysGovId, 
+				GOVTB.SYS_GOV_NAME AS sysGovName,
+				GOVTB.SYS_GOV_FINANCIAL_CODE AS sysGovFinancialCode,
+				GOVTB.SYS_GOV_UPID AS sysGovUpid,
+				GOVTB.SYS_GOV_TYPE_ID AS sysGovTypeId,
+				GOVTB.SYS_DIC_ID AS sysDicId,
+				GOVTB.SYS_AREA_ID AS sysAreaId,
+				GOVTB.SYS_ORG_NOTES AS sysOrgNotes,
+				(SELECT GOV.SYS_GOV_NAME FROM SYS_GOV_TB GOV 
+				WHERE GOV.SYS_GOV_ID=GOVTB.SYS_GOV_UPID) AS sysGovUpname,
+				(SELECT GOV.SYS_GOV_FINANCIAL_CODE FROM SYS_GOV_TB GOV 
+				WHERE GOV.SYS_GOV_ID=GOVTB.SYS_GOV_UPID) AS sysGovUpcode,
+				(SELECT GOVTYPE.SYS_GOV_TYPE_NAME FROM SYS_GOV_TYPE_TB GOVTYPE 
+				WHERE GOVTYPE.SYS_GOV_TYPE_ID=GOVTB.SYS_GOV_TYPE_ID) AS sysGovTypeName,
+				(SELECT GOVTYPE.SYS_GOV_TYPE_CODE FROM SYS_GOV_TYPE_TB GOVTYPE 
+				WHERE GOVTYPE.SYS_GOV_TYPE_ID=GOVTB.SYS_GOV_TYPE_ID) AS sysGovTypeCode
+		FROM 	SYS_GOV_TB GOVTB
+		WHERE 	GOVTB.SYS_GOV_ID=#{id}
+	</select>
+	
+	<!-- 保存政府部门 -->
+	<insert id="saveSysGover" parameterType="com.workmanagement.model.SysGover">
+		INSERT INTO SYS_GOV_TB(
+				SYS_GOV_NAME,
+				SYS_GOV_FINANCIAL_CODE,
+				SYS_GOV_UPID,
+				SYS_GOV_TYPE_ID,
+				SYS_DIC_ID,
+				SYS_ORG_NOTES,
+				SYS_AREA_ID)VALUES(
+				#{sysGovName},
+				#{sysGovFinancialCode},
+				#{sysGovUpid},
+				#{sysGovTypeId},
+				#{sysDicId},
+				#{sysOrgNotes},
+				#{sysAreaId}
+				)
+	</insert>
+	
+	<!-- 通過Name查詢名称是否重复 -->
+	<select id="querySysGoverByNameCount" resultType="int" parameterType="com.workmanagement.model.SysGover">
+		SELECT COUNT(*) FROM SYS_GOV_TB 
+		WHERE SYS_GOV_NAME= #{sysGovName}
+		<if test="sysGovId!=null">
+			AND sys_gov_id != #{sysGovId}
+		</if>
+	</select>
+	
+	<!-- 通过Code查询编码是否重复 -->
+	<select id="querySysGoverByCodeCount" resultType="int" parameterType="com.workmanagement.model.SysGover">
+		SELECT COUNT(*) FROM SYS_GOV_TB 
+		WHERE SYS_GOV_FINANCIAL_CODE= #{sysGovFinancialCode}
+		<if test="sysGovId!=null">
+			AND sys_gov_id != #{sysGovId}
+		</if>
+	</select>
+	
+	<!-- 删除政府部门 -->
+	<delete id="delSysGoverById">
+		DELETE SYS_GOV_TB WHERE SYS_GOV_ID=#{id}
+	</delete>
+	
+	<!-- 删除下级政府部门 -->
+	<delete id="delSysGoverByUpid">
+		DELETE SYS_GOV_TB WHERE SYS_GOV_UPID=#{id}
+	</delete>
+	
+	<!-- 修改政府部门 -->
+	<update id="updateSysGover" parameterType="com.workmanagement.model.SysGover">
+		UPDATE 	SYS_GOV_TB
+		<set>
+			SYS_GOV_NAME= #{sysGovName},
+			SYS_GOV_FINANCIAL_CODE= #{sysGovFinancialCode},
+			SYS_GOV_UPID= #{sysGovUpid},
+			SYS_GOV_TYPE_ID= #{sysGovTypeId},
+			SYS_DIC_ID= #{sysDicId},
+			SYS_AREA_ID= #{sysAreaId},
+			SYS_ORG_NOTES= #{sysOrgNotes} 
+		</set>
+		WHERE 	SYS_GOV_ID = #{sysGovId}
+	</update>
+	
+	<select id="queryTypeAll" resultType="com.workmanagement.model.SysGover">
+		SELECT 	GOVTB.SYS_GOV_ID AS sysGovId, 
+				GOVTB.SYS_GOV_NAME AS sysGovName,
+				GOVTB.SYS_GOV_FINANCIAL_CODE AS sysGovFinancialCode,
+				GOVTB.SYS_GOV_UPID AS sysGovUpid,
+				GOVTB.SYS_GOV_TYPE_ID AS sysGovTypeId,
+				GOVTB.SYS_DIC_ID AS sysDicId,
+				GOVTB.SYS_AREA_ID AS sysAreaId,
+				GOVTB.SYS_ORG_NOTES AS sysOrgNotes,
+				(SELECT GOV.SYS_GOV_NAME FROM SYS_GOV_TB GOV 
+				WHERE GOV.SYS_GOV_ID=GOVTB.SYS_GOV_UPID) AS sysGovUpname,
+				(SELECT GOVTYPE.SYS_GOV_TYPE_NAME FROM SYS_GOV_TYPE_TB GOVTYPE 
+				WHERE GOVTYPE.SYS_GOV_TYPE_ID=GOVTB.SYS_GOV_TYPE_ID) AS sysGovTypeName,
+				(SELECT DIC.DIC_NAME FROM DIC_TB DIC 
+				WHERE DIC.DIC_ID=GOVTB.SYS_DIC_ID) AS sysDicName,
+				(SELECT AREA.SYS_AREA_NAME FROM SYS_AREA_TB AREA 
+				WHERE AREA.SYS_AREA_ID=GOVTB.SYS_AREA_ID) AS sysAreaName
+		FROM 	SYS_GOV_TB GOVTB
+		WHERE 	1=1
+		<if test="name!=null">
+				AND GOVTB.SYS_GOV_NAME LIKE '%${name}%'
+		</if>
+	</select>
+	
+	<select id="queryInstitutionsById" resultType="com.workmanagement.model.SysGover">
+		SELECT 	GOVTB.SYS_GOV_ID AS sysGovId, 
+				GOVTB.SYS_GOV_NAME AS sysGovName,
+				GOVTB.SYS_GOV_FINANCIAL_CODE AS sysGovFinancialCode,
+				GOVTB.SYS_GOV_UPID AS sysGovUpid,
+				GOVTB.SYS_GOV_TYPE_ID AS sysGovTypeId,
+				GOVTB.SYS_DIC_ID AS sysDicId,
+				GOVTB.SYS_AREA_ID AS sysAreaId,
+				GOVTB.SYS_ORG_NOTES AS sysOrgNotes,
+				(SELECT GOV.SYS_GOV_NAME FROM SYS_GOV_TB GOV 
+				WHERE GOV.SYS_GOV_ID=GOVTB.SYS_GOV_UPID) AS sysGovUpname,
+				(SELECT GOVTYPE.SYS_GOV_TYPE_NAME FROM SYS_GOV_TYPE_TB GOVTYPE 
+				WHERE GOVTYPE.SYS_GOV_TYPE_ID=GOVTB.SYS_GOV_TYPE_ID) AS sysGovTypeName,
+				(SELECT DIC.DIC_NAME FROM DIC_TB DIC 
+				WHERE DIC.DIC_ID=GOVTB.SYS_DIC_ID) AS sysDicName,
+				(SELECT AREA.SYS_AREA_NAME FROM SYS_AREA_TB AREA 
+				WHERE AREA.SYS_AREA_ID=GOVTB.SYS_AREA_ID) AS sysAreaName
+		FROM 	SYS_GOV_TB GOVTB 
+		WHERE 	GOVTB.SYS_GOV_ID=#{id}
+	</select>
+	
+	<!-- 通过名称和编码查询政府部门 -->
+	<select id="querySysGoverByCodeAndName" resultMap="sysGoverMap">
+		SELECT * FROM SYS_GOV_TB 
+		WHERE 1=1
+		<if test="name!=null">
+				AND SYS_GOV_NAME=#{name} 
+		</if>
+		<if test="code!=null">
+				AND SYS_GOV_FINANCIAL_CODE=#{code}
+		</if> 
+	</select>
+	
+	<!-- 根据政府部门名称查询id -->
+	<select id="querySysGoverIdByName" resultMap="sysGoverMap">
+		SELECT * FROM SYS_GOV_TB WHERE SYS_GOV_NAME= #{name}
+	</select>
+	
+	<!-- 根据字典名称名称查询id -->
+	<select id="queryDicIdByName" resultMap="dicMap">
+		SELECT * FROM DIC_TB WHERE DIC_NAME= #{name}
+	</select>
+	
+	<!-- 根据地区名称名称查询id -->
+	<select id="querySysAreaIdByName" resultMap="sysArea">
+		SELECT * FROM SYS_AREA_TB WHERE SYS_AREA_NAME= #{name}
+	</select>
+	
+	<!-- 通过政府类别名称查找政府代码 -->
+	<select id="querySysGoverCodeByName" resultType="String" parameterType="String">
+		SELECT SYS_GOV_FINANCIAL_CODE FROM SYS_GOV_TB WHERE SYS_GOV_NAME =#{name}
+	</select>
+	
+	<!-- 通过id查询是否有下级政府部门 -->
+	<select id="querySysGoverUpidByCount" resultType="int">
+		SELECT COUNT(*) FROM SYS_GOV_TB WHERE SYS_GOV_UPID=#{id}
+	</select>
+	
+	<!-- 通过id查询下级政府部门 -->
+	<select id="querySysGoverByUpid" resultType="com.workmanagement.model.SysGover">
+		SELECT 	GOVTB.SYS_GOV_ID AS sysGovId, 
+				GOVTB.SYS_GOV_NAME AS sysGovName,
+				GOVTB.SYS_GOV_FINANCIAL_CODE AS sysGovFinancialCode,
+				GOVTB.SYS_GOV_UPID AS sysGovUpid,
+				GOVTB.SYS_GOV_TYPE_ID AS sysGovTypeId,
+				GOVTB.SYS_DIC_ID AS sysDicId,
+				GOVTB.SYS_AREA_ID AS sysAreaId,
+				GOVTB.SYS_ORG_NOTES AS sysOrgNotes,
+				(SELECT GOV.SYS_GOV_NAME FROM SYS_GOV_TB GOV 
+				WHERE GOV.SYS_GOV_ID=GOVTB.SYS_GOV_UPID) AS sysGovUpname,
+				(SELECT GOVTYPE.SYS_GOV_TYPE_NAME FROM SYS_GOV_TYPE_TB GOVTYPE 
+				WHERE GOVTYPE.SYS_GOV_TYPE_ID=GOVTB.SYS_GOV_TYPE_ID) AS sysGovTypeName,
+				(SELECT DIC.DIC_NAME FROM DIC_TB DIC 
+				WHERE DIC.DIC_ID=GOVTB.SYS_DIC_ID) AS sysDicName,
+				(SELECT AREA.SYS_AREA_NAME FROM SYS_AREA_TB AREA 
+				WHERE AREA.SYS_AREA_ID=GOVTB.SYS_AREA_ID) AS sysAreaName
+		FROM 	SYS_GOV_TB GOVTB 
+		WHERE 	GOVTB.SYS_GOV_UPID=#{id}
+	</select>
+</mapper>

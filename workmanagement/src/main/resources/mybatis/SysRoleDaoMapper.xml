@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysRoleDao">
+
+	<!-- 通过名称查询角色 -->
+	<select id="querySystemRoleByName" resultType="com.workmanagement.model.SysRole">
+		SELECT * FROM sys_role_tb WHERE sys_role_name = #{name}
+	</select>
+	<!-- 通过角色id查询角色是否被用户引用，如果被引用，则不允许被删除-->
+	<select id="querySystemRoleByName1" resultType="int">
+		SELECT count(*) FROM sys_role_user_tb WHERE sys_role_id = #{id}
+	</select>
+
+	<!-- 删除角色 -->
+	<delete id="delRoleById">
+	<!-- 	UPDATE sys_role_tb SET sys_role_delete = 1 WHERE sys_role_used = 0 AND sys_role_id = #{id} -->
+			DELETE FROM sys_role_tb WHERE sys_role_id = #{id}
+	</delete>
+
+	<!-- 保存角色对应的菜单 -->
+	<insert id="insertMenuOfSystemRole">
+		INSERT INTO sys_role_menu_tb VALUES
+		<foreach collection="menuIds" item="mid" separator=",">
+			(#{id}, #{mid})
+		</foreach>
+	</insert>
+
+	<!-- 删除角色对应的菜单 -->
+	<delete id="delMenuOfSystemRole">
+		DELETE FROM sys_role_menu_tb WHERE sys_role_id = #{id,jdbcType=VARCHAR}
+	</delete>
+
+	<!-- 查询职责名称集合 -->
+	<select id="queryRoleDuties" resultType="string">
+		<!-- MYSQL-->
+		<!-- 
+		SELECT GROUP_CONCAT(sys_menu_name) FROM sys_menu_tb WHERE sys_menu_id IN 
+		<foreach collection="menuIds" item="ids" open="(" separator="," close=")">
+			#{ids}
+		</foreach> 
+		 -->
+		
+		<!-- DB2 -->
+		SELECT LISTAGG(sys_menu_name, ',') FROM sys_menu_tb WHERE sys_menu_id IN 
+		<foreach collection="menuIds" item="ids" open="(" separator="," close=")">
+			#{ids}
+		</foreach>
+	</select>
+
+
+
+
+	<!-- 查询角色相对应的菜单 -->
+	<select id="querySystemMenus" resultType="com.workmanagement.model.SysMenu">
+		<!-- MYSQL-->
+		<!-- 
+		SELECT sm.*, (srm.sys_role_id = #{rid}) AS checked
+		FROM sys_menu_tb sm 
+		LEFT JOIN sys_role_menu_tb srm ON sm.sys_menu_id = srm.sys_menu_id AND srm.sys_role_id = #{rid}
+		WHERE sm.sys_menu_parent_id = 0 
+		-->
+		
+		<!-- DB2 -->
+		SELECT sm.*, (SELECT 1 FROM sys_role_menu_tb srm WHERE srm.sys_role_id = #{rid,jdbcType=VARCHAR} AND srm.sys_menu_id = sm.sys_menu_id) AS checked
+		FROM sys_menu_tb sm 
+		LEFT JOIN sys_role_menu_tb srm ON sm.sys_menu_id = srm.sys_menu_id AND srm.sys_role_id = #{rid,jdbcType=VARCHAR}
+		WHERE sm.sys_menu_parent_id = 0  
+	</select>
+	<!-- 查询角色相对应的菜单  所有  new -->
+	<select id="querySystemMenus1" resultType="com.workmanagement.model.SysMenu">
+		SELECT sm.*, (SELECT 1 FROM sys_role_menu_tb srm WHERE srm.sys_role_id = #{rid,jdbcType=VARCHAR} AND srm.sys_menu_id = sm.sys_menu_id) AS checked
+		FROM sys_menu_tb sm 
+		LEFT JOIN sys_role_menu_tb srm ON sm.sys_menu_id = srm.sys_menu_id AND srm.sys_role_id = #{rid,jdbcType=VARCHAR}
+	</select>
+	<!-- 查询角色名相对应的菜单 -->
+	<select id="querySystemMenusName" resultType="com.workmanagement.model.SysMenu">
+		<!-- MYSQL-->
+		<!-- 
+		SELECT sm.*, (srm.sys_role_id = #{rid}) AS checked
+		FROM sys_menu_tb sm 
+		LEFT JOIN sys_role_menu_tb srm ON sm.sys_menu_id = srm.sys_menu_id AND srm.sys_role_id = #{rid}
+		WHERE sm.sys_menu_parent_id = 0 
+		-->
+		
+		<!-- DB2 -->
+		SELECT sm.*, (SELECT 1 FROM sys_role_menu_tb srm WHERE srm.sys_menu_id = sm.sys_menu_id) AS checked
+		FROM sys_menu_tb sm 
+		LEFT JOIN sys_role_menu_tb srm ON sm.sys_menu_id = srm.sys_menu_id 
+		WHERE sm.sys_menu_parent_id = 0  AND sm.SYS_MENU_NAME=#{name}
+	</select>
+	
+	
+		<!-- 所有菜单 -->
+	<select id="queryParentAllMenu" resultType="Integer">
+		 select * from sys_menu_tb sm where sm.sys_menu_parent_id = 0 and sm.sys_menu_name=#{name} 
+ 
+	</select>
+		<!-- 所有菜单 的子菜单-->
+	<select id="queryAllMenu" resultType="com.workmanagement.model.SysMenu">
+		select * from sys_menu_tb where sys_menu_id=#{id}
+	</select>
+	<!-- 查询角色相对应的子菜单 -->
+	<select id="querySubSystemMenuByRoleId" resultType="com.workmanagement.model.SysMenu">
+		<!-- MYSQL -->
+		<!-- 
+		SELECT sm.*, (srm.sys_role_id = #{rid}) AS checked 
+		FROM sys_menu_tb sm 
+		LEFT JOIN sys_role_menu_tb srm ON sm.sys_menu_id = srm.sys_menu_id AND srm.sys_role_id = #{rid}
+		WHERE sm.sys_menu_parent_id = #{pid} AND sm.sys_menu_id NOT IN(31,32,33,34)
+		 -->
+		 
+		<!-- DB2 -->
+		SELECT sm.*, (SELECT 1 FROM sys_role_menu_tb srm WHERE srm.sys_role_id = #{rid,jdbcType=VARCHAR} AND srm.sys_menu_id = sm.sys_menu_id) AS checked
+		FROM sys_menu_tb sm 
+		LEFT JOIN sys_role_menu_tb srm ON sm.sys_menu_id = srm.sys_menu_id AND srm.sys_role_id = #{rid,jdbcType=VARCHAR}
+		WHERE sm.sys_menu_parent_id = #{pid} AND sm.sys_menu_id NOT IN(31,33,34)
+	</select>
+	<!-- 根据userid 取出对应的操作权限 -->
+	<select id="querySysUserId" resultType="java.lang.String">
+		SELECT SYS_ROLE_DUTIES FROM SYS_ROLE_TB,SYS_ROLE_USER_TB,SYS_USER_TB
+		 WHERE SYS_ROLE_USER_TB.SYS_ROLE_ID = SYS_ROLE_TB.SYS_ROLE_ID AND SYS_ROLE_USER_TB.SYS_USER_ID = SYS_USER_TB.SYS_USER_ID
+		AND SYS_USER_TB.SYS_USER_ID = #{uid}
+	</select>
+	
+	
+	
+	
+
+	<!-- 保存角色 -->
+	<insert id="insertSystemRole" parameterType="com.workmanagement.model.SysRole" useGeneratedKeys="true" keyProperty="sys_role_id"> 
+		INSERT INTO 
+		sys_role_tb(sys_role_name, sys_role_duties, sys_role_notes, sys_role_type,areaid) 
+		VALUES(#{sys_role_name}, #{sys_role_duties}, #{sys_role_notes}, #{sys_role_type},#{areaId})
+	</insert>
+	
+	<!-- 更新角色 -->
+	<update id="updateSystemRole" parameterType="com.workmanagement.model.SysRole"> 
+		UPDATE sys_role_tb
+		<set>
+			<if test="sys_role_name!=null">sys_role_name = #{sys_role_name},</if>
+			<if test="sys_role_duties!=null">sys_role_duties = #{sys_role_duties},</if>
+			<if test="sys_role_notes!=null">sys_role_notes = #{sys_role_notes},</if>
+			<if test="sys_role_type!=null">sys_role_type = #{sys_role_type}</if>
+		</set>
+		WHERE sys_role_id = #{sys_role_id} AND sys_role_id != 1
+	</update>
+
+	<!-- 通过ID查询角色 -->
+	<select id="querySystemRoleById" resultType="com.workmanagement.model.SysRole">
+		SELECT sys_role_id, sys_role_name, sys_role_type, sys_role_duties, sys_role_notes ,areaid
+		FROM sys_role_tb WHERE  sys_role_id = #{id}
+	</select>	
+	<!-- 通过角色id查询type -->
+	<select id="getRoleIdByType" resultType="java.lang.String">
+		SELECT sys_role_type  FROM sys_role_tb where sys_role_id=#{id}
+	</select>	
+	<!--查询角色列表  -->
+	<select id="queryAllByArea"   resultType="com.workmanagement.model.SysRole">
+		SELECT * FROM SYS_ROLE_TB WHERE 1=1 
+		<if test="param.areaId!=null">
+			AND AREAID in
+			<foreach collection="param.areaId" item="id" open="(" separator="," close=")">
+					#{id}
+			</foreach>
+		</if>
+		AND  sys_role_id!=1 or sys_role_id in (21,125,141,22,23,24,25,26,27,28) ORDER BY SYS_ROLE_ID
+	</select>
+	
+	<!-- 查询角色列表 -->
+	<select id="querySystemRoles" resultType="com.workmanagement.model.SysRole">
+		SELECT *
+		FROM sys_role_tb 
+		<where>
+		 sys_role_id != 1 
+		<if test="pepole!=null">
+			AND sys_role_type NOT IN(1,2,3,7,9,10)
+		</if>
+		<if test="pepoles!=null">
+			AND sys_role_type NOT IN(5,6,8)
+		</if>
+		ORDER BY sys_role_id 
+		</where>
+	</select>
+		<!--通过菜单id查询菜单名称  -->
+	<select id="queryMenuByMenuId" resultType="com.workmanagement.model.SysMenu">
+		SELECT SYS_MENU_NAME FROM SYS_MENU_TB WHERE SYS_MENU_ID=#{sysMenuId}
+	</select>
+		<!--通过菜单id查询菜单名称  -->
+	<select id="queryMenuByMenuIdByParentId" resultType="com.workmanagement.model.SysMenu">
+		<!-- SELECT * FROM SYS_MENU_TB WHERE SYS_MENU_PARENT_ID=#{sysMenuId} -->
+			SELECT sm.*, (SELECT 1 FROM sys_role_menu_tb srm WHERE srm.sys_role_id = #{rid} AND srm.sys_menu_id = sm.sys_menu_id) AS checked
+		FROM sys_menu_tb sm 
+		LEFT JOIN sys_role_menu_tb srm ON sm.sys_menu_id = srm.sys_menu_id AND srm.sys_role_id = #{rid,jdbcType=VARCHAR}
+		WHERE sm.sys_menu_parent_id = #{sysMenuId} 
+	</select>
+	
+	<select id="queryMenuNameByRoleId" resultType="com.workmanagement.model.SysMenu">
+		SELECT sm.SYS_MENU_NAME FROM SYS_ROLE_MENU_TB  srm
+				LEFT JOIN SYS_MENU_TB sm ON sm.SYS_MENU_ID=srm.SYS_MENU_ID
+				WHERE srm.SYS_ROLE_ID=#{sys_role_id,jdbcType=VARCHAR}
+	</select>
+</mapper>

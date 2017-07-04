@@ -1,0 +1,88 @@
+#calendarDiv {
+display: block;
+display: none;
+position: relative;
+border: 1px solid #54ff00;
+}
+#calendarDiv a {
+cursor: pointer;
+cursor: hand;
+}
+#calendar {
+background: #ddd;
+clear: both;
+text-align: center;
+font-size: 105%;
+}
+#calendar, #linksTable {
+width: 180px;
+}
+#calendar .calendarHeader {
+background: #358243;
+border-bottom: 1px solid #444;
+color: #fff;
+}
+#calendar .weekDaysTitleRow {
+background: #d5fbf6;
+color: #255b2d;
+}
+#calendar .weekDaysRow {
+background: #d5fbf6;
+color: #255b2d;
+}
+#calendar .weekDaysCell {
+color: #1e75c8;
+border: 1px solid #ddd;
+}
+#calendar .weekDaysCellOver {
+background: #f9d2d2;
+border: 1px solid #10243c;
+}
+#closeCalender {
+position: absolute;
+right: 0;
+bottom: 100%;
+margin-bottom: 1px;
+display: block;
+padding: 2px;
+cursor: pointer;
+cursor: hand;
+font-size: 60%;
+letter-spacing: 1px;
+color: #000;
+font-size:10px;
+}
+#closeCalender:hover {
+background: #f9d2d2;
+color: #10243c;
+}
+#linksTable {
+background: #44633b;
+}
+#linksTable a {
+display: block;
+color: #fff;
+letter-spacing: 1px;
+font-weight: bold;
+font-size: 80%;
+padding: 2px 5px;
+}
+#linksTable a:hover {
+background: #f9d2d2;
+color: #10243c;
+}
+#prevMonth {
+float: left;
+}
+#nextMonth {
+float: right;
+}
+#prevYear {
+float: left;
+}
+#nextYear {
+float: right;
+}
+#today {
+background: #67d35a;
+}

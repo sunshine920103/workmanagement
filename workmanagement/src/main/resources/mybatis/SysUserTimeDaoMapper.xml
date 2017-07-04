@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SysUserTimeDao">
+	
+	<insert id="insertSysUserTime"  parameterType="com.workmanagement.model.SysUserTime" useGeneratedKeys="true" keyProperty="sysUserTimeId">
+		INSERT INTO SYS_USER_TIME(SYS_USER_ID,SYS_USER_TIME_BEGIN,SYS_USER_TIME_IP,SYS_USER_TIME_MENU) VALUES(#{SYS_USER_ID},#{SYS_USER_TIME_BEGIN},#{SYS_USER_TIME_IP},#{SYS_USER_TIME_MENU})
+	</insert>
+	<select id="quertAll" resultType="int">
+		<!-- 
+		SELECT * FROM(SELECT NUMBER() OVER(SYS_USER_TIME ORDER BY DESC) AS N,S.* FROM SYS_USER_TIME AS S WHERE S.SYS_USER_ID = #{id})AS A 
+		 -->
+		 <![CDATA[
+		 SELECT COUNT(0) FROM SYS_USER_TIME WHERE SYS_USER_ID =#{id} AND SYS_USER_TIME_BEGIN>=#{begin} AND SYS_USER_TIME_BEGIN <= #{end}
+		 ]]>
+	</select>
+	
+</mapper>

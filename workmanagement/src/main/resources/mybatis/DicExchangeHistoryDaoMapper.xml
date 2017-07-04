@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.DicExchangeHistoryDao">
+	<resultMap type="com.workmanagement.model.DicExchangeHistory" id="dicExchangeHistoryMap">
+		<id column="dic_exchange_id" property="dicExchangeId"/>
+		<result column="dic_exchange_last_id" property="dicExchangeLastId"/>
+		<result column="dic_exchange_name" property="dicExchangeName"/>
+		<result column="dic_exchange_code" property="dicExchangeCode"/>
+		<result column="dic_exchange_value" property="dicExchangeValue"/>
+		<result column="dic_exchange_time" property="dicExchangeTime"/>
+	</resultMap>
+	
+	<!-- 查询列表 -->
+	<!-- <select id="queryDicExchangeHistorys" resultMap="dicExchangeHistoryMap">
+		SELECT * FROM dic_exchange_history_tb
+		<where>
+			<if test="dicExchangeLastId!=null">AND dic_exchange_last_id=#{dicExchangeLastId}</if>
+		</where>
+		order by dic_exchange_time desc
+		<if test="limit!=null">
+			LIMIT #{limit} OFFSET #{offset}
+		</if>
+		
+	</select> -->
+	<select id="queryDicExchangeHistorys" resultMap="dicExchangeHistoryMap">
+		 SELECT * FROM  (
+			SELECT dic_exchange_id, dic_exchange_last_id, dic_exchange_name,
+			dic_exchange_code,dic_exchange_value,dic_exchange_time,
+					ROW_NUMBER() OVER(ORDER BY dic_exchange_id DESC ) AS cpbid  
+			FROM dic_exchange_history_tb
+				<where>
+					<if test="dicExchangeLastId!=null">AND dic_exchange_last_id=#{dicExchangeLastId}</if>
+				</where>
+		 ) AS a 
+		<if test="limit!=null">
+		 <![CDATA[
+			WHERE  a.cpbid > #{limit} AND a.cpbid <= #{offset}
+		 ]]>
+		 </if>
+	</select>	
+	<!-- 查询总数 -->
+	<select id="queryDicExchangeHistorys_count" resultType="int">
+		SELECT COUNT(0) FROM dic_exchange_history_tb
+		<where>
+			<if test="dicExchangeLastId!=null">AND dic_exchange_last_id=#{dicExchangeLastId}</if>
+		</where>
+	</select>	
+	
+	<!-- 通过ID查询 -->
+	<select id="getDicExchangeHistoryById"  resultMap="dicExchangeHistoryMap">
+		SELECT * FROM dic_exchange_history_tb WHERE dic_exchange_id = #{dicExchangeId}
+	</select>
+	<!-- 保存 -->
+	<insert id="insert" parameterType="com.workmanagement.model.DicExchangeHistory"  useGeneratedKeys="true" keyProperty="dicExchangeId">
+		INSERT INTO dic_exchange_history_tb(dic_exchange_last_id,dic_exchange_name,dic_exchange_code,dic_exchange_value,dic_exchange_time)
+		VALUES(#{dicExchangeLastId},#{dicExchangeName},#{dicExchangeCode},#{dicExchangeValue},#{dicExchangeTime})
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="update" parameterType="com.workmanagement.model.DicExchangeHistory">
+		UPDATE dic_exchange_history_tb
+		<set>
+			<if test="dicExchangeLastId!=null">dic_exchange_last_id=#{dicExchangeLastId},</if>
+			<if test="dicExchangeName!=null">dic_exchange_name=#{dicExchangeName},</if>
+			<if test="dicExchangeCode!=null">dic_exchange_code=#{dicExchangeCode},</if>
+			<if test="dicExchangeValue!=null">dic_exchange_value=#{dicExchangeValue},</if>
+			<if test="dicExchangeTime!=null">dic_exchange_time=#{dicExchangeTime}</if>
+		</set>
+		WHERE dic_exchange_id = #{dicExchangeId}
+	</update>
+
+</mapper>

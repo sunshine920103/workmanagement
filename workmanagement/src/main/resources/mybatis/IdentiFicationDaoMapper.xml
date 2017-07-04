@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"  ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.IdentiFicationDao">
+	
+	<select id="queryIdentiFicationByAll" resultType="com.workmanagement.model.IdentiFication">
+		select SYS_IDENTIFICATION_TB.*,sys_area_name from SYS_IDENTIFICATION_TB left join sys_area_tb on SYS_IDENTIFICATION_TB.sys_area_id = sys_area_tb.sys_area_id
+		<where> 
+			1 = 1
+			<if test="areaIds!=null">
+					and sys_area_tb.sys_area_id in 
+				<foreach collection="areaIds" item="id" open="(" separator="," close=")">
+							#{id}
+				</foreach>
+			</if>
+			<if test="ifId!=null">
+				and SYS_IDENTIFICATION_ID = #{ifId}
+			</if>
+			<if test="orgId!=null">
+				 and locate(#{orgId},SYS_IDENTIFICATION_TB.sys_org_id) !=0
+			</if>
+			<if test="begin!=null">
+				and SYS_CREAT_TIME >=#{begin}
+			</if>
+			<if test="end!=null">
+				 <![CDATA[
+				and SYS_CREAT_TIME <=#{end}
+				 ]]>
+			</if>
+		</where>
+	</select>
+	<update id="updateIdentiFication" parameterType="com.workmanagement.model.IdentiFication">
+		UPDATE SYS_IDENTIFICATION_TB
+		<set> 
+			SYS_IDENTIFICATION_NAME=#{sys_identification_name}, 
+			SYS_ORG_ID=#{sys_org_id} 
+		</set>
+		WHERE SYS_IDENTIFICATION_ID=#{sys_identification_id}
+	</update>
+	
+	<insert id="insertIdentiFication" parameterType="com.workmanagement.model.IdentiFication">
+		INSERT INTO ADMINISTRATOR.SYS_IDENTIFICATION_TB
+		(SYS_IDENTIFICATION_NAME, SYS_ORG_ID, SYS_AREA_ID, SYS_CREAT_USERNAME, SYS_CREAT_ORG, SYS_CREAT_TIME)
+		VALUES(#{sys_identification_name},#{sys_org_id},#{sys_area_id},#{sys_creat_username},#{sys_creat_org},#{sys_creat_time})
+		
+	</insert>
+	<delete id="deleteIdentiFication">
+		DELETE FROM  SYS_IDENTIFICATION_TB
+		WHERE SYS_IDENTIFICATION_ID=#{id}
+
+	</delete>
+</mapper>

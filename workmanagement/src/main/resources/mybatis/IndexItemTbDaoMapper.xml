@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.IndexItemTbDao">
+	<resultMap id="indexItemTbMap" type="com.workmanagement.model.IndexItemTb">
+		<id property="indexItemId" column="index_item_id"/>
+		<result property="indexId" column="index_id"/>
+		<result property="indexItemName" column="index_item_name"/>
+		<result property="indexItemCode" column="index_item_code"/>
+		<result property="indexItemNumber" column="index_item_number"/>
+		<result property="sysAreaId" column="sys_area_id"/>
+		<result property="indexItemUsed" column="index_item_used"/>
+		<result property="indexItemType" column="index_item_type"/>
+		<result property="dicId" column="dic_id"/>
+		<result property="indexItemImportUnique" column="index_item_import_unique"/>
+		<result property="indexItemEmpty" column="index_item_empty"/>
+		<result property="indexItemNetId" column="index_item_net_id"/>
+		<result property="indexItemNotes" column="index_item_notes"/>
+		<result property="indexItemCreateTime" column="index_item_create_time"/>
+		<result property="sys_user_id" column="sys_user_id"/>
+		<result property="sys_org_id" column="sys_org_id"/>
+		<result property="indexItemAliasName" column="index_item_alias_name"/>
+		<result property="varLength" column="var_length"/>
+		<result property="sysAreaName" column="sys_area_name"/>
+	</resultMap>
+	
+	<!-- 新增指标项 -->
+	<insert id="insertIndexItemTb" parameterType="com.workmanagement.model.IndexItemTb">
+	 INSERT INTO 
+		index_item_tb(index_id,index_item_name,index_item_code,index_item_number,sys_area_id,index_item_used,index_item_type,
+		dic_id,index_item_import_unique,index_item_empty,index_item_net_id,index_item_notes,index_item_create_time,
+		sys_user_id,sys_org_id,index_item_alias_name,var_length) 
+	 VALUES(#{indexId},#{indexItemName},#{indexItemCode},#{indexItemNumber},#{sysAreaId},#{indexItemUsed},#{indexItemType},
+	 #{dicId},#{indexItemImportUnique},#{indexItemEmpty},#{indexItemNetId},#{indexItemNotes},
+	 current_timestamp,#{sys_user_id},#{sys_org_id},#{indexItemAliasName},#{varLength} )
+	</insert>
+	
+	<!-- 在表中插入这个指标项对应的字段 -->
+	<insert id="insertColumn" parameterType="java.util.HashMap" statementType="STATEMENT">
+		alter table ${tbName} add column ${columnName} ${type} ${isEmpty} 
+	</insert>
+	
+	<!-- 根据指标大类和地区s查询指标项 -->
+	<select id="queryItemsByAreaIds" resultMap="indexItemTbMap">
+		select i.*,a.sys_area_name from index_item_tb  i
+		left join sys_area_tb a on i.sys_area_id = a.sys_area_id
+		where i.index_id=${indexId} and i.sys_area_id in
+		<foreach collection="areaIds" item="sysAreaId" separator="," open="(" close=")">
+            #{sysAreaId}
+        </foreach>
+	</select>
+	
+	<!--   根据sql,在表中插入这个指标项对应的字段  -->
+	<update id="addColumnBySql" parameterType="java.util.Map"  statementType="STATEMENT">
+		${sql}
+	</update>
+
+	<!-- 更新修改指标项 -->
+	<update id="updateIndexItemTb" parameterType="com.workmanagement.model.IndexItemTb">
+		UPDATE index_item_tb
+		<trim prefix="set " suffixOverrides=",">		
+			<if test="indexItemImportUnique!=null">index_item_import_unique = #{indexItemImportUnique},</if>	
+			<if test="indexItemEmpty!=null">index_item_empty = #{indexItemEmpty},</if>	
+			<if test="indexItemAliasName!=null">index_item_alias_name=#{indexItemAliasName},</if>	
+			<if test="indexItemUsed!=null">index_item_used = #{indexItemUsed},</if>	
+			<if test="indexItemNumber!=null">index_item_number = #{indexItemNumber},</if>
+			<if test="varLength!=null">var_length = #{varLength},</if>	
+			<if test="indexItemNotes!=null">index_item_notes = #{indexItemNotes}</if>	
+		</trim>
+		WHERE index_item_id = #{indexItemId}
+	</update>
+	<!-- 删除指标项 -->
+	<delete id="deleteIndexItemTb" parameterType="java.lang.Integer">
+		DELETE FROM index_item_tb WHERE index_id = #{indexId}	
+	</delete>
+
+	<!-- 通過ID获取指标项信息 -->
+	<select id="queryIndexItemTbById" resultMap="indexItemTbMap">
+		SELECT * FROM index_item_tb 
+		WHERE index_item_id = #{indexItemId}
+	</select> 
+	<!-- 通過父ID获取所有指标项信息 -->
+	<select id="queryIndexItemTbsByIndexId" resultMap="indexItemTbMap">
+		SELECT i.*,o.sys_org_name  FROM index_item_tb i
+		left join sys_org_tb o on o.sys_org_id = i.sys_org_id
+		WHERE i.index_id = #{indexId}
+		order by i.index_item_number
+	</select> 
+	<select id="queryIndexItemTbsByIndexIdWithStatus" resultMap="indexItemTbMap">
+		SELECT * FROM index_item_tb 
+		WHERE index_id = #{indexId} and index_item_status != 4
+	</select> 
+	<!-- 通過code得到对象 -->
+	<select id="getIndexItemTbByCode" resultMap="indexItemTbMap">
+		SELECT * FROM index_item_tb 
+		WHERE index_item_code = #{indexItemCode}
+	</select> 
+	<!-- 获取所有的dicId -->
+	<select id="getDicIdsInIndexItem" resultType="Integer">
+	SELECT DISTINCT index_item_value_range FROM index_item_tb WHERE 
+		<![CDATA[
+				index_item_value_range IS NOT NULL
+			 ]]>
+		
+	</select>
+	<!-- 根据indexId得到所有相关indexItemName-->
+	<select id="selectAllIndexItemNameByIndexId" resultType="java.lang.Object">
+		SELECT index_item_name FROM index_item_tb WHERE index_id=#{indexId}
+	</select>
+	<!-- 根据indexId得到所有相关indexItemCode-->
+	<select id="selectAllIndexItemCodeByIndexId" resultType="java.lang.Object">
+		SELECT index_item_code FROM index_item_tb WHERE index_id=#{indexId}
+	</select>
+	<!-- 根据指标项类型获取所有指标项-->
+	<select id="selectAllIndexItemByIndexItemType" resultMap="indexItemTbMap">
+		SELECT * FROM index_item_tb WHERE index_item_type=#{indexItemType}
+	</select>
+	<!-- 根据字典id获取所有指标项 -->
+	<select id="getIndexIdsInIndexItem" resultType="java.lang.String">
+		SELECT index_item_code FROM index_item_tb WHERE index_item_value_range =#{pdicId}
+	</select>
+	<!-- 根据被使用的数据字典子类 -->
+	<select id="getUsedNames" resultType="java.lang.String">
+		SELECT ${indexItemCode} FROM ${indexTb}
+	</select>
+
+	<!-- 根据指标大类id和指标项类型获取所有指标项-->
+	<select id="getIndexItemsByIdAndType" resultMap="indexItemTbMap">
+        SELECT * FROM index_item_tb WHERE index_id=#{indexId}
+        AND index_item_type=#{indexItemType} and index_item_used=1
+        AND SYS_AREA_ID IN
+        <foreach collection="sysAreaIds" item="sysAreaId" open="(" close=")" separator=",">
+            #{sysAreaId}
+        </foreach>
+        ORDER BY INDEX_ITEM_ID ASC
+	</select>
+	
+	<!-- 根据指标项name获取指标项 -->
+	<select id="getIndexItemsByIndexIdAndName" resultMap="indexItemTbMap">
+		SELECT * FROM index_item_tb WHERE index_id=#{indexId} and index_item_name=#{indexItemName} 
+	</select>
+
+	<!--根据指标id查询只带启用的指标项的指标-->
+	<select id="getIndexIntemsIsUsedByIdAndAreaIds" resultMap="indexItemTbMap">
+        select * from index_item_tb where index_id = #{indexId}
+        <if test="sysAreaIds!=null">
+            AND SYS_AREA_ID IN
+            <foreach collection="sysAreaIds" item="sysAreaId" open="(" close=")" separator=",">
+                #{sysAreaId}
+            </foreach>
+        </if>
+        AND index_item_used=1 ORDER BY INDEX_ITEM_ID ASC
+    </select>
+
+    <!--根据指标id查询只带启用的指标项的指标并且必须是可以为空的字段-->
+    <select id="getIndexIntemsIsUsedByIdAndAreaIdsAndCanNull" resultMap="indexItemTbMap">
+        select * from index_item_tb where index_id = #{indexId}
+        AND SYS_AREA_ID IN
+        <foreach collection="sysAreaIds" item="sysAreaId" open="(" close=")" separator=",">
+            #{sysAreaId}
+        </foreach>
+		AND INDEX_ITEM_TYPE=0 AND index_item_used=1 ORDER BY INDEX_ITEM_ID ASC
+    </select>
+</mapper>

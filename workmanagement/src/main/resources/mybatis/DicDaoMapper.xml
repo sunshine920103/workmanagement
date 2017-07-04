@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.DicDao">
+
+    <resultMap type="com.workmanagement.model.Dic" id="dicMap">
+        <id column="dic_id" property="dicId"/>
+        <result column="dic_name" property="dicName"/>
+        <result column="sys_area_id" property="sysAreaId"/>
+        <result column="dic_notes" property="dicNotes"/>
+    </resultMap>
+
+    <resultMap type="com.workmanagement.model.Dic" id="dicMap1">
+        <id column="dic_id" property="dicId"/>
+        <result column="dic_name" property="dicName"/>
+        <result column="sys_area_id" property="sysAreaId"/>
+        <result column="dic_notes" property="dicNotes"/>
+        <collection property="dicContentList" select="queryDicContent" ofType="com.workmanagement.model.DicContent"
+                    javaType="ArrayList" column="dic_id"/>
+    </resultMap>
+    <!--关联查询的，暂时不用，因为redis的缓存机制不是mapper级别的-->
+
+    <resultMap type="com.workmanagement.model.DicContent" id="dicContentMap">
+        <id column="dic_content_id" property="dicContentId"/>
+        <result column="dic_id" property="dicId"/>
+        <result column="dic_content_code" property="dicContentCode"/>
+        <result column="dic_content_value" property="dicContentValue"/>
+    </resultMap>
+
+    <!-- 查询关联的数据字典子类集合 -->
+    <select id="queryDicContent" resultMap="dicContentMap">
+		SELECT * FROM dic_content_tb WHERE dic_id=#{dic_id} ORDER BY dic_id,dic_content_code
+	</select>
+
+    <!-- 根据主键获取一个数据字典 -->
+    <select id="getDicByDicId" resultMap="dicMap">
+		SELECT * FROM dic_tb WHERE dic_id=#{dicId}
+	</select>
+
+    <select id="getAllDic" resultMap="dicMap">
+		SELECT * FROM dic_tb ORDER BY dic_id DESC
+	</select>
+
+    <!-- 根据所属区域查询区域下所有的数据字典 -->
+    <select id="getDicsBySysAreaId" resultMap="dicMap">
+        SELECT * FROM dic_tb WHERE sys_area_id IN
+        <foreach collection="sysAreaIds" item="sysAreaId" separator="," open="(" close=")">
+            #{sysAreaId}
+        </foreach>
+        AND dic_name not in ('金融机构或者政府部门','地区','经济行业')
+        ORDER BY dic_id DESC
+    </select>
+
+    <!-- 根据所属地区获取数据字典,包含了那三个不显示的,用于指标项 -->
+    <select id="getDicsBySysAreaIdHaveThree" resultMap="dicMap">
+        SELECT * FROM dic_tb WHERE sys_area_id IN
+        <foreach collection="sysAreaIds" item="sysAreaId" separator="," open="(" close=")">
+            #{sysAreaId}
+        </foreach>
+        ORDER BY dic_id ASC
+    </select>
+
+    <!-- 根据名字查一个数据字典 -->
+    <select id="getDicByDicName" resultMap="dicMap">
+        SELECT * FROM dic_tb WHERE dic_name=#{dicName} AND SYS_AREA_ID = #{areaId}
+	</select>
+
+    <!-- 根据名字判断是否输入有重名 -->
+    <select id="isDicNameBeUsedInDic" resultType="int">
+        SELECT count(0) FROM dic_tb WHERE dic_name=#{dicName} AND sys_area_id = #{areaId}
+    </select>
+
+    <!--根据主键删除一个数据字典-->
+    <delete id="delByDicId" parameterType="int">
+		DELETE FROM dic_tb WHERE dic_id=#{dicId}
+	</delete>
+
+    <!--新增一个数据字典-->
+    <insert id="insertOneDic" parameterType="com.workmanagement.model.Dic" useGeneratedKeys="true" keyProperty="dicId">
+        INSERT INTO dic_tb(sys_area_id,dic_name,dic_notes) values(#{sysAreaId},#{dicName},#{dicNotes})
+	</insert>
+
+    <!--更新一个数据字典-->
+    <update id="updateOneDic" parameterType="com.workmanagement.model.Dic">
+        UPDATE dic_tb
+        <trim prefix="set" suffixOverrides=",">
+            <if test="sysAreaId!=null">sys_area_id=#{sysAreaId},</if>
+            <if test="dicName!=null">dic_name=#{dicName},</if>
+            <if test="dicNotes!=null">dic_notes=#{dicNotes}</if>
+        </trim>
+        WHERE dic_id = #{dicId}
+    </update>
+
+    <!-- 查询是否有被index_item_tb使用 -->
+    <select id="usedInIndexItem" resultType="int" parameterType="int">
+		SELECT COUNT(0) FROM index_item_tb AS i WHERE i.dic_id=#{dicId}
+    </select>
+
+    <!-- 查询是否有被sys_industry_tb使用 -->
+    <select id="usedInSysIndustry" resultType="int" parameterType="int">
+		SELECT COUNT(0) FROM sys_industry_tb as si WHERE si.sys_dic_id=#{dicId}
+    </select>
+
+    <!-- 查询是否有被sys_gov_tb使用 -->
+    <select id="usedInSysGov" resultType="int" parameterType="int">
+		SELECT COUNT(0) FROM SYS_ORG_TB as sg WHERE sg.sys_dic_id=#{dicId}
+    </select>
+
+    <!-- 获取字典下，代码的个数 -->
+    <select id="selectDicContentNames" resultType="java.lang.Integer"
+            parameterType="com.workmanagement.model.DicContent">
+		SELECT COUNT(0) FROM dic_content_tb WHERE dic_id=#{dicId} AND dic_content_value=#{dicContentValue}
+	</select>
+
+    <select id="getDicById" resultMap="dicMap1">
+		SELECT * FROM dic_tb WHERE dic_id=#{id}
+	</select>
+
+    <select id="getDicByLikeName" parameterType="string" resultMap="dicMap">
+        SELECT * FROM dic_tb WHERE dic_name LIKE '%'||#{dicName}||'%'
+        AND dic_name not in ('金融机构或者政府部门','地区','经济行业')
+        AND sys_area_id IN
+        <foreach collection="sysAreaIds" item="AreaId" separator="," open="(" close=")">
+            #{AreaId}
+        </foreach>
+    </select>
+
+    <!--超级管理员专用-->
+    <select id="getAllDicNotTree" resultMap="dicMap">
+        SELECT * FROM dic_tb WHERE dic_name not in ('金融机构或者政府部门','地区','经济行业')
+        ORDER BY dic_id DESC
+    </select>
+</mapper>

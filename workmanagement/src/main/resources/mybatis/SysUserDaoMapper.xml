@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.SystemUserDao">
+	<!-- 通过代码和名称查询用户 -->
+	<select id="querySystemUserByCodeAndName" resultType="com.workmanagement.model.SysUser">
+		SELECT * FROM sys_user_tb WHERE  username = #{name}
+	</select>
+
+	<!-- 更新用户 -->
+	<update id="updateSystemUser" parameterType="com.workmanagement.model.SysUser">
+		UPDATE sys_user_tb
+		<set>
+			<if test="username!=null">username=#{username},</if>
+			<if test="password!=null">password=#{password},</if>
+			<if test="sys_user_name!=null">sys_user_name=#{sys_user_name},</if>
+			<if test="sys_user_phone!=null">sys_user_phone=#{sys_user_phone},</if>
+			<if test="sys_user_contacts!=null">sys_user_contacts=#{sys_user_contacts},</if>
+			<if test="sys_user_notes!=null">sys_user_notes=#{sys_user_notes},</if>
+			<if test="sys_user_card!=null">sys_user_card=#{sys_user_card},</if>
+			<if test="sys_org_id!=null">sys_org_id=#{sys_org_id},</if>
+			<if test="sys_role_id!=null">sys_role_id=#{sys_role_id},</if>
+			<if test="enabled!=null">enabled=#{enabled},</if>
+			<if test="sys_user_error!=null">sys_user_error=#{sys_user_error},</if>
+			<if test="sys_user_login_ip!=null">sys_user_login_ip=#{sys_user_login_ip},</if>
+			<if test="sys_user_login_time!=null">sys_user_login_time=#{sys_user_login_time},</if>
+			<if test="sys_user_last_login_ip!=null">sys_user_last_login_ip=#{sys_user_last_login_ip},</if>
+			<if test="sys_user_last_login_time!=null">sys_user_last_login_time=#{sys_user_last_login_time},</if>
+			<if test="sys_delete!=null">sys_delete=#{sys_delete},</if>
+		</set>
+		 WHERE sys_user_id=#{sys_user_id}
+	</update>
+	
+	<!-- 保存用户 -->
+	<insert id="insertSystemUser" parameterType="com.workmanagement.model.SysUser" useGeneratedKeys="true" keyProperty="sys_user_id">
+		INSERT INTO SYS_USER_TB
+		(USERNAME, PASSWORD, SYS_USER_NAME, SYS_USER_CARD, SYS_USER_PHONE, SYS_USER_CONTACTS, SYS_ROLE_ID, SYS_ORG_ID, SYS_CREATE_USER_ID, SYS_USER_NOTES, SYS_USER_ERROR, ENABLED,  SYS_USER_QUERY_TIMES,sys_delete)
+		VALUES(#{username}, #{password}, #{sys_user_name},#{sys_user_card}, #{sys_user_phone}, #{sys_user_contacts}, #{sys_role_id}, #{sys_org_id}, #{sys_create_user_id}, #{sys_user_notes}, #{sys_user_error}, 1, 0,1)
+	</insert>
+
+	<!-- 删除用户 -->
+	<update id="delUserById">
+		DELETE FROM sys_user_tb WHERE sys_user_id = #{uid}
+	</update>
+
+	<!-- 删除用户以前的角色 -->
+	<delete id="delSystemUserRole">
+		DELETE FROM sys_role_user_tb WHERE sys_user_id = #{uid}
+	</delete>
+	
+	<!-- 保存用户角色 -->
+	<insert id="insertSystemRole">
+		INSERT INTO 
+		sys_role_user_tb(sys_role_id, sys_user_id) 
+		VALUES(#{rid},#{uid}) 
+	</insert>
+	
+	<!-- 通过ID查询用户 -->
+	<select id="querySystemUserById" resultType="com.workmanagement.model.SysUser">
+		SELECT su.*, sr.sys_role_name AS sys_user_role_name, sr.sys_role_id AS sys_user_role_id, 
+			   i.sys_org_name AS sys_user_org_name, i.sys_org_address AS sys_user_org_address
+		FROM sys_user_tb su
+		LEFT JOIN sys_role_user_tb sru ON su.sys_user_id = sru.sys_user_id
+		LEFT JOIN sys_role_tb sr ON sr.sys_role_id = sru.sys_role_id
+		LEFT JOIN sys_org_tb i ON su.sys_org_id = i.sys_org_id
+		WHERE su.sys_user_id = #{id}
+	</select>
+	
+	<!-- 查询用户列表 -->
+	<select id="querySystemUsers" resultType="com.workmanagement.model.SysUser">
+		
+		 
+		<!-- DB2 -->
+		
+			SELECT su.*, sr.sys_role_name AS sys_user_role_name, sr.sys_role_id AS sys_role_id, 
+					i.sys_org_name AS sys_user_org_name 
+			FROM sys_user_tb su
+			LEFT JOIN sys_role_user_tb sru ON su.sys_user_id = sru.sys_user_id
+			LEFT JOIN sys_role_tb sr ON sr.sys_role_id = sru.sys_role_id
+			LEFT JOIN sys_org_tb i ON su.sys_org_id = i.sys_org_id
+			LEFT JOIN sys_area_tb a ON i.sys_area_id = a.sys_area_id
+			<where>
+			1=1 
+				<if test="self!=null">AND su.sys_user_id != #{self}</if>
+				<if test="key!=null">AND (su.sys_user_name like '%${key}%' OR su.username like '%${key}%')</if>
+				<if test="role_id!=null">AND sr.sys_role_id = #{role_id}</if>
+				<if test="insti_id!=null">AND su.sys_org_id = #{insti_id}</if>
+				<if test="orgArea!=null">
+					
+					AND ( i.sys_org_id IN
+					<foreach collection="orgArea" item="id" open="(" separator="," close=")">
+						#{id}
+					</foreach>
+					<if test="dutyArea!=null">
+						OR a.sys_area_id IN
+						<foreach collection="dutyArea" item="id" open="(" separator="," close=")">
+							#{id}
+						</foreach>
+					</if>
+					)
+				</if>
+				<if test="orgIn!=null">
+					and i.sys_org_id in (select sys_org_id from sys_org_tb where SYS_ORG_AFFILIATION_AREA_ID = #{orgIn})
+				</if>
+				ORDER BY su.sys_user_id DESC
+			</where>	
+		 
+	</select>
+	
+	<!-- 查询用户列表总数 -->
+	<select id="querySystemUsers_count" resultType="int">
+		SELECT COUNT(1)
+		FROM sys_user_tb su
+		LEFT JOIN sys_role_user_tb sru ON su.sys_user_id = sru.sys_user_id
+		LEFT JOIN sys_role_tb sr ON sr.sys_role_id = sru.sys_role_id
+		LEFT JOIN sys_org_tb i ON su.sys_org_id = i.sys_org_id
+		LEFT JOIN sys_area_tb a ON i.sys_area_id = a.sys_area_id
+		<where>
+			1=1
+			<if test="self!=null">AND su.sys_user_id != #{self}</if>
+			<!-- <if test="key!=null">AND (su.sys_user_name LIKE '%${key}%' OR su.username LIKE '%${key}%')</if> -->
+			<if test="key!=null">AND (su.sys_user_name like '%${key}%' OR su.username like '%${key}%')</if>
+			<if test="method==2 and role_id!=null">AND sr.sys_role_id = #{role_id}</if><!-- 角色 -->
+			<if test="insti_id!=null">AND su.sys_org_id = #{insti_id}</if>
+			<if test="orgArea!=null">
+				AND ( i.sys_org_id IN
+				<foreach collection="orgArea" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+				
+				<if test="dutyArea!=null">
+					OR a.sys_area_id IN
+					<foreach collection="dutyArea" item="id" open="(" separator="," close=")">
+						#{id}
+					</foreach>
+				</if>
+				)
+			</if>
+		</where>
+	</select>
+	
+	<!-- 更新最后登录时间 -->
+	<update id="updateLastLoginTimeById">
+		update sys_user_tb set last_login_time=#{lastLoginTime} where id=#{id}
+	</update>
+	
+	<!-- 通过用户名查询用户 -->
+	<select id="queryUserByUsername" resultType="com.workmanagement.model.SysUser">
+		SELECT su.* FROM sys_user_tb su 
+		<where>
+			<if test="username!=null">
+				AND su.username = #{username} 
+			</if>
+		</where>
+	</select>
+	
+	<!-- 锁定用户 -->
+	<update id="updateEnabled">
+		update sys_user_tb set enabled=#{enabled} where sys_user_id=#{userId}
+	</update>
+	
+	<select id="queryUserDetail" resultType="com.workmanagement.model.SysUser">
+		SELECT su.* FROM sys_user_tb su WHERE sys_user_delete = 0 AND su.sys_user_id = #{userId}
+	</select>
+	<select id="queryAll" resultType="com.workmanagement.model.SysUser">
+	SELECT * FROM sys_user_tb WHERE sys_user_delete = 0
+	</select>
+	
+	
+	<select id="querySql" resultType="com.workmanagement.model.SysUser">
+		${sql}
+	</select>
+	
+	<select id="queryCard" resultType="com.workmanagement.model.SysUser">
+	
+		SELECT * FROM sys_user_tb WHERE  SYS_USER_CARD = #{card} and sys_delete =1
+	</select>
+</mapper>

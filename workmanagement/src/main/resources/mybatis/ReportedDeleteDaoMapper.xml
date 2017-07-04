@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workmanagement.dao.ReportedDeleteDao">
+
+	<!-- 指标基本映射 -->
+	<resultMap type="com.workmanagement.model.IndexTb" id="indexTbMap" >
+		<id property="indexId" column="index_id"/> 
+		<result property="indexName" column="index_name" />
+		<result property="indexCode" column="index_code" />
+		<result property="sysAreaId" column="sys_area_id" />
+		<result property="indexNumber" column="index_number" />
+		<result property="indexNotes" column="index_notes" />
+		<result property="indexUsed" column="index_used" />
+		<result property="indexCreateTime" column="index_create_time" />
+		<result property="sys_user_id" column="sys_user_id" />
+		<result property="sys_org_id" column="sys_org_id" />
+		<result property="indexType" column="index_type" />
+	</resultMap>
+	
+	<!-- 指标项基本映射 -->
+	<resultMap id="indexItemTbMap" type="com.workmanagement.model.IndexItemTb">		
+		<id property="indexItemId" column="index_item_id"/>
+		<result property="indexId" column="index_id"/>
+		<result property="indexItemName" column="index_item_name"/>
+		<result property="indexItemCode" column="index_item_code"/>
+		<result property="indexItemNumber" column="index_item_number"/>
+		<result property="sysAreaId" column="sys_area_id"/>
+		<result property="indexItemUsed" column="index_item_used"/>
+		<result property="indexItemType" column="index_item_type"/>
+		<result property="dicId" column="dic_id"/>
+		<result property="indexItemImportUnique" column="index_item_import_unique"/>
+		<result property="indexItemEmpty" column="index_item_empty"/>
+		<result property="indexItemNetId" column="index_item_net_id"/>
+		<result property="indexItemNotes" column="index_item_notes"/>
+		<result property="indexItemCreateTime" column="index_item_create_time"/>
+		<result property="sys_user_id" column="sys_user_id"/>
+		<result property="sys_org_id" column="sys_org_id"/>
+		<result property="indexItemAliasName" column="index_item_alias_name"/>
+		<result property="varLength" column="var_length"/>
+	</resultMap>
+	<!--通过机构获取指标大类-->
+	<select id="queryIndexTb" resultMap="indexTbMap">
+		SELECT * FROM index_tb xt WHERE 
+		<if test="map.orgId!==null">xt.sys_org_id = #{map.orgId}</if>
+		<if test="map.indexId!=null">xt.index_id = #{map.indexId}</if>
+	</select>
+	
+	<select id="queryResult" resultType="java.util.Map" parameterType="java.util.Map">
+		${sql}	
+	</select>
+	
+	<delete id="deleteData"  parameterType="java.util.Map">
+		${delete}	
+	</delete>
+</mapper>
