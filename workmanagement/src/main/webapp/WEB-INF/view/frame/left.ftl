@@ -387,12 +387,12 @@ $(function(){
                         </li>
                         <li>
                             <p class="menuB">
-                                <a href="/admin/manualEntry/list.jhtml" target="rightFrame">报送数据查询</a>
+                                <a href="/admin/dataCount/searchcc.jhtml" target="rightFrame">报送数据查询</a>
                             </p>
                         </li>
                         <li>
                             <p class="menuB">
-                                <a href="/admin/reportedDataList/list.jhtml" target="rightFrame">报送数据质量统计</a>
+                                <a href="/admin/dataCount/count.jhtml" target="rightFrame">报送数据质量统计</a>
                             </p>
                         </li>
                     </ul>
