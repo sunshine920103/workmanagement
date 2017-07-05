@@ -55,16 +55,32 @@ public class DataCountController {
     public String list(HttpServletRequest request, HttpSession session) throws Exception {
         return "dataCount/list";
     }
-
-
     @RequestMapping(value = "/searchcc")
-    public String search(HttpServletRequest request, HttpSession session) throws Exception {
+    public String searchcc(HttpServletRequest request, HttpSession session) throws Exception {
         return "dataCount/search";
     }
-
     @RequestMapping(value = "/count")
     public String count(HttpServletRequest request, HttpSession session) throws Exception {
         return "dataCount/count";
+    }
+    @RequestMapping(value = "/show")
+    public String show(HttpServletRequest request, HttpSession session) throws Exception {
+        return "dataCount/show";
+    }
+    @RequestMapping(value = "/show2")
+    public String show2(HttpServletRequest request, HttpSession session) throws Exception {
+        return "dataCount/show2";
+    }
+    @RequestMapping(value = "/sjgl")
+    public String sjgl(HttpServletRequest request, HttpSession session) throws Exception {
+        return "dataCount/sjgl";
+    }
+    @RequestMapping(value = "/fjgbszljc")
+    public String fjgbszljc(HttpServletRequest request, HttpSession session) throws Exception {
+        return "dataCount/fjgbszljc";
+    }@RequestMapping(value = "/fjgbsgmtj")
+     public String fjgbsgmtj(HttpServletRequest request, HttpSession session) throws Exception {
+        return "dataCount/fjgbsgmtj";
     }
 
     private void reSetName(List<Dic> dicList, Integer areaId) {
