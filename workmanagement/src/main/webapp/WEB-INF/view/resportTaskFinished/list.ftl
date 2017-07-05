@@ -70,11 +70,11 @@
 						<td width="100">excel报送</td>
 					</#if>
 					<#if item.reportTaskPushStatus==0>
-						<td class="txc" width="100">未完成</td>
+						<td class="txc" width="100">完成</td>
 					<#elseif item.reportTaskPushStatus==1>
 						<td class="txc" width="100">完成</td>
 					<#else>
-						<td class="txc" width="100">逾期</td>
+						<td class="txc" width="100">完成</td>
 					</#if>
 					<td class="txc" width="150">${item.sysOrgName}</td>
 				</tr>

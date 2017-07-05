@@ -618,7 +618,7 @@
             <td class="noBorderL firstTD"><label class="mainOrange"> * </label>任务发布机构</td>
             <td class="secondTD">
             	<input type="hidden" name="reportTaskPushSetOrgId" value="${reportTaskPushSet.sysOrgCreateId}" />
-              	<input readonly="readonly" name="reportTaskPushSetOrgName" type="text" value="崇左市发改委" />
+              	<input readonly="readonly" name="reportTaskPushSetOrgName" type="text" value="崇左市质监局" />
             </td>
         </tr>
         <tr>

@@ -306,16 +306,16 @@
 										</#if>
 									</td>
 									<td>
-									<#if orgCode="">
+									<#--<#if orgCode="">
 										<#if it.REPORT_INDEX_STATUS==0>
-											<a class="changeFont fontSize12 hasUnderline cursorPointer" onclick="setLayer('查看','${request.getContextPath()}/admin/reportedDelete/show.jhtml?id=${it.REPORT_INDEX_ID}')">查 看</a>	
+											<a class="changeFont fontSize12 hasUnderline cursorPointer" onclick="setLayer('查看','${request.getContextPath()}/admin/reportedDelete/show.jhtml?id=${it.REPORT_INDEX_ID}')">查 看</a>	-->
 											<a class="delFont fontSize12 hasUnderline cursorPointer"  onclick="return del(this,'${it.CID}','${it.REPORT_INDEX_TEMPLATE}','${it.SYS_ORG_ID}','${it.REPORT_INDEX_METHOD}','${it.REPORT_INDEX_ID}','${it.INDEX_ID}')">删 除</a>
-										<#else>
+										<#--<#else>
 											<a class="changeFont fontSize12 hasUnderline cursorPointer" onclick="setLayer('查看','${request.getContextPath()}/admin/reportedDelete/show.jhtml?id=${it.REPORT_INDEX_ID}')">查 看</a>	
 										</#if>
 									<#else>
 										<a class="delFont fontSize12 hasUnderline cursorPointer" onclick="setLayer('查看详情','${request.getContextPath()}/admin/reportedDelete/select.jhtml?indexId=${indexId}&id=${it.CID}')">查看详情</a>
-									</#if>
+									</#if>-->
 									</td>
 								</tr>
 							</#list>

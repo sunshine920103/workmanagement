@@ -369,6 +369,34 @@ $(function(){
 	    			</#if>
 				</li>
 			</#list>
+                <li>
+                    <label>
+                        <a href="javascript:">
+                            <label class="firLi">
+                                <img src="//assets/images/admin.png">
+                                <p style="width:80px;height:20px;float:left;letter-spacing:2px">报送统计</p>
+                                <img class="pointImg" src="/assets/images/img-up.png" style="width:12px;float:none;padding:0;margin-left:0px;margin-top:12px">
+                            </label>
+                        </a>
+                    </label>
+                    <ul class="secMenu" style="border-bottom:1px solid #d2d2d2;">
+                        <li>
+                            <p class="menuB">
+                                <a href="/admin/dataCount/list.jhtml" target="rightFrame">报送数据概览</a>
+                            </p>
+                        </li>
+                        <li>
+                            <p class="menuB">
+                                <a href="/admin/manualEntry/list.jhtml" target="rightFrame">报送数据查询</a>
+                            </p>
+                        </li>
+                        <li>
+                            <p class="menuB">
+                                <a href="/admin/reportedDataList/list.jhtml" target="rightFrame">报送数据质量统计</a>
+                            </p>
+                        </li>
+                    </ul>
+                </li>
 		</ul>
 	</div>
 	<div style="width:0;height:1000px;border-right:1px solid #d2d2d2;position:absolute;top:0;left:200px;"></div>

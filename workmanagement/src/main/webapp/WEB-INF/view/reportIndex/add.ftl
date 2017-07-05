@@ -161,13 +161,21 @@
         <div></div>
         <div class="listBox">
             <table cellpadding="0" cellspacing="0">
-            <#list list as i>
                 <tr>
-                    <td id="${i.reportExcelTemplateId}" onclick='selUpstream(this)'>
-                        <label>${i.reportExcelTemplateName}</label>
+                    <td id="66" onclick="selUpstream(this)">
+                        <label>崇左市-基本信息</label>
                     </td>
                 </tr>
-            </#list>
+                <tr>
+                    <td id="129" onclick="selUpstream(this)">
+                        <label>崇左市-行政处罚信息</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="130" onclick="selUpstream(this)">
+                        <label>崇左市-行政许可信息</label>
+                    </td>
+                </tr>
             </table>
         </div>
         <div class="btnBox">

@@ -166,7 +166,7 @@
 							<td style="width:100;">归档日期</td>
 							<td style="width:100;">操作时间</td>
 							<td style="width:50;">状态</td>
-							<td style="width:50;">操作</td>
+							<#--<td style="width:50;">操作</td>-->
 						</tr>
 						<#list reportIndexs as it>
 								<tr>
@@ -191,9 +191,9 @@
 											已删除
 										</#if>
 									</td>
-									<td>
+									<#--<td>
 										<a class="changeFont fontSize12 hasUnderline cursorPointer" onclick="setLayer('查看','${request.getContextPath()}/admin/reportedDataList/show.jhtml?id=${it.REPORT_INDEX_ID}')">查 看</a>
-									</td>
+									</td>-->
 								</tr>
 							</#list>
 						</table>

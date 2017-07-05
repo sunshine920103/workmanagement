@@ -299,13 +299,9 @@
 						<#if poptype == "add">
 						<td class="secondTD">
 							<select id="areaType" class="shouldHide inputSty" name="sysAreaType">
-								<#if a.sysAreaType == '0'>
-								<option value="1">地市</option>
-								<#elseif a.sysAreaType == '1'>
+
 								<option value="2">区县</option>     
-								<#else >
-								<option value="3">乡镇</option>
-								</#if>
+
 							</select>
 						</td>
 						<#else>

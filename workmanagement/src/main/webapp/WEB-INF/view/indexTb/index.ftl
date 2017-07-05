@@ -130,7 +130,7 @@
 						<td>状态</td>
 						<td>数据类型</td>
 						<td>所属区域</td>
-						<td>是否识别码</td>
+						<#--<td>是否识别码</td>-->
 						<td>是否可以为空</td>
 						<td>操作</td>
 					</tr>
@@ -156,19 +156,19 @@
 							<td>字典</td>
 						</#if>
 						<td>崇左市</td>
-						<td>
+						<#--<td>
 							<#if item.indexItemImportUnique==0>
 								否
 							<#else>
 								是
 							</#if>
-						</td>
+						</td>-->
 						<td>
-							<#if item.indexItemEmpty==0>
+							<#--<#if item.indexItemEmpty==0>-->
 								否
-							<#else>
+							<#--<#else>
 								是
-							</#if>
+							</#if>-->
 						</td>
 						<td>
 							<span class="changeFont fontSize12 cursorPointer hasUnderline"  

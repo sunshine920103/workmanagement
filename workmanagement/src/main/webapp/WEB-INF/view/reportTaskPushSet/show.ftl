@@ -49,7 +49,7 @@
 				</tr>
 				<tr>
 					<td>涉及报送模板</td>
-					<td>${reportTaskPushSet.reportTaskPushSetTemplate}</td>
+					<td>行政许可报送</td>
 				</tr>
 				<tr>
 					<td>任务发布机构</td>
