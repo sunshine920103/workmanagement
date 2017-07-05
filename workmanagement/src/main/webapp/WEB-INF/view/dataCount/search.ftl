@@ -127,7 +127,7 @@
 <div id="poplayer">
     <div class="borderBox zbdl">			
 		<div class="titleFont1">
-			<span>cccc模板列表</span>
+			<span>模板列表</span>
 		</div>
 		<div class="listBox">
 	        <table cellpadding="0" cellspacing="0" id="cycle_j">
@@ -168,9 +168,7 @@
 <div class="rightPart eachInformationSearch" id="sureWidth">
     <div class="queryInputBox ">
     	<div style="text-align: left;">
-            <input type="button" class="sureBtn sureBtnEx" style="margin-left: 30px;width: 85px;" value="cc报送"
-				   onclick="setLayer('报送','${request.getContextPath()}/admin/reportIndex/add.jhtml');$('.layui-layer-shade').height($(window).height());$(this).blur();"
-            />
+
         </div>
         <div class="margin2030">
         <form id="searchForm" method="post">
@@ -181,19 +179,23 @@
 			<input  id ="hidArea" name="status"  type="hidden" value="${status}"  />
 			<input  id ="hidArea" name="submitTime"  type="hidden" value="${submitTime}"  />
 		</form>
-		<form id="search" method="post" action="${request.getContextPath()}/admin/reportIndex/search.jhtml">
+		<form id="search" method="post" action="">
 		 <p>
-                    <label>报送模板：
-                        <a id="openPop1"  class="inlineBlock changeFont fontSize12 hasUnderline cursorPointer" onclick="openPop(1)">
-						 <#if tempName==null> 请选择报送模板<#else >${tempName}</#if></a>
-						  <input id = "tempNameId" type="hidden" name="tempName" value="${tempName}"/>
+                    <label>报送项：
+                        <select name="status" class="inputSty">
+                            <option value="1">行政许可</option>
+
+                            <option value="0" selected>行政处罚</option>
+                            <option value="2" selected>全部</option>
+
+                        </select>
                     </label>
-                    <label> 送报机构：
+                    <#--<label> 送报机构：
                          <a id="openPop2" name="orgName" class=" inlineBlock changeFont fontSize12 hasUnderline cursorPointer" onclick="openPop(2)">
 						  <#if orgName==null>请选机构<#else>${orgName}</#if></a>
 						  <input id = "orgNameId" type="hidden" name="orgName" value="${orgName}"/>
 						  <input id = "orgId" type="hidden" name="orgId" value="${orgId}"/>
-                    </label>
+                    </label>-->
                 </p>
          <p style="margin: 10px auto;">
                     <label>
@@ -206,19 +208,12 @@
                         <input id="gdTime1" name="submitTime" autocomplete="off" class="inputSty fontSize12"
                                value="${submitTime}">
                     </label>
-                    <label> 状态：
+                    <label> 报送形式：
                         <select name="status" class="inputSty">
-						   	<option value="${status}">请选择</option>
-							<#if status == 0>
-		                        <option value="0" selected>上传成功</option>
-		                    <#else >
-		                        <option value="0">上传成功</option>
-		                    </#if>
-		                    <#if status == 1>
-		                        <option value="1" selected>上传失败</option>
-		                    <#else >
-		                        <option value="1">上传失败</option>
-		                    </#if>
+		                        <option value="0" selected>EXCEL报送</option>
+		                        <option value="1">WORD报送</option>
+		                        <option value="2" selected>其他</option>
+
 						</select>
                     </label>
                 </p>
@@ -236,45 +231,38 @@
 					<tbody>
 						<tr class="firstTRFont">
 							<td style="width:5%;">序号</td>
-		                    <td style="width:30%;">送报机构</td>
-		                    <td style="width:19%">模板名称</td>
-		                    <td style="width:13%;">归档日期</td>
+		                    <td style="width:30%;">报送形式</td>
+		                    <td style="width:19%">报送事项</td>
 		                    <td style="width:13%;">报送日期</td>
-		                    <td style="width:10%;">状态</td>
 		                    <td style="width:10%;">操作</td>
 						</tr>
-						<#list list as li>
+
 						<tr>
             				<td>${li_index+1}</td>
-							<td>${li.reportIndexOrgName}</td>
-							<td>${li.reportIndexTemplate}</td>							
-							<td>${li.reportIndexTime?string("yyyy-MM-dd")}</td>
-							<td>${li.reportIndexSubmitTime?string("yyyy-MM-dd")}</td>
-							<td>
-							<#if li.reportIndexStatus = 0>
-                            	<span class="changeFont fontSize12">上报成功</span>
-                        	<#else>
-                            	<span class="delFont fontSize12">上报失败</span>
-                        	</#if>
-							</td>
+							<td>EXCEL报送</td>
+							<td>行政许可</td>
+							<td>2017-07-01 17:12:38</td>
 							<td>
 								<a class="changeFont fontSize12 hasUnderline cursorPointer" 
-								onclick="setLayer('查看','${request.getContextPath()}/admin/reportIndex/show.jhtml?reportIndexId=${li.reportIndexId}');$('.layui-layer-shade').height($(window).height());"
+								onclick="setLayer('查看','${request.getContextPath()}/admin/dataCount/show.jhtml');$('.layui-layer-shade').height($(window).height());"
 								>查 看</a>
 							</td>
 						</tr>
-						</#list>
+                        <tr>
+                            <td>${li_index+1}</td>
+                            <td>EWORD报送</td>
+                            <td>行政处罚</td>
+                            <td>2017-07-02 17:12:38</td>
+                            <td>
+                                <a class="changeFont fontSize12 hasUnderline cursorPointer"
+                                   onclick="setLayer('查看','${request.getContextPath()}/admin/dataCount/show2.jhtml');$('.layui-layer-shade').height($(window).height());"
+                                        >查 看</a>
+                            </td>
+                        </tr>
+
 					</tbody>
 				</table>
-				<#if (list?? )&& list?size>
-					<#include "/fragment/paginationbar.ftl"/>
-				<#else>
-					<table cellspacing="0" cellpadding="0" class="noBorderT">
-						<tr class="firstTRFont">
-							<td style="text-align: center;">暂无数据</td>
-						</tr>
-					</table>
-				</#if>
+
 			</div>
 		</div>
 		</div>

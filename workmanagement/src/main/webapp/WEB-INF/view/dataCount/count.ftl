@@ -8,6 +8,48 @@
             $('.layui-layer-shade').height($(window).height());
         };
         $(function () {
+
+            var myChart = echarts.init(document.getElementById('main'));
+
+            var option = {
+                title : {
+                    x:'center'
+                },
+                tooltip : {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    data: ['字段不能同时为空','字段超长','状态说明不符合规范','字段为空','时间格式不符合标准']
+                },
+                series : [
+                    {
+                        name: '访问来源',
+                        type: 'pie',
+                        radius : '55%',
+                        center: ['60%', '40%'],
+                        data:[
+                            {value:1, name:'字段不能同时为空'},
+                            {value:2, name:'字段超长'},
+                            {value:3, name:'状态说明不符合规范'},
+                            {value:12, name:'字段为空'},
+                            {value:1, name:'时间格式不符合标准'}
+                        ],
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+
+            myChart.setOption(option);
+            
             //回显
             var msg = "${msg}";
             if(msg != "") {
@@ -127,7 +169,7 @@
 <div id="poplayer">
     <div class="borderBox zbdl">			
 		<div class="titleFont1">
-			<span>cccc模板列表</span>
+			<span>模板列表</span>
 		</div>
 		<div class="listBox">
 	        <table cellpadding="0" cellspacing="0" id="cycle_j">
@@ -167,114 +209,267 @@
 </div>
 <div class="rightPart eachInformationSearch" id="sureWidth">
     <div class="queryInputBox ">
-    	<div style="text-align: left;">
-            <input type="button" class="sureBtn sureBtnEx" style="margin-left: 30px;width: 85px;" value="cc报送"
-				   onclick="setLayer('报送','${request.getContextPath()}/admin/reportIndex/add.jhtml');$('.layui-layer-shade').height($(window).height());$(this).blur();"
-            />
-        </div>
         <div class="margin2030">
-        <form id="searchForm" method="post">
-			<input  id ="hidArea" name="tempName"  type="hidden" value="${tempName}"  />
-			<input  id ="hidArea" name="orgName"  type="hidden" value="${orgName}"  />
-			<input  id ="hidArea" name="orgId"  type="hidden" value="${orgId}"  />
-			<input  id ="hidArea" name="reportDate"  type="hidden" value="${reportDate}"  />
-			<input  id ="hidArea" name="status"  type="hidden" value="${status}"  />
-			<input  id ="hidArea" name="submitTime"  type="hidden" value="${submitTime}"  />
-		</form>
-		<form id="search" method="post" action="${request.getContextPath()}/admin/reportIndex/search.jhtml">
-		 <p>
-                    <label>报送模板：
-                        <a id="openPop1"  class="inlineBlock changeFont fontSize12 hasUnderline cursorPointer" onclick="openPop(1)">
-						 <#if tempName==null> 请选择报送模板<#else >${tempName}</#if></a>
-						  <input id = "tempNameId" type="hidden" name="tempName" value="${tempName}"/>
+            <form id="search" method="post">
+                <p>
+                    <label> 报送项：
+                        <select id="sendops" class="inputSty">
+                            <option value="0">行政许可</option>
+                            <option value="1" selected>行政处罚</option>
+                            <option value="2">全部</option>
+                        </select>
                     </label>
-                    <label> 送报机构：
-                         <a id="openPop2" name="orgName" class=" inlineBlock changeFont fontSize12 hasUnderline cursorPointer" onclick="openPop(2)">
-						  <#if orgName==null>请选机构<#else>${orgName}</#if></a>
-						  <input id = "orgNameId" type="hidden" name="orgName" value="${orgName}"/>
-						  <input id = "orgId" type="hidden" name="orgId" value="${orgId}"/>
+                    <label> 数据质量状态：
+                        <select id="quaops" class="inputSty">
+                            <option value="0">合规</option>
+                            <option value="1" selected>不合规</option>
+                            <option value="2">全部</option>
+                        </select>
                     </label>
-                </p>
-         <p style="margin: 10px auto;">
+                </p ><br>
+                <p>
                     <label>
-                        归档时间：
+                        统计时间：
                         <input id="gdTime" name="reportDate" autocomplete="off" class="inputSty fontSize12"
                                value="${reportDate}">
                     </label>
-                     <label>
-                        报送时间：
+                    <label>
                         <input id="gdTime1" name="submitTime" autocomplete="off" class="inputSty fontSize12"
                                value="${submitTime}">
                     </label>
-                    <label> 状态：
-                        <select name="status" class="inputSty">
-						   	<option value="${status}">请选择</option>
-							<#if status == 0>
-		                        <option value="0" selected>上传成功</option>
-		                    <#else >
-		                        <option value="0">上传成功</option>
-		                    </#if>
-		                    <#if status == 1>
-		                        <option value="1" selected>上传失败</option>
-		                    <#else >
-		                        <option value="1">上传失败</option>
-		                    </#if>
-						</select>
-                    </label>
-                </p>
+                </p >
+                <label>
+                    <input type="button"  class="sureBtn sureBtnEx " value="查询" style="margin-left: 0;"/ >
+                </label>
+            </form><br>
+            <p>
+                <label>行政许可：
+                    <span  style="font-weight: bold;">76</span>项
+                </label>&nbsp&nbsp
+                <label> 行政处罚：
+                    <span  style="font-weight: bold;">31</span>项
+                </label>&nbsp&nbsp
+                <label> 合计：
+                    <span  style="font-weight: bold;">107</span>项
+                </label>
+            </p><br>
             <label>
-                    <input type="submit"  class="sureBtn sureBtnEx " value="查询" style="margin-left: 0;"/ > 
-              </label>
-             
-        </form>
+                <a  class="sureBtn sureBtnEx " href="${request.getContextPath()}/assets/不合规信息列表模板.xlsx" style="margin-left: 0;padding: 5px 20px;">导出</a>
+            </label>
 	</div>
+        <div id="main" style="width: 800px;height:400px;padding-left: 50px"></div>
         <div>
 
 			<div class="listBox">
 				<table cellpadding="0" cellspacing="0">
-					<caption class="titleFont1 titleFont1Ex">报送记录列表</caption>
+					<caption class="titleFont1 titleFont1Ex">不合规数据列表</caption>
 					<tbody>
-						<tr class="firstTRFont">
-							<td style="width:5%;">序号</td>
-		                    <td style="width:30%;">送报机构</td>
-		                    <td style="width:19%">模板名称</td>
-		                    <td style="width:13%;">归档日期</td>
-		                    <td style="width:13%;">报送日期</td>
-		                    <td style="width:10%;">状态</td>
-		                    <td style="width:10%;">操作</td>
-						</tr>
-						<#list list as li>
+                    <tr class="firstTRFont">
+                        <td style="width:5%;">序号</td>
+                        <td style="width:15%;">行政相对人名称</td>
+                        <td style="width:19%">项目名称</td>
+                        <td style="width:13%;">行政相对人代码</td>
+                        <td style="width:13%;">许可内容</td>
+                        <td style="width:10%;">法定代表人姓名</td>
+                        <td style="width:10%;">许可机关</td>
+                        <td >操作</td>
+                    </tr>
+                    <tr>
+                        <td>${li_index+1}</td>
+                        <td>崇左市金帆船务有限公司</td>
+                        <td>医师</td>
+                        <td>9134010078</td>
+                        <td>国籍登记</td>
+                        <td>李传云</td>
+                        <td>
+                            崇左市交通运输局
+                        </td>
+                        <td>
+                            <a class="changeFont fontSize12 hasUnderline cursorPointer"
+                               onclick="setLayer('查看','${request.getContextPath()}/admin/dataCount/show2.jhtml');$('.layui-layer-shade').height($(window).height());"
+                                    >查 看</a>
+                        </td>
+                    </tr>
+
 						<tr>
             				<td>${li_index+1}</td>
-							<td>${li.reportIndexOrgName}</td>
-							<td>${li.reportIndexTemplate}</td>							
-							<td>${li.reportIndexTime?string("yyyy-MM-dd")}</td>
-							<td>${li.reportIndexSubmitTime?string("yyyy-MM-dd")}</td>
+							<td>周银铭</td>
+							<td>医师</td>
+							<td></td>
+							<td>医师变更</td>
+							<td></td>
 							<td>
-							<#if li.reportIndexStatus = 0>
-                            	<span class="changeFont fontSize12">上报成功</span>
-                        	<#else>
-                            	<span class="delFont fontSize12">上报失败</span>
-                        	</#if>
+                                崇左市江州区卫计委
 							</td>
-							<td>
-								<a class="changeFont fontSize12 hasUnderline cursorPointer" 
-								onclick="setLayer('查看','${request.getContextPath()}/admin/reportIndex/show.jhtml?reportIndexId=${li.reportIndexId}');$('.layui-layer-shade').height($(window).height());"
-								>查 看</a>
-							</td>
+                            <td>
+                                <a class="changeFont fontSize12 hasUnderline cursorPointer"
+                                   onclick="setLayer('查看','${request.getContextPath()}/admin/dataCount/show2.jhtml');$('.layui-layer-shade').height($(window).height());"
+                                        >查 看</a>
+                            </td>
 						</tr>
-						</#list>
+                    </tr>
+
+                    <tr>
+                        <td>${li_index+1}</td>
+                        <td>马廷廷</td>
+                        <td>医师</td>
+                        <td></td>
+                        <td>医师注册</td>
+                        <td></td>
+                        <td>
+                            崇左市江州区卫计委
+                        </td>
+                        <td>
+                            <a class="changeFont fontSize12 hasUnderline cursorPointer"
+                               onclick="setLayer('查看','${request.getContextPath()}/admin/dataCount/show2.jhtml');$('.layui-layer-shade').height($(window).height());"
+                                    >查 看</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>${li_index+1}</td>
+                        <td>凭祥市华航船务有限责任公司</td>
+                        <td>桂凭祥货6198</td>
+                        <td>9134012469</td>
+                        <td>国籍登记
+                        </td>
+                        <td>王水银
+                        </td>
+                        <td>
+                            崇左市交通运输局
+
+                        </td>
+                        <td>
+                            <a class="changeFont fontSize12 hasUnderline cursorPointer"
+                               onclick="setLayer('查看','${request.getContextPath()}/admin/dataCount/show2.jhtml');$('.layui-layer-shade').height($(window).height());"
+                                    >查 看</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>${li_index+1}</td>
+                        <td>崇左市江洲区仟富贵有限公司
+                        </td>
+                        <td>公共场所
+                        </td>
+                        <td></td>
+                        <td>公共浴室
+                        </td>
+                        <td>张瑞标
+                        </td>
+                        <td>
+                            崇左市江州区卫计委
+                        </td>
+                        <td>
+                            <a class="changeFont fontSize12 hasUnderline cursorPointer"
+                               onclick="setLayer('查看','${request.getContextPath()}/admin/dataCount/show2.jhtml');$('.layui-layer-shade').height($(window).height());"
+                                    >查 看</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>${li_index+1}</td>
+                        <td>崇左韵晨酒店管理有限公司
+                        </td>
+                        <td>公共场所
+                        </td>
+                        <td></td>
+                        <td>宾馆开业
+                        </td>
+                        <td>王健
+                        </td>
+                        <td>
+                            崇左市江州区卫计委
+                        </td>
+                        <td>
+                            <a class="changeFont fontSize12 hasUnderline cursorPointer"
+                               onclick="setLayer('查看','${request.getContextPath()}/admin/dataCount/show2.jhtml');$('.layui-layer-shade').height($(window).height());"
+                                    >查 看</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>${li_index+1}</td>
+                        <td>崇左中华职业学校
+                            </td>
+                        <td>学校举办者变更
+                        </td>
+                        <td></td>
+                        <td>变更安徽中华职业学校
+                        </td>
+                        <td></td>
+                        <td>
+                            崇左市教育局
+
+                        </td>
+                        <td>
+                            <a class="changeFont fontSize12 hasUnderline cursorPointer"
+                               onclick="setLayer('查看','${request.getContextPath()}/admin/dataCount/show2.jhtml');$('.layui-layer-shade').height($(window).height());"
+                                    >查 看</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>${li_index+1}</td>
+                        <td>崇左电气工程职业技术学院
+                        </td>
+                        <td>公办高职高专院校
+                        </td>
+                        <td></td>
+                        <td>高职高专院校章程核准
+                        </td>
+                        <td></td>
+                        <td>
+                            崇左市教育局
+
+                        </td>
+                        <td>
+                            <a class="changeFont fontSize12 hasUnderline cursorPointer"
+                               onclick="setLayer('查看','${request.getContextPath()}/admin/dataCount/show2.jhtml');$('.layui-layer-shade').height($(window).height());"
+                                    >查 看</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>${li_index+1}</td>
+                        <td>崇左白厦职业学校
+
+                        </td>
+                        <td>变更学校类别
+                        </td>
+                        <td></td>
+                        <td>高职高专院校章程核准
+                        </td>
+                        <td></td>
+                        <td>
+                            崇左市教育局
+
+                        </td>
+                        <td>
+                            <a class="changeFont fontSize12 hasUnderline cursorPointer"
+                               onclick="setLayer('查看','${request.getContextPath()}/admin/dataCount/show2.jhtml');$('.layui-layer-shade').height($(window).height());"
+                                    >查 看</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>${li_index+1}</td>
+                        <td>广西广播影视职业学院
+
+                        </td>
+                        <td>公办高职高专院校
+                        </td>
+                        <td></td>
+                        <td>高职高专院校章程核准
+                        </td>
+                        <td></td>
+                        <td>
+                            崇左市教育局
+
+                        </td>
+                        <td>
+                            <a class="changeFont fontSize12 hasUnderline cursorPointer"
+                               onclick="setLayer('查看','${request.getContextPath()}/admin/dataCount/show2.jhtml');$('.layui-layer-shade').height($(window).height());"
+                                    >查 看</a>
+                        </td>
+                    </tr>
+
 					</tbody>
 				</table>
-				<#if (list?? )&& list?size>
-					<#include "/fragment/paginationbar.ftl"/>
-				<#else>
-					<table cellspacing="0" cellpadding="0" class="noBorderT">
-						<tr class="firstTRFont">
-							<td style="text-align: center;">暂无数据</td>
-						</tr>
-					</table>
-				</#if>
+
 			</div>
 		</div>
 		</div>

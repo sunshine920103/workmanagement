@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="${request.getContextPath()}/assets/js/layer/mobile/need/layer.css" />
 <script src="${request.getContextPath()}/assets/js/layer/layer.js"></script> 
 <script src="${request.getContextPath()}/assets/js/setLayer.js"></script>
+<script src="${request.getContextPath()}/assets/js/echarts.common.min.js"></script>
 <link rel="stylesheet" type="text/css"  href="${request.getContextPath()}/assets/js/zTree_v3-master/css/zTreeStyle.css"/>
 <script src="${request.getContextPath()}/assets/js/zTree_v3-master/js/jquery.ztree.all.min.js"></script>
 <script src="${request.getContextPath()}/assets/js/organd.js"></script>
